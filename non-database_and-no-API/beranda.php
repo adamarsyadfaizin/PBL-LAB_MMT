@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
@@ -189,10 +190,10 @@
                         Malang, Indonesia
                     </p>
                     <div class="social-links-footer">
-                        <a href="#" aria-label="Facebook">F</a>
-                        <a href="#" aria-label="Twitter">T</a>
-                        <a href="#" aria-label="Instagram">I</a>
-                        <a href="#" aria-label="YouTube">Y</a>
+                        <a href="#" aria-label="Facebook" class="bx bxl-facebook"></a>
+                        <a href="#" aria-label="Twitter" class="bx bxl-twitter"></a>
+                        <a href="#" aria-label="Instagram" class="bx bxl-instagram"></a>
+                        <a href="#" aria-label="YouTube" class="bx bxl-youtube"></a>
                     </div>
                 </div>
                 
