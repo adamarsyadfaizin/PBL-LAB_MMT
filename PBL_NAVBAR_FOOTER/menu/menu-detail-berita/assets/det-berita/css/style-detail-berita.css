@@ -1,0 +1,187 @@
+/* ==== STYLE KHUSUS HALAMAN DETAIL BERITA ==== */
+
+/* Layout Konten Utama */
+.main-content-area {
+    padding-top: 80px;
+    padding-bottom: 80px;
+}
+.main-content-area > .container {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 48px; 
+}
+.primary-content {
+    flex: 1; 
+    min-width: 0; 
+}
+.sidebar {
+    width: 360px; 
+    flex-shrink: 0;
+}
+
+/* Banner Artikel */
+.detail-article-banner {
+    width: 100%;
+    height: auto;
+    max-height: 450px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Meta Info Artikel */
+.article-meta-detail {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--color-border-light);
+    gap: 15px;
+}
+.article-meta-detail .meta-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.article-meta-detail strong {
+    color: var(--color-text-darker);
+    margin-right: 4px;
+}
+
+/* Social Share */
+.social-share {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.social-share span {
+    font-weight: 600;
+    color: var(--color-text-darker);
+}
+.social-share a {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border-light);
+    color: var(--color-primary);
+    text-align: center;
+    line-height: 28px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.social-share a:hover {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+/* Konten Artikel */
+.article-content {
+    padding-bottom: 30px;
+}
+.article-content p {
+    margin-bottom: 20px;
+    color: var(--color-text-darker);
+}
+.article-content .lead-paragraph {
+    font-size: 1.15em;
+    font-weight: 400; 
+}
+.article-content h3 {
+    font-size: 22px;
+    margin-top: 30px;
+    margin-bottom: 16px;
+    color: var(--color-primary);
+}
+.article-content ul {
+    list-style-type: disc;
+    margin-left: 24px;
+    margin-bottom: 24px;
+}
+.article-content ul li {
+    margin-bottom: 10px;
+    line-height: 1.7;
+}
+
+/* Lampiran Artikel */
+.article-attachments {
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border-light);
+    padding: 24px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+.article-attachments h4 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: var(--color-text-darker);
+}
+.article-attachments ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.article-attachments li {
+    margin-bottom: 10px;
+}
+.article-attachments a {
+    font-weight: 600;
+    text-decoration: none;
+}
+.article-attachments a:hover {
+    text-decoration: underline;
+}
+.article-attachments a::before {
+    display: inline-block;
+    margin-right: 10px;
+    font-weight: bold;
+}
+.article-attachments a.link-pendaftaran::before {
+    content: '🔗';
+}
+.article-attachments a.link-pdf::before {
+    content: '📄';
+}
+.article-attachments a.link-slide::before {
+    content: '💻';
+}
+
+/* Tombol Kembali */
+.back-link {
+    margin-top: 40px;
+    display: inline-block;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .main-content-area > .container { 
+        flex-direction: column; 
+        gap: 60px; 
+    }
+    .sidebar { 
+        width: 100%; 
+    }
+}
+
+@media (max-width: 768px) {
+    .article-meta-detail {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .detail-article-banner {
+        max-height: 300px;
+    }
+    .article-content .lead-paragraph {
+        font-size: 1.1em;
+    }
+    .article-content h3 {
+        font-size: 20px;
+    }
+}
