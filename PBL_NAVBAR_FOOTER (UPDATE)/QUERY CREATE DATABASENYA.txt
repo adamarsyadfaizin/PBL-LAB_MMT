@@ -61,6 +61,7 @@ CREATE TABLE media_assets (
   caption VARCHAR(512),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
+ALTER TABLE media_assets ADD COLUMN deskripsi TEXT;
 
 ---------------------------------------------------------
 -- 6️⃣ news

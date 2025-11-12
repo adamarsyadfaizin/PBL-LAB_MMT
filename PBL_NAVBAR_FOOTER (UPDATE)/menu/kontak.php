@@ -10,7 +10,7 @@ require_once 'components/footer.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kontak - Laboratorium Mobile and Multimedia Tech POLINEMA</title>
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
@@ -38,6 +38,21 @@ require_once 'components/footer.php';
             text-transform: uppercase;
             letter-spacing: 1px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Tombol email kuning konsisten dengan tombol lain */
+        .btn-email {
+            background: #ffc107; /* kuning */
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            transition: opacity 0.3s;
+        }
+        .btn-email:hover {
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -115,12 +130,16 @@ require_once 'components/footer.php';
                         <h3 class="widget-title">Media Sosial</h3>
                         <div class="widget-social">
                             <div class="widget-social-links">
-                                <a href="#" aria-label="Facebook">F</a>
-                                <a href="#" aria-label="Twitter">T</a>
-                                <a href="#" aria-label="Instagram">I</a>
-                                <a href="#" aria-label="YouTube">Y</a>
-                                <a href="#" aria-label="LinkedIn">L</a>
+                                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+                                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
                             </div>
+                            <!-- Tombol email langsung muncul di bawah social links -->
+                            <a href="mailto:adamkian09@gmail.com?subject=Halo%20Lab%20POLINEMA" class="btn-email">
+                                Kirim Email ke Adam
+                            </a>
                         </div>
                     </div>
 
@@ -132,7 +151,6 @@ require_once 'components/footer.php';
     </main>
 
     <?php
-    // ✅ Render footer langsung dari file komponen
     renderFooter();
     ?>
 

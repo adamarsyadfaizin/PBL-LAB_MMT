@@ -1,50 +1,41 @@
-/* ---
-   File: script.js
-   Deskripsi: Interaksi vanilla JS (Hamburger, Sticky Header, Scroll-to-Top, Dropdown).
-   (Slider JS dihapus karena hero diganti)
---- */
+// Animasi fade-in untuk scrollTopBtn pakai JS murni
+const fadeIn = (el) => {
+    el.style.opacity = 0;
+    el.style.display = "block";
+    let last = +new Date();
+    const tick = function() {
+        el.style.opacity = +el.style.opacity + (new Date() - last) / 200;
+        last = +new Date();
+
+        if (+el.style.opacity < 1) {
+            (window.requestAnimationFrame && requestAnimationFrame(tick)) || setTimeout(tick, 16);
+        }
+    };
+    tick();
+};
+
+const fadeOut = (el) => {
+    el.style.opacity = 1;
+    const tick = function() {
+        el.style.opacity = +el.style.opacity - 0.05;
+        if (+el.style.opacity > 0) {
+            (window.requestAnimationFrame && requestAnimationFrame(tick)) || setTimeout(tick, 16);
+        } else {
+            el.style.display = "none";
+        }
+    };
+    tick();
+};
 
 document.addEventListener("DOMContentLoaded", function() {
-
-    /**
-     * 1. Toggle Menu Hamburger (Mobile)
-     */
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navMenu = document.querySelector('#primary-menu');
-
-    if (menuToggle && navMenu) {
-        menuToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('is-active');
-            const isExpanded = navMenu.classList.contains('is-active');
-            menuToggle.setAttribute('aria-expanded', isExpanded);
-        });
-    }
-
-    /**
-     * 2. Efek Shadow pada Sticky Header saat scroll
-     */
-    const header = document.querySelector('#siteHeader');
-    if (header) {
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 10) {
-                header.classList.add('header-scrolled');
-            } else {
-                header.classList.remove('header-scrolled');
-            }
-        });
-    }
-
-    /**
-     * 3. Tombol Scroll-to-Top
-     */
     const scrollTopBtn = document.querySelector('#scrollTopBtn');
-    
+
     if (scrollTopBtn) {
         window.addEventListener('scroll', function() {
             if (window.scrollY > 300) {
-                scrollTopBtn.classList.add('show');
+                if (scrollTopBtn.style.display !== "block") fadeIn(scrollTopBtn);
             } else {
-                scrollTopBtn.classList.remove('show');
+                if (scrollTopBtn.style.display !== "none") fadeOut(scrollTopBtn);
             }
         });
 
@@ -56,22 +47,4 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
     }
-
-    /**
-     * 4. Dropdown Menu Toggle (HANYA UNTUK MOBILE)
-     */
-    const dropdownToggles = document.querySelectorAll('.main-navigation .dropdown-toggle');
-
-    dropdownToggles.forEach(function(toggle) {
-        toggle.addEventListener('click', function(e) {
-            if (window.innerWidth <= 768) {
-                e.preventDefault(); 
-                const parentLi = this.parentElement;
-                parentLi.classList.toggle('submenu-open');
-            }
-        });
-    });
-
-    /* (Logika Slider JS telah dihapus karena hero diganti) */
-
 });

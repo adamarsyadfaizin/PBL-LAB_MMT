@@ -1,11 +1,11 @@
 <?php
 /**
  * menu/components/navbar.php
- * Reusable navbar + improved live-search UI (updated: visible text + magnifier icon)
+ * Reusable navbar + improved live-search UI
  *
  * Notes:
  * - Keep DB include only for AJAX requests.
- * - Replace existing file with this one.
+ * - Include navbar.css instead of internal <style>
  */
 
 /* ---------- BASE URL ---------- */
@@ -24,7 +24,7 @@ if (isset($_GET['ajax_search'])) {
     if ($q !== '') {
         $pat = "%$q%";
         try {
-            // Berita (limit 4)
+            // Berita
             $sqlNews = "SELECT id, title, slug, cover_image FROM news
                         WHERE status = 'published' AND (title ILIKE ? OR summary ILIKE ?)
                         ORDER BY created_at DESC LIMIT 4";
@@ -39,7 +39,7 @@ if (isset($_GET['ajax_search'])) {
                 ];
             }
 
-            // Proyek (limit 4)
+            // Proyek
             $sqlProj = "SELECT id, title, slug, cover_image FROM projects
                         WHERE status = 'published' AND (title ILIKE ? OR summary ILIKE ?)
                         ORDER BY created_at DESC LIMIT 4";
@@ -54,7 +54,7 @@ if (isset($_GET['ajax_search'])) {
                 ];
             }
 
-            // Galeri (limit 4)
+            // Galeri
             $sqlGal = "SELECT id, title, image_path FROM galleries
                        WHERE status = 'published' AND (title ILIKE ? OR description ILIKE ?)
                        ORDER BY created_at DESC LIMIT 4";
@@ -83,6 +83,9 @@ if (isset($_GET['ajax_search'])) {
 function renderNavbar($currentPage = '') {
     $ajaxEndpoint = rtrim(BASE_URL, "/") . "/menu/components/navbar.php?ajax_search=1";
     ?>
+    <!-- Link CSS eksternal -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>menu/components/navbar.css">
+
     <header class="site-header" id="siteHeader">
         <div class="container">
             <div class="logo-area">
@@ -103,7 +106,6 @@ function renderNavbar($currentPage = '') {
                 </ul>
             </nav>
 
-            <!-- Search area with new style -->
             <div class="nav-search">
                 <div class="nav-search-form" role="search" aria-label="Pencarian situs">
                     <input id="nav-search-input" class="nav-search-input" type="search" placeholder="Cari berita / proyek / galeri..." aria-label="Cari">
@@ -122,177 +124,7 @@ function renderNavbar($currentPage = '') {
             </button>
         </div>
 
-        <!-- Scoped styles -->
-        <style>
-        /* === NEW NAV SEARCH STYLES === */
-        .nav-search {
-            display: flex;
-            align-items: center;
-            margin-left: 16px;
-            position: relative;
-        }
-        .nav-search-form {
-            display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 999px;
-            overflow: hidden;
-            height: 36px;
-            margin-top: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .nav-search-input {
-            border: none;
-            background: transparent;
-            padding: 0 16px;
-            font-size: 14px;
-            font-family: 'Open Sans', sans-serif;
-            color: var(--color-white);
-            height: 100%;
-            width: 160px;
-            transition: width 0.3s ease;
-        }
-        .nav-search-input:focus {
-            width: 200px;
-            outline: none;
-        }
-        .nav-search-input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-            opacity: 1;
-        }
-        .nav-search-button {
-            border: none;
-            background: transparent;
-            color: rgba(255, 255, 255, 0.7);
-            cursor: pointer;
-            height: 100%;
-            padding: 0 16px;
-            font-size: 16px;
-            transition: color 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .nav-search-button:hover {
-            color: var(--color-white);
-        }
-
-        /* Dropdown hasil pencarian */
-        .nav-search-results {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: calc(100% + 10px);
-            background: rgba(15,23,42,0.98);
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.08);
-            box-shadow: 0 14px 40px rgba(2,6,23,0.5);
-            z-index: 1200;
-            max-height: 340px;
-            overflow-y: auto;
-            display: none;
-            padding: 6px;
-            backdrop-filter: blur(8px);
-        }
-
-        /* Item hasil */
-        .nav-search-results .result-item {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            padding: 10px;
-            text-decoration: none;
-            color: #e2e8f0;
-            border-radius: 8px;
-            transition: background 0.2s ease, transform 0.15s ease;
-        }
-        .nav-search-results .result-item:hover,
-        .nav-search-results .result-item.active {
-            background: rgba(96,165,250,0.15);
-            transform: scale(1.02);
-        }
-
-        .nav-search-results .result-thumb {
-            width: 60px;
-            height: 44px;
-            flex: 0 0 60px;
-            border-radius: 6px;
-            object-fit: cover;
-            background: #475569;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-
-        .nav-search-results .result-meta { font-size: 13px; line-height: 1.2; }
-        .nav-search-results .result-type { font-weight: 700; font-size: 11px; color: #93c5fd; margin-bottom: 3px; text-transform: uppercase; }
-        .nav-search-results .result-title { font-weight: 600; color: #f1f5f9; }
-
-        .nav-search-results .result-empty {
-            padding: 14px;
-            color: #94a3b8;
-            text-align: center;
-            font-style: italic;
-        }
-
-        /* Responsif */
-        @media (max-width: 900px) {
-            .nav-search { margin-left: 12px; }
-            .nav-search-input { width: 140px; }
-            .nav-search-input:focus { width: 180px; }
-        }
-        @media (max-width: 768px) {
-            .nav-search { margin-left: 8px; }
-            .nav-search-input { width: 120px; font-size: 13px; padding: 0 12px; }
-            .nav-search-input:focus { width: 160px; }
-            .nav-search-button { padding: 0 12px; }
-        }
-        @media (max-width: 520px) {
-            .nav-search { margin-left: 6px; }
-            .nav-search-input { width: 100px; }
-            .nav-search-input:focus { width: 140px; }
-            .nav-search-results .result-thumb { width: 48px; height: 36px; }
-        }
-
-        .main-navigation .has-dropdown > a { padding-right: 14px; }
-        .main-navigation .has-dropdown > a::before {
-            content: '\25BC';
-            font-size: 10px;
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            opacity: 0.7;
-            transition: transform 0.2s ease;
-        }
-        .main-navigation .has-dropdown:hover > a::before { transform: translateY(-50%) rotate(180deg); }
-
-        /* ---- 3.1 Dropdown Menu (Desktop) ---- */
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            min-width: 230px;
-            background: var(--color-dropdown-bg);
-            border: 1px solid var(--color-dropdown-border);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.08);
-            z-index: 1000;
-            border-radius: 0 0 6px 6px;
-            border-top: 3px solid var(--color-accent);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
-        }
-        @media (min-width: 769px) {
-            .main-navigation .has-dropdown:hover > .dropdown-menu {
-                display: block;
-                opacity: 1;
-                visibility: visible;
-                transform: translateY(0);
-            }
-        }
-        </style>
-
+        <!-- Script search AJAX -->
         <script>
         (function(){
             const input = document.getElementById('nav-search-input');
@@ -345,26 +177,13 @@ function renderNavbar($currentPage = '') {
                 timer = setTimeout(() => fetchResults(q), 220);
             });
 
-            // keyboard navigation
             input.addEventListener('keydown', function(e){
                 const items = box.querySelectorAll('.result-item');
                 if (!items.length) return;
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    active = Math.min(active + 1, items.length - 1);
-                    updateActive(items);
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    active = Math.max(active - 1, 0);
-                    updateActive(items);
-                } else if (e.key === 'Enter') {
-                    if (active >= 0 && items[active]) {
-                        e.preventDefault();
-                        window.location.href = items[active].getAttribute('href');
-                    }
-                } else if (e.key === 'Escape') {
-                    clearBox();
-                }
+                if (e.key === 'ArrowDown') { e.preventDefault(); active = Math.min(active + 1, items.length - 1); updateActive(items); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); active = Math.max(active - 1, 0); updateActive(items); }
+                else if (e.key === 'Enter') { if (active >= 0 && items[active]) { e.preventDefault(); window.location.href = items[active].getAttribute('href'); } }
+                else if (e.key === 'Escape') { clearBox(); }
             });
 
             function updateActive(items) {
@@ -381,7 +200,6 @@ function renderNavbar($currentPage = '') {
                 if (!e.target.closest('.nav-search')) clearBox();
             });
 
-            // focus input when clicking button
             if (button) button.addEventListener('click', function(){ input.focus(); });
 
             input.addEventListener('focus', function(){
