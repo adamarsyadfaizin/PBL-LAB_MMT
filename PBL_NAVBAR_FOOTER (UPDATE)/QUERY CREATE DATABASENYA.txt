@@ -207,3 +207,193 @@ CREATE TABLE project_members (
 
 INSERT INTO project_members (project_id, member_id)
 VALUES (1, 1), (1, 2);
+
+
+
+
+ALTER TABLE news ADD COLUMN user_id INT;
+
+SELECT n.*, u.name AS author_name 
+FROM news n
+LEFT JOIN users u ON n.user_id = u.id
+WHERE n.status = 'published'
+ORDER BY n.created_at DESC;
+
+select * from projects ;
+SELECT id, title, year, status FROM projects LIMIT 5;
+SELECT id, title FROM projects WHERE status = 'published';
+
+DESCRIBE projects;
+SELECT * FROM projects LIMIT 3;
+SELECT * FROM categories;
+
+SELECT DISTINCT status FROM projects;
+
+SELECT * FROM media_assets;
+
+INSERT INTO media_assets (caption, deskripsi, type, url, created_at)
+VALUES
+('Kegiatan Dies Natalis', 'Hari ulang tahun kampus', 'foto', 'assets/images/galeri/gallery-photo-1.jpg', NOW()),
+('Wisuda Mahasiswa', 'Hari kelulusan mahasiswa', 'foto', 'assets/images/galeri/gallery-photo-2.jpg', NOW()),
+('Video Dokumentasi Lomba Game Dev', 'Lomba Game 2025', 'video', 'https://www.youtube.com/embed/abcdefghij', NOW());
+
+ALTER TABLE projects ADD COLUMN views INT DEFAULT 0;
+ALTER TABLE projects ADD COLUMN likes INT DEFAULT 0;
+ALTER TABLE news ADD COLUMN category_id INT;
+ALTER TABLE news ADD COLUMN author VARCHAR(100);
+ALTER TABLE news ADD COLUMN attachments JSON;
+ALTER TABLE projects ADD COLUMN user_id INT;
+
+CREATE TABLE comments (
+    id SERIAL PRIMARY KEY,
+    entity_type VARCHAR(50) NOT NULL, -- 'project', 'news'
+    entity_id INT NOT NULL,
+    author_name VARCHAR(100) NOT NULL,
+    author_email VARCHAR(255),
+    rating INT CHECK (rating >= 1 AND rating <= 5),
+    content TEXT NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending', -- 'pending', 'approved', 'rejected'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+
+-- Tabel untuk audit logs (sesuai RPP)
+CREATE TABLE audit_logs (
+    id SERIAL PRIMARY KEY,
+    user_id INT,
+    action VARCHAR(100) NOT NULL,
+    entity_type VARCHAR(50) NOT NULL,
+    entity_id INT,
+    old_values JSON,
+    new_values JSON,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Foreign keys untuk projects
+ALTER TABLE projects 
+ADD CONSTRAINT fk_projects_category 
+FOREIGN KEY (category_id) REFERENCES categories(id);
+
+ALTER TABLE projects 
+ADD CONSTRAINT fk_projects_user 
+FOREIGN KEY (user_id) REFERENCES users(id);
+
+-- Foreign keys untuk news
+ALTER TABLE news 
+ADD CONSTRAINT fk_news_category 
+FOREIGN KEY (category_id) REFERENCES categories(id);
+
+ALTER TABLE news 
+ADD CONSTRAINT fk_news_user 
+FOREIGN KEY (user_id) REFERENCES users(id);
+
+-- Foreign keys untuk projects_members (existing)
+ALTER TABLE project_members 
+ADD CONSTRAINT fk_projects_members_project 
+FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE project_members 
+ADD CONSTRAINT fk_projects_members_member 
+FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE;
+
+-- Foreign keys untuk projects_tags (existing)
+ALTER TABLE project_tags 
+ADD CONSTRAINT fk_projects_tags_project 
+FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE project_tags 
+ADD CONSTRAINT fk_projects_tags_tag 
+FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE;
+
+-- Tabel untuk relasi many-to-many news dan tags
+CREATE TABLE news_tags (
+    id SERIAL PRIMARY KEY,
+    news_id INT NOT NULL,
+    tag_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(news_id, tag_id)
+);
+
+-- Foreign keys untuk news_tags (new)
+ALTER TABLE news_tags 
+ADD CONSTRAINT fk_news_tags_news 
+FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE;
+
+ALTER TABLE news_tags 
+ADD CONSTRAINT fk_news_tags_tag 
+FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE;
+
+-- Foreign keys untuk comments (new)
+ALTER TABLE "comments"  ADD COLUMN user_id INT;
+ALTER TABLE comments 
+ADD CONSTRAINT fk_comments_user 
+FOREIGN KEY (user_id) REFERENCES users(id);
+
+-- Foreign keys untuk audit_logs (new)
+ALTER TABLE audit_logs 
+ADD CONSTRAINT fk_audit_logs_user 
+FOREIGN KEY (user_id) REFERENCES users(id);
+
+ALTER TABLE news ADD COLUMN type VARCHAR(20) DEFAULT 'news'; -- 'news' or 'event'
+
+-- Index untuk pencarian dan filtering
+CREATE INDEX idx_projects_status ON projects(status);
+CREATE INDEX idx_projects_category ON projects(category_id);
+CREATE INDEX idx_projects_user ON projects(user_id);
+CREATE INDEX idx_projects_created_at ON projects(created_at);
+
+CREATE INDEX idx_news_status ON news(status);
+CREATE INDEX idx_news_type ON news(type);
+CREATE INDEX idx_news_category ON news(category_id);
+CREATE INDEX idx_news_user ON news(user_id);
+CREATE INDEX idx_news_created_at ON news(created_at);
+
+CREATE INDEX idx_media_entity ON media_assets(type, id);
+CREATE INDEX idx_comments_entity ON comments(entity_type, entity_id);
+CREATE INDEX idx_comments_status ON comments(status);
+CREATE INDEX idx_audit_logs_entity ON audit_logs(entity_type, entity_id);
+CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at);
+
+-- Index untuk junction tables
+CREATE INDEX idx_projects_members_member ON project_members(member_id);
+CREATE INDEX idx_projects_tags_tag ON project_tags(tag_id);
+CREATE INDEX idx_news_tags_news ON news_tags(news_id);
+CREATE INDEX idx_news_tags_tag ON news_tags(tag_id);
+
+select *from categories c ;
+-- Insert default categories
+INSERT INTO categories (name, slug) VALUES
+('Mobile App', 'mobile-app'),
+('Game Development', 'game-development'),
+('AR/VR', 'ar-vr'),
+('Animation', 'animation'),
+('Berita', 'berita'),
+('Kegiatan', 'kegiatan'),
+('Workshop', 'workshop');
+
+-- Insert default roles untuk users
+UPDATE users SET role = 'admin' WHERE id = 1; -- Asumsi user pertama adalah admin
+select *from users u ;
+
+-- Insert default lab profile jika belum ada
+INSERT INTO lab_profile (visi, misi, sejarah) VALUES
+('Menjadi laboratorium multimedia dan mobile technology terdepan dalam inovasi dan kreativitas digital', 
+'Mengembangkan solusi digital inovatif melalui penelitian, pengembangan, dan kolaborasi dengan industri',
+'Laboratorium Multimedia dan Mobile Tech didirikan pada tahun 2010 sebagai pusat pengembangan teknologi digital di Politeknik Negeri Malang');
+select*from lab_profile lp ;
+
+-- Trigger untuk auto update updated_at
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Apply trigger ke tabel yang perlu
+CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON projects FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_news_updated_at BEFORE UPDATE ON news FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_comments_updated_at BEFORE UPDATE ON comments FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
