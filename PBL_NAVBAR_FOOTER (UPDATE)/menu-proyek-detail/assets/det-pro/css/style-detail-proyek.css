@@ -1,0 +1,241 @@
+/* ==== STYLE KHUSUS HALAMAN DETAIL PROYEK ==== */
+
+/* Layout Konten Utama */
+.main-content-area {
+    padding-top: 80px;
+    padding-bottom: 80px;
+}
+.main-content-area > .container {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 48px; 
+}
+.primary-content {
+    flex: 1; 
+    min-width: 0; 
+}
+.sidebar {
+    width: 360px; 
+    flex-shrink: 0;
+}
+
+/* Video/Media Embed */
+.project-video-embed {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #000;
+    margin-bottom: 24px;
+}
+.project-video-embed iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+/* Mockup jika tidak ada iframe */
+.project-video-embed .mockup-video {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #333;
+    color: white;
+    font-size: 60px;
+}
+
+/* Typography Konten */
+.primary-content .lead-paragraph {
+    font-size: 1.15em;
+    color: var(--color-text-darker);
+    font-weight: 400; 
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--color-border-light);
+    padding-bottom: 24px;
+}
+.primary-content h3 {
+    font-size: 22px;
+    margin-top: 30px;
+    margin-bottom: 16px;
+    color: var(--color-primary);
+}
+
+/* Badges Teknologi */
+.tech-badge-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+.tech-badge {
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border-light);
+    color: var(--color-text-darker);
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Tautan Proyek */
+.project-links-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 24px;
+}
+.project-links-list li {
+    margin-bottom: 10px;
+}
+.project-links-list a {
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+}
+.project-links-list a:hover {
+    text-decoration: underline;
+}
+.project-links-list a::before {
+    content: '🔗'; /* Emoji link */
+    margin-right: 8px;
+}
+.project-links-list a.github::before {
+    content: '💻'; /* Emoji laptop */
+}
+.project-links-list a.paper::before {
+    content: '📄'; /* Emoji dokumen */
+}
+
+/* Rating & Feedback */
+.star-rating {
+    font-size: 24px;
+    color: var(--color-accent);
+    margin-bottom: 8px;
+}
+.rating-summary {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin-bottom: 20px;
+}
+
+/* Form Komentar */
+.comment-form .form-group {
+    margin-bottom: 16px;
+}
+.comment-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+.comment-form input[type="text"],
+.comment-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--color-border-light);
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: var(--font-body);
+}
+.comment-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+.comment-form button {
+    margin-top: 10px;
+}
+
+/* Daftar Komentar */
+.comment-list .comment-item {
+    border-bottom: 1px solid var(--color-border-light);
+    padding: 16px 0;
+}
+.comment-list .comment-item:last-child {
+    border-bottom: none;
+}
+.comment-list .comment-author {
+    font-weight: 700;
+    font-family: var(--font-heading);
+    margin-bottom: 4px;
+}
+.comment-list .comment-date {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+}
+
+/* Sidebar: Anggota Tim */
+.widget-team-list {
+    list-style: none;
+    padding: 10px 18px 18px 18px;
+}
+.team-member {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.team-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border-light);
+}
+.team-info h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+.team-info .role {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+}
+.team-info .contact-link {
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+.team-info .contact-link:hover {
+    text-decoration: underline;
+}
+
+/* Tombol Kembali */
+.back-link {
+    margin-top: 40px;
+    display: inline-block;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .main-content-area > .container { 
+        flex-direction: column; 
+        gap: 60px; 
+    }
+    .sidebar { 
+        width: 100%; 
+    }
+}
+
+@media (max-width: 768px) {
+    .primary-content .lead-paragraph {
+        font-size: 1.1em;
+    }
+    .primary-content h3 {
+        font-size: 20px;
+    }
+    .tech-badge-container {
+        gap: 8px;
+    }
+    .tech-badge {
+        font-size: 13px;
+        padding: 4px 10px;
+    }
+}
