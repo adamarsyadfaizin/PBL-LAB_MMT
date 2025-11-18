@@ -405,3 +405,30 @@ RENAME COLUMN password_hash TO password;
 
 INSERT INTO users (name, email, password, role)
 VALUES ('adam', 'adamkull36@gmail.com', '1234', 'anggota');
+
+//baru kontak.php
+-- Tambahkan kolom-kolom yang belum ada (PostgreSQL)
+ALTER TABLE lab_profile 
+ADD COLUMN alamat_lab TEXT,
+ADD COLUMN email_lab VARCHAR(255),
+ADD COLUMN telepon_lab VARCHAR(50),
+ADD COLUMN lokasi_lab TEXT,
+ADD COLUMN fb_link VARCHAR(255),
+ADD COLUMN x_link VARCHAR(255),
+ADD COLUMN ig_link VARCHAR(255),
+ADD COLUMN yt_link VARCHAR(255),
+ADD COLUMN linkedin VARCHAR(255);
+
+-- Jika data sudah ada (misalnya dengan id=1), gunakan UPDATE
+UPDATE lab_profile SET
+    alamat_lab = 'Jl. Soekarno Hatta No.9, Jatimulyo, Kec. Lowokwaru, Kota Malang, Jawa Timur 65141',
+    email_lab = 'mobile.multimedia@polinema.ac.id',
+    telepon_lab = '(0341) 404424',
+    lokasi_lab = 'Jl. Soekarno Hatta No.9, Jatimulyo, Lowokwaru, Malang',
+    fb_link = 'https://facebook.com/polinema.mobilelab',
+    x_link = 'https://twitter.com/polinema_mobile',
+    ig_link = 'https://instagram.com/polinema.mobilelab',
+    yt_link = 'https://youtube.com/c/PolinemaMobileLab',
+    linkedin = 'https://linkedin.com/company/polinema-mobile-lab',
+    updated_at = NOW()
+WHERE id = 1;
