@@ -432,3 +432,27 @@ UPDATE lab_profile SET
     linkedin = 'https://linkedin.com/company/polinema-mobile-lab',
     updated_at = NOW()
 WHERE id = 1;
+
+CREATE TABLE IF NOT EXISTS feedback (
+    id SERIAL PRIMARY KEY,
+    nama_lengkap VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    subjek VARCHAR(255) NOT NULL,
+    pesan TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    is_read BOOLEAN DEFAULT FALSE
+);
+
+-- Hapus table yang salah (jika ada)
+DROP TABLE IF EXISTS feedback;
+
+-- Buat table dengan struktur yang benar
+CREATE TABLE feedback (
+    id SERIAL PRIMARY KEY,
+    name_lengkap VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    subjek VARCHAR(255) NOT NULL,
+    pesan TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    is_read BOOLEAN DEFAULT FALSE
+);
