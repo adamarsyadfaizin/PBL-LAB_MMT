@@ -1,76 +1,98 @@
-// floating-profile.js
-
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById("floatingProfileBtn");
     const menu = document.getElementById("floatingMenu");
 
-    if (!btn || !menu) return;
+    if (!btn || !menu) {
+        console.error("Floating Profile: Tombol atau Menu tidak ditemukan di DOM.");
+        return;
+    }
 
     let isDragging = false;
     let dragThreshold = 5; 
     let startX, startY; 
     let initialX, initialY; 
 
+    // Ambil ukuran dari CSS (Pastikan variabel CSS di floating-profile.css sudah benar)
     const style = getComputedStyle(document.documentElement);
+    // Menggunakan parseFloat untuk mendapatkan nilai numerik
     const buttonSize = parseFloat(style.getPropertyValue('--button-size')) || 70;
     const menuWidth = parseFloat(style.getPropertyValue('--menu-width')) || 240;
-
-    const defaultRight = 35;
-    const defaultBottom = 35;
-    const menuGap = 10; 
+    const menuGap = 20; // Jarak antara tombol dan menu (disesuaikan agar pas dengan CSS)
 
     // === FUNGSI TOGGLE MENU ===
     function toggleFloatingMenu() {
         if (!isDragging) {
             menu.classList.toggle("active");
             btn.classList.toggle("glow");
-            updateMenuPosition();
+            if(menu.classList.contains("active")) {
+                updateMenuPosition(); // Posisikan ulang saat dibuka
+            }
         }
     }
     
-    // === FUNGSI LOAD POSITION ===
+    // === FUNGSI LOAD POSITION (Perbaikan Anti-Error) ===
     function loadPosition() {
         const savedPosition = localStorage.getItem('floatingProfilePosition');
+        
+        // Atur posisi awal sebagai fixed dan matikan transisi
+        btn.style.position = 'fixed';
+        btn.style.transition = 'none';
+
         if (savedPosition) {
-            const pos = JSON.parse(savedPosition);
-            btn.style.right = 'auto';
-            btn.style.bottom = 'auto';
-            btn.style.left = pos.left;
-            btn.style.top = pos.top;
-        } else {
-            btn.style.position = 'fixed';
+            try {
+                // Mencegah script crash jika data rusak
+                const pos = JSON.parse(savedPosition); 
+                
+                btn.style.right = 'auto'; // Reset right/bottom CSS
+                btn.style.bottom = 'auto';
+                
+                // Terapkan posisi yang disimpan
+                btn.style.left = pos.left;
+                btn.style.top = pos.top;
+                
+            } catch (e) {
+                // Jika error, hapus data rusak dan gunakan posisi default CSS
+                console.error("Floating Profile: Data LocalStorage rusak, mengatur ulang.", e);
+                localStorage.removeItem('floatingProfilePosition');
+            }
         }
+        
+        // Aktifkan kembali transisi dan update posisi menu
+        setTimeout(() => {
+            btn.style.transition = ''; 
+            updateMenuPosition();
+        }, 50); 
     }
 
     // === FUNGSI SAVE POSITION ===
     function savePosition() {
-        const pos = {
-            left: btn.style.left,
-            top: btn.style.top
-        };
+        const pos = { left: btn.style.left, top: btn.style.top };
         localStorage.setItem('floatingProfilePosition', JSON.stringify(pos));
     }
 
-    // === FUNGSI UPDATE MENU POSITION ===
+    // === FUNGSI UPDATE MENU POSITION (Perbaikan Akumulasi/Stretching) ===
     function updateMenuPosition() {
-        if (menu.classList.contains("active")) {
-            const rect = btn.getBoundingClientRect();
-            
-            const menuLeft = rect.left - menuWidth + buttonSize;
-            const menuTop = rect.top - menu.offsetHeight - menuGap; 
+        if (!menu.classList.contains("active")) return;
+        
+        // Dapatkan posisi real-time tombol di viewport
+        const rect = btn.getBoundingClientRect();
+        
+        // Pastikan menu menggunakan positioning absolute/fixed yang benar
+        menu.style.position = 'fixed';
+        
+        // 1. Posisi HORIZONTAL (Sejajar Kanan Tombol)
+        // Hitung jarak tepi kanan tombol dari tepi kanan viewport
+        const rightOffset = window.innerWidth - rect.right;
+        // Terapkan jarak tersebut ke tepi kanan menu
+        menu.style.right = `${rightOffset}px`;
+        menu.style.left = 'auto'; 
 
-            menu.style.position = 'fixed';
-            menu.style.left = `${menuLeft}px`;
-            menu.style.top = `${menuTop}px`;
-            menu.style.right = 'auto'; 
-            menu.style.bottom = 'auto';
-        } else {
-            menu.style.left = 'auto';
-            menu.style.top = 'auto';
-            const btnRect = btn.getBoundingClientRect();
-            menu.style.right = (window.innerWidth - btnRect.right) + 'px';
-            menu.style.bottom = (window.innerHeight - btnRect.top - menu.offsetHeight - menuGap) + 'px';
-        }
+        // 2. Posisi VERTIKAL (Di Atas Tombol)
+        // Hitung jarak tepi atas tombol dari tepi bawah viewport
+        const bottomOffset = window.innerHeight - rect.top;
+        // Jarak dari bottom harus = (jarak ke tepi atas tombol) + (tinggi tombol) + (gap)
+        menu.style.bottom = `${bottomOffset + menuGap}px`;
+        menu.style.top = 'auto'; 
     }
 
     // === LOGIKA DRAG START ===
@@ -80,13 +102,12 @@ document.addEventListener('DOMContentLoaded', () => {
         menu.classList.remove("active");
         btn.classList.remove("glow");
 
-        const clientX = e.clientX || (e.touches ? e.touches[0].clientX : undefined);
-        const clientY = e.clientY || (e.touches ? e.touches[0].clientY : undefined);
-
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        
         if (clientX === undefined || clientY === undefined) return;
 
         const rect = btn.getBoundingClientRect();
-
         initialX = clientX;
         initialY = clientY;
         startX = clientX - rect.left; 
@@ -106,8 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === LOGIKA DRAG MOVE ===
     function onDragMove(e) {
-        const currentClientX = e.clientX || (e.touches ? e.touches[0].clientX : undefined);
-        const currentClientY = e.clientY || (e.touches ? e.touches[0].clientY : undefined);
+        const currentClientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const currentClientY = e.clientY || (e.touches && e.touches[0].clientY);
         
         if (currentClientX === undefined || currentClientY === undefined) return;
 
@@ -121,8 +142,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let newX = currentClientX - startX;
             let newY = currentClientY - startY;
 
-            newX = Math.max(0, Math.min(newX, window.innerWidth - buttonSize));
-            newY = Math.max(0, Math.min(newY, window.innerHeight - buttonSize));
+            const viewportW = window.innerWidth;
+            const viewportH = window.innerHeight;
+
+            newX = Math.max(0, Math.min(newX, viewportW - buttonSize));
+            newY = Math.max(0, Math.min(newY, viewportH - buttonSize));
 
             btn.style.left = newX + 'px';
             btn.style.top = newY + 'px';

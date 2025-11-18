@@ -2,14 +2,15 @@
 // PBL/menu/components/floating_profile.php
 
 function renderFloatingProfile() {
-    // Pastikan sesi dimulai
+    // 1. PASTIKAN SESI DIMULAI
     if (!isset($_SESSION)) session_start();
     
-    // Keluar jika user_id tidak diset
+    // 2. KELUAR JIKA USER BELUM LOGIN
     if (!isset($_SESSION['user_id'])) {
         return;
     }
     
+    // 3. DEFINISI BASE_URL (FALLBACK)
     // Asumsi: BASE_URL sudah didefinisikan di global scope (misal: /PBL/)
     if (!defined('BASE_URL')) {
         define('BASE_URL', '/PBL/'); 
@@ -19,7 +20,7 @@ function renderFloatingProfile() {
     $user_id_display = htmlspecialchars($_SESSION['user_id'] ?? 'N/A');
     
     // Jalur ASET RELATIF dari BASE_URL:
-    // Kita harus mengakses folder menu/components/ dari BASE_URL
+    // Sesuai struktur: BASE_URL + menu/components/
     $asset_path = 'menu/components/';
     
     ?>
@@ -27,7 +28,11 @@ function renderFloatingProfile() {
     <link rel="stylesheet" href="<?= BASE_URL . $asset_path ?>floating-profile.css?v=<?= $v ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     
-    <div class="floating-profile" id="floatingProfileBtn">
+    <div 
+        class="floating-profile" 
+        id="floatingProfileBtn"
+        style="position: fixed; bottom: 35px; right: 35px; z-index: 999999;" 
+    >
         <i class="fas fa-user-shield"></i> 
     </div>
 
