@@ -2,8 +2,56 @@
 if (!isset($_SESSION)) session_start();
 // Include navbar component
 require_once 'components/navbar.php';
-// Include footer component
 require_once 'components/footer.php';
+
+// Koneksi ke database
+require_once '../config/db.php'; // File ini menggunakan PDO PostgreSQL
+
+try {
+    // Query untuk mengambil data lab_profile dengan id = 1
+    $query = "SELECT alamat_lab, email_lab, telepon_lab, lokasi_lab, fb_link, x_link, ig_link, yt_link, linkedin FROM lab_profile WHERE id = 1";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute();
+    $lab_profile = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Jika data dengan id = 1 tidak ditemukan, gunakan nilai default
+    if (!$lab_profile) {
+        $lab_profile = [];
+    }
+
+    // Pastikan semua kolom memiliki nilai, jika NULL gunakan default
+    $lab_profile = array_merge([
+        'alamat_lab' => 'Jl. Soekarno Hatta No.9, Jatimulyo, Kec. Lowokwaru, Kota Malang, Jawa Timur 65141',
+        'email_lab' => 'info@polinema.ac.id',
+        'telepon_lab' => '(0341) 404 424',
+        'lokasi_lab' => 'Jl. Soekarno Hatta No.9, Jatimulyo, Lowokwaru, Malang',
+        'fb_link' => '#',
+        'x_link' => '#',
+        'ig_link' => '#',
+        'yt_link' => '#',
+        'linkedin' => '#'
+    ], $lab_profile);
+
+} catch (PDOException $e) {
+    // Jika terjadi error, gunakan nilai default
+    $lab_profile = [
+        'alamat_lab' => 'Jl. Soekarno Hatta No.9, Jatimulyo, Kec. Lowokwaru, Kota Malang, Jawa Timur 65141',
+        'email_lab' => 'info@polinema.ac.id',
+        'telepon_lab' => '(0341) 404 424',
+        'lokasi_lab' => 'Jl. Soekarno Hatta No.9, Jatimulyo, Lowokwaru, Malang',
+        'fb_link' => '#',
+        'x_link' => '#',
+        'ig_link' => '#',
+        'yt_link' => '#',
+        'linkedin' => '#'
+    ];
+    error_log("Database error: " . $e->getMessage());
+}
+
+// Fungsi helper untuk aman menampilkan data
+function safeDisplay($data) {
+    return htmlspecialchars($data ?? '');
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -96,7 +144,7 @@ require_once 'components/footer.php';
                     <h2>Kirim Pesan</h2>
                     <p>Punya pertanyaan atau ingin berkolaborasi? Silakan isi formulir di bawah ini dan kami akan segera menghubungi Anda.</p>
                     
-                    <form class="contact-form" action="#" method="post">
+                    <form class="contact-form" action="process_contact.php" method="post">
                         <div class="form-group">
                             <label for="contact-name">Nama Lengkap</label>
                             <input type="text" id="contact-name" name="name" required>
@@ -124,15 +172,17 @@ require_once 'components/footer.php';
                         <div class="widget-contact-info">
                             <p>
                                 <strong>Alamat:</strong>
-                                Jl. Soekarno Hatta No.9, Jatimulyo, Kec. Lowokwaru, Kota Malang, Jawa Timur 65141
+                                <?php echo safeDisplay($lab_profile['alamat_lab']); ?>
                             </p>
                             <p>
                                 <strong>Email:</strong>
-                                <a href="mailto:info@polinema.ac.id">info@polinema.ac.id</a>
+                                <a href="mailto:<?php echo safeDisplay($lab_profile['email_lab']); ?>">
+                                    <?php echo safeDisplay($lab_profile['email_lab']); ?>
+                                </a>
                             </p>
                             <p>
                                 <strong>Telepon:</strong>
-                                (0341) 404 424
+                                <?php echo safeDisplay($lab_profile['telepon_lab']); ?>
                             </p>
                         </div>
                     </div>
@@ -150,15 +200,15 @@ require_once 'components/footer.php';
                         <h3 class="widget-title">Media Sosial</h3>
                         <div class="widget-social">
                             <div class="widget-social-links">
-                                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                                <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
-                                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="<?php echo safeDisplay($lab_profile['fb_link']); ?>" aria-label="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                                <a href="<?php echo safeDisplay($lab_profile['x_link']); ?>" aria-label="Twitter" target="_blank"><i class="fab fa-x-twitter"></i></a>
+                                <a href="<?php echo safeDisplay($lab_profile['ig_link']); ?>" aria-label="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+                                <a href="<?php echo safeDisplay($lab_profile['yt_link']); ?>" aria-label="YouTube" target="_blank"><i class="fab fa-youtube"></i></a>
+                                <a href="<?php echo safeDisplay($lab_profile['linkedin']); ?>" aria-label="LinkedIn" target="_blank"><i class="fab fa-linkedin-in"></i></a>
                             </div>
 
-                            <a href="mailto:adamkian09@gmail.com?subject=Halo%20Lab%20POLINEMA" class="btn-email">
-                                Kirim Email ke Adam
+                            <a href="mailto:<?php echo safeDisplay($lab_profile['email_lab']); ?>?subject=Halo%20Lab%20POLINEMA" class="btn-email">
+                                Kirim Email ke Lab
                             </a>
                         </div>
                     </div>
@@ -185,7 +235,7 @@ require_once 'components/footer.php';
 
     <script>
         (function(){
-            const address = "Jl. Soekarno Hatta No.9, Jatimulyo, Lowokwaru, Malang";
+            const address = "<?php echo addslashes($lab_profile['lokasi_lab'] ?? 'Jl. Soekarno Hatta No.9, Jatimulyo, Lowokwaru, Malang'); ?>";
 
             const map = L.map('map', { scrollWheelZoom: false }).setView([-7.9666, 112.6326], 13);
 
