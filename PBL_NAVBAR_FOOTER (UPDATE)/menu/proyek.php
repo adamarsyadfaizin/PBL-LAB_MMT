@@ -1,85 +1,103 @@
 <?php
+if (!isset($_SESSION)) session_start();
+include 'components/floating_profile.php'; 
+renderFloatingProfile();
 require_once '../config/db.php';
-// Include navbar component
 require_once 'components/navbar.php';
 
-// -- PENGATURAN PAGINASI --
-$limit = 6; // Jumlah proyek per halaman (sesuai screenshot)
-$page = (int)($_GET['page'] ?? 1); // Ambil halaman saat ini
-$offset = ($page - 1) * $limit; // Hitung offset
+// PAGINATION
+$limit = 6;
+$page = (int)($_GET['page'] ?? 1);
+$offset = ($page - 1) * $limit;
 
-// -- AMBIL DATA FILTER DARI URL --
+// FILTER ON
 $search_term = $_GET['s'] ?? '';
 $category_slug = $_GET['kategori'] ?? 'semua';
 $tech_slug = $_GET['teknologi'] ?? 'semua';
 $year = $_GET['tahun'] ?? 'semua';
 $sort = $_GET['sort'] ?? 'terbaru';
 
-// -- SIAPKAN QUERY DINAMIS --
+// BASE QUERY
 $sql_base = "FROM projects p
              LEFT JOIN categories c ON p.category_id = c.id
              LEFT JOIN project_tags pt ON p.id = pt.project_id
              LEFT JOIN tags t ON pt.tag_id = t.id
-             WHERE p.status = 'published'";
+             WHERE 1=1";
+
 $params = [];
 
-// Tambahkan kondisi filter
+// Search
 if (!empty($search_term)) {
     $sql_base .= " AND (p.title LIKE ? OR p.summary LIKE ?)";
     $params[] = "%$search_term%";
     $params[] = "%$search_term%";
 }
+
+// Category
 if ($category_slug != 'semua') {
     $sql_base .= " AND c.slug = ?";
     $params[] = $category_slug;
 }
+
+// Tech
 if ($tech_slug != 'semua') {
     $sql_base .= " AND t.slug = ?";
     $params[] = $tech_slug;
 }
+
+// Year
 if ($year != 'semua') {
     $sql_base .= " AND p.year = ?";
     $params[] = (int)$year;
 }
 
-// Group By untuk menghindari duplikat
-$sql_base .= " GROUP BY p.id, c.name, p.created_at, p.title";
+// Group (wajib biar SELECT aman)
+$sql_base .= " GROUP BY p.id";
 
-// -- HITUNG TOTAL PROYEK UNTUK PAGINASI --
+// Count total
 $sql_count = "SELECT COUNT(DISTINCT p.id) " . $sql_base;
 $stmt_count = $pdo->prepare($sql_count);
 $stmt_count->execute($params);
 $total_projects = $stmt_count->fetchColumn();
 $total_pages = ceil($total_projects / $limit);
 
-// -- ATUR PENGURUTAN (ORDER BY) --
+// Sorting
 $order_by = " ORDER BY p.created_at DESC";
 if ($sort == 'a-z') {
     $order_by = " ORDER BY p.title ASC";
 }
 
-// -- QUERY AKHIR UNTUK MENGAMBIL PROYEK --
-$sql_final = "SELECT p.id, p.title, p.slug, p.summary, p.cover_image, p.demo_url " . $sql_base . $order_by . " LIMIT ? OFFSET ?";
-$params[] = $limit;
-$params[] = $offset;
+// Query final
+$sql_final = "SELECT p.id, p.title, p.slug, p.summary, p.cover_image, p.demo_url
+              " . $sql_base . 
+              $order_by . 
+              " LIMIT ? OFFSET ?";
+
+$params_final = $params;
+$params_final[] = $limit;
+$params_final[] = $offset;
 
 $stmt_projects = $pdo->prepare($sql_final);
-$stmt_projects->execute($params);
+$stmt_projects->execute($params_final);
 $projects = $stmt_projects->fetchAll(PDO::FETCH_ASSOC);
 
-// -- (Blok untuk mengambil data dropdown filter tetap sama seperti respons sebelumnya) --
-// (Ambil $categories, $tags, $years)
+// Dropdown data
 try {
-    $stmt_cats = $pdo->query("SELECT name, slug FROM categories ORDER BY name");
-    $categories = $stmt_cats->fetchAll(PDO::FETCH_ASSOC);
-    $stmt_tags = $pdo->query("SELECT name, slug FROM tags ORDER BY name");
-    $tags = $stmt_tags->fetchAll(PDO::FETCH_ASSOC);
-    $stmt_years = $pdo->query("SELECT DISTINCT year FROM projects WHERE year IS NOT NULL ORDER BY year DESC");
-    $years = $stmt_years->fetchAll(PDO::FETCH_ASSOC);
+    $categories = $pdo->query("SELECT name, slug FROM categories ORDER BY name")
+                      ->fetchAll(PDO::FETCH_ASSOC);
+
+    $tags = $pdo->query("SELECT name, slug FROM tags ORDER BY name")
+                ->fetchAll(PDO::FETCH_ASSOC);
+
+    $years = $pdo->query("SELECT DISTINCT year FROM projects WHERE year IS NOT NULL ORDER BY year DESC")
+                 ->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    $categories = []; $tags = []; $years = [];
+    $categories = [];
+    $tags = [];
+    $years = [];
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>

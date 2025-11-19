@@ -1,57 +1,78 @@
 <?php
+// ============================================================================
+// File: galeri-detail.php
+// Deskripsi: Halaman detail media (gambar / video / animasi) dari tabel media_assets
+// ============================================================================
+if (!isset($_SESSION)) session_start();
+include '../components/floating_profile.php'; 
+renderFloatingProfile();
 require_once '../../config/db.php';
-// Include navbar component
 require_once '../components/navbar.php';
 
-// Ambil data galeri dari database berdasarkan ID atau slug
-$gallery_id = $_GET['id'] ?? '';
-if (!$gallery_id) {
+// Ambil ID media dari parameter URL
+$media_id = $_GET['id'] ?? '';
+if (!$media_id || !is_numeric($media_id)) {
     header('Location: ../galeri.php');
     exit;
 }
 
-// Query untuk mengambil data galeri
-$sql = "SELECT * FROM galleries WHERE id = ? AND status = 'published' LIMIT 1";
+// Ambil data media dari database
+$sql = "SELECT * FROM media_assets WHERE id = ? LIMIT 1";
 $stmt = $pdo->prepare($sql);
-$stmt->execute([$gallery_id]);
-$gallery = $stmt->fetch(PDO::FETCH_ASSOC);
+$stmt->execute([$media_id]);
+$media = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$gallery) {
-    die("Galeri tidak ditemukan.");
+if (!$media) {
+    die("Media tidak ditemukan atau telah dihapus.");
 }
+
+// Siapkan data aman untuk ditampilkan
+$title = htmlspecialchars($media['caption'] ?? '(Tanpa Judul)');
+$type = htmlspecialchars(ucfirst($media['type'] ?? '-'));
+$url = htmlspecialchars($media['url'] ?? '');
+$created_at = !empty($media['created_at']) ? date('d F Y', strtotime($media['created_at'])) : '-';
+$deskripsi = htmlspecialchars($media['deskripsi'] ?? '');
+$event_name = htmlspecialchars($media['event_name'] ?? '');
 ?>
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Galeri: <?php echo htmlspecialchars($gallery['title']); ?> - POLINEMA</title>
-    
+    <title>Detail Media: <?= $title; ?> - POLINEMA</title>
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-    
-    <!-- CSS Utama (sama dengan halaman lain) -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS Global -->
     <link rel="stylesheet" href="../../assets/css/style.css">
-    
-    <!-- CSS Khusus Halaman Detail Galeri -->
+
+    <!-- CSS Khusus Halaman Galeri Detail -->
     <link rel="stylesheet" href="assets/det-gel/css/style-galeri-detail.css">
-    
+
     <style>
-        /* Override background hero image dengan path yang benar */
+        
+        /* Hero Section */
         .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), 
-                        url('../../assets/images/hero.jpg') center center/cover no-repeat;
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)),
+                url('../../assets/images/hero.jpg') center center/cover no-repeat;
             height: 300px;
             display: flex;
             align-items: center;
             position: relative;
             color: var(--color-white);
         }
+
         .hero .container {
             position: relative;
             z-index: 2;
         }
+
         .hero h1 {
             font-size: 36px;
             font-weight: 700;
@@ -59,112 +80,117 @@ if (!$gallery) {
             letter-spacing: 1px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
         }
+
+        /* Media Display */
+        .detail-article-banner {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Deskripsi */
+        .media-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #444;
+            margin-top: 15px;
+        }
+
+        /* Meta Info */
+        .article-meta-detail {
+            margin-bottom: 20px;
+        }
+
+        .article-meta-detail .meta-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 15px;
+            color: #555;
+        }
+
+        .article-meta-detail strong {
+            color: var(--color-primary);
+        }
+
+        /* Button Back */
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+        }
     </style>
 </head>
+
 <body id="top">
 
-    <?php
-    // Render navbar dengan halaman aktif 'galeri'
-    renderNavbar('galeri');
-    ?>
+    <?php renderNavbar('galeri'); ?>
 
     <main>
 
+        <!-- Hero -->
         <section class="hero">
             <div class="container">
-                <h1><?php echo htmlspecialchars($gallery['title']); ?></h1>
+                <h1><?= $title; ?></h1>
             </div>
         </section>
 
+        <!-- Konten Utama -->
         <div class="main-content-area">
             <div class="container">
-                
                 <div class="primary-content">
 
-                                    <img src="<?php echo htmlspecialchars($data['image_path'] ?? 'uploads/default.jpg'); ?>" 
-                    alt="Pameran Teknologi 2025" 
-                    class="detail-article-banner">
+                    <!-- Media -->
+                    <!-- Contoh di galeri-detail.php -->
+                    <?php if ($media['type'] === 'video'): ?>
+                        <?php if (strpos($media['url'], 'youtube.com/embed') !== false): ?>
+                            <iframe width="100%" height="400" src="<?php echo htmlspecialchars($media['url']); ?>"
+                                frameborder="0" allowfullscreen>
+                            </iframe>
+                        <?php else: ?>
+                            <!-- Video lokal -->
+                            <video controls width="100%" poster="assets/images/video-thumb.jpg">
+                                <source src="<?php echo htmlspecialchars($media['url']); ?>" type="video/mp4">
+                                Browser Anda tidak mendukung pemutaran video.
+                            </video>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <img src="<?php echo htmlspecialchars($media['url']); ?>"
+                            alt="<?php echo htmlspecialchars($media['caption']); ?>">
+                    <?php endif; ?>
 
+                    <!-- Informasi Media -->
                     <div class="article-meta-detail">
                         <div class="meta-info">
-                            <span><strong>Kategori:</strong> <?php echo htmlspecialchars($gallery['category']); ?></span>
-                            <span><strong>Acara:</strong> <?php echo htmlspecialchars($gallery['event_name']); ?></span>
-                            <span><strong>Tanggal:</strong> <?php echo date('d F Y', strtotime($gallery['created_at'])); ?></span>
-                        </div>
-                        <div class="social-share">
-                            <span>Bagikan:</span>
-                            <a href="#" aria-label="Bagikan ke Facebook">F</a>
-                            <a href="#" aria-label="Bagikan ke Twitter">T</a>
-                            <a href="#" aria-label="Bagikan ke LinkedIn">L</a>
+                            <span><strong>Jenis:</strong> <?= $type; ?></span>
+                            <?php if (!empty($event_name)): ?>
+                                <span><strong>Acara:</strong> <?= $event_name; ?></span>
+                            <?php endif; ?>
+                            <span><strong>Tanggal:</strong> <?= $created_at; ?></span>
                         </div>
                     </div>
 
-                    <div class="article-content">
-                        <?php echo nl2br(htmlspecialchars($gallery['description'])); ?>
-                    </div>
-                    
+                    <!-- Tombol Kembali -->
                     <a href="../galeri.php" class="btn btn-secondary back-link">&larr; Kembali ke Galeri</a>
 
                 </div>
-                
-                <aside class="sidebar">
-                    
-                    <div class="widget widget-categories">
-                        <h3 class="widget-title">Kategori Galeri</h3>
-                        <ul>
-                            <li><a href="../galeri.php">Semua Media</a></li>
-                            <li><a href="../galeri.php?kategori=foto">Foto</a></li>
-                            <li><a href="../galeri.php?kategori=video">Video</a></li>
-                            <li><a href="../galeri.php?kategori=animasi">Animasi</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="widget widget-news">
-                        <h3 class="widget-title">Album Lainnya</h3>
-                        <ul>
-                            <?php
-                            // Query untuk mengambil galeri lainnya
-                            $sql_other = "SELECT * FROM galleries WHERE id != ? AND status = 'published' ORDER BY created_at DESC LIMIT 3";
-                            $stmt_other = $pdo->prepare($sql_other);
-                            $stmt_other->execute([$gallery_id]);
-                            $other_galleries = $stmt_other->fetchAll(PDO::FETCH_ASSOC);
-                            
-                            foreach ($other_galleries as $other):
-                            ?>
-                            <li>
-                                <a href="galeri-detail.php?id=<?php echo $other['id']; ?>">
-                                    <h4><?php echo htmlspecialchars($other['title']); ?></h4>
-                                    <span class="date"><?php echo htmlspecialchars($other['category']); ?> | <?php echo htmlspecialchars($other['event_name']); ?></span>
-                                    <p><?php echo htmlspecialchars(substr($other['description'], 0, 100)); ?>...</p>
-                                    <span class="arrow-icon" aria-hidden="true">&rarr;</span>
-                                </a>
-                            </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
-
-                </aside>
-                
             </div>
         </div>
-        
+
     </main>
 
     <?php
-    // Include footer
     require_once '../components/footer.php';
     renderFooter();
     ?>
 
-    <a href="#top" id="scrollTopBtn" class="scroll-top-btn" aria-label="Kembali ke atas">
-        &uarr;
-    </a>
+    <a href="#top" id="scrollTopBtn" class="scroll-top-btn" aria-label="Kembali ke atas">&uarr;</a>
 
-    <!-- JavaScript Utama -->
+    <!-- Script -->
     <script src="../../assets/js/navbar.js"></script>
-    
-    <!-- JavaScript Khusus Halaman Detail Galeri -->
     <script src="assets/det-gel/js/script-galeri-detail.js"></script>
 
 </body>
+
 </html>

@@ -1,9 +1,11 @@
 <?php
+if (!isset($_SESSION)) session_start();
 require_once '../config/db.php';
 // Include navbar component
 require_once 'components/navbar.php';
 require_once 'components/footer.php';
-
+include 'components/floating_profile.php'; 
+renderFloatingProfile();
 // Ambil Visi, Misi, Sejarah
 $profile = $pdo->query("SELECT * FROM lab_profile LIMIT 1")->fetch(PDO::FETCH_ASSOC);
 // Ambil Anggota Tim
@@ -145,7 +147,6 @@ $members = $pdo->query("SELECT * FROM members ORDER BY name")->fetchAll(PDO::FET
         </section>
         
     </main>
-
     <?php renderFooter(); ?>
 
     <a href="#top" id="scrollTopBtn" class="scroll-top-btn" aria-label="Kembali ke atas">

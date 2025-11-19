@@ -40,7 +40,6 @@ html {
     scroll-behavior: smooth;
     font-family: var(--font-body);
 }
-
 body {
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
@@ -325,17 +324,33 @@ h1, h2, h3, h4, h5, h6 {
     flex-shrink: 0;
 }
 
-/* ==== 7. Style Detail Galeri ==== */
+/* ==== DEBUG FIX - GAMBAR DETAIL ==== */
 .detail-article-banner {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-    border-radius: 8px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    background: #f9f9f9;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+    max-width: 100% !important;
+    height: auto !important;
+    position: static !important;
+    transform: none !important;
 }
 
+.primary-content {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.main-content-area {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Force show all images */
+img {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+}
 .article-meta-detail {
     display: flex;
     flex-wrap: wrap;

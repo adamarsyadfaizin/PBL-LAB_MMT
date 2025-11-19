@@ -1,7 +1,9 @@
 <?php
+if (!isset($_SESSION)) session_start();
 require_once '../../config/db.php';
 require_once '../components/navbar.php';
-
+include '../components/floating_profile.php'; 
+renderFloatingProfile();
 if (!isset($_GET['slug']) || empty($_GET['slug'])) {
     header('Location: ../proyek.php');
     exit;

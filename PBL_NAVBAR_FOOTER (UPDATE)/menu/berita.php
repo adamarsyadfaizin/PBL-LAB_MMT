@@ -1,4 +1,5 @@
 <?php
+if (!isset($_SESSION)) session_start();
 require_once '../config/db.php';
 
 // Ambil parameter pencarian & filter dari URL
@@ -451,6 +452,9 @@ $events_json = json_encode($events_by_date, JSON_HEX_TAG | JSON_HEX_APOS | JSON_
     </main>
 
     <?php
+    include 'components/floating_profile.php'; 
+    renderFloatingProfile(); 
+
     // Include footer
     require_once 'components/footer.php';
     renderFooter();

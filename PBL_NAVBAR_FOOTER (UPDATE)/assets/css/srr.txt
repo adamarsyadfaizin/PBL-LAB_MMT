@@ -1,7 +1,4 @@
 <?php
-if (!isset($_SESSION)) session_start();
-include 'menu/components/floating_profile.php'; 
-renderFloatingProfile();
 require_once 'config/db.php';
 require_once 'menu/components/navbar.php';
 ?>

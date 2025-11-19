@@ -1,0 +1,159 @@
+/* floating-profile.css */
+
+/* Base Variables */
+:root {
+    --primary-color: #6a11cb;
+    --secondary-color: #2575fc;
+    --text-color: #333;
+    --button-size: 70px; 
+    --menu-width: 240px; 
+    --shadow-main: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+/* Floating Button */
+.floating-profile {
+    /* POSISI WAJIB */
+    position: fixed;
+    bottom: 35px;
+    right: 35px;
+    z-index: 999999; 
+    
+    /* VISUAL */
+    width: var(--button-size);
+    height: var(--button-size);
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    font-size: 30px; 
+    border: 3px solid rgba(255,255,255,0.9); /* Sedikit disederhanakan */
+    box-shadow: var(--shadow-main);
+    
+    /* INTERAKSI */
+    cursor: grab; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* ANIMASI */
+    animation: bounce 4s infinite ease-in-out; /* Durasi dikurangi */
+    transition: all .3s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Durasi dikurangi */
+}
+
+/* State Dragging */
+.floating-profile.dragging {
+    cursor: grabbing;
+    transition: none !important;
+    animation: none;
+}
+
+/* Animasi Bounce (Hanya translate, lebih ringan) */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); } /* Jarak dikurangi */
+}
+
+/* Hover */
+.floating-profile:hover {
+    transform: scale(1.05); /* Skala dikurangi agar lebih halus */
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4); /* Shadow dikurangi */
+    animation: none;
+}
+
+/* Glow State (Saat Menu Aktif) */
+.floating-profile.glow {
+    box-shadow: 0 0 15px var(--primary-color), 0 0 25px var(--secondary-color); /* Shadow disederhanakan */
+}
+
+/* Expanding Menu */
+.floating-menu {
+    /* POSISI WAJIB */
+    position: fixed;
+    /* Gunakan kalkulasi yang lebih eksplisit untuk mencegah offset */
+    bottom: calc(var(--button-size) + 25px); 
+    right: 35px;
+    z-index: 999998;
+    
+    /* VISUAL */
+    background: #fff;
+    border-radius: 12px; /* Radius dikurangi sedikit */
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25); /* Shadow disederhanakan */
+    padding: 15px; /* Padding dikurangi sedikit */
+    width: var(--menu-width);
+    border: 1px solid #f0f0f0; /* Border lebih halus */
+
+    /* HIDDEN DEFAULT */
+    display: none;
+    opacity: 0;
+    transform: translateY(20px) scale(.95); /* Transformasi sedikit disederhanakan */
+    transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Durasi dikurangi */
+}
+
+/* Panah Menu */
+.floating-menu::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; /* Jarak disamakan dengan tinggi panah */
+    right: 25px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent; /* Ukuran panah dikurangi */
+    border-right: 10px solid transparent;
+    border-top: 10px solid #fff; 
+    filter: drop-shadow(0 3px 1px rgba(0, 0, 0, 0.1));
+}
+
+/* Menu Active State */
+.floating-menu.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Menu Content Styling */
+.menu-header {
+    font-size: 15px; /* Ukuran font disederhanakan */
+    font-weight: 600; /* Font weight disederhanakan */
+    color: var(--text-color);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.menu-header i {
+    margin-right: 8px;
+    color: var(--primary-color);
+}
+
+.floating-menu hr {
+    border: 0;
+    height: 1px;
+    background: rgba(0,0,0,0.08);
+    margin: 12px 0;
+}
+
+.floating-menu a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 14px; /* Ukuran font disederhanakan */
+    display: flex;
+    align-items: center;
+    padding: 8px 10px; /* Padding disederhanakan */
+    border-radius: 8px; /* Radius disederhanakan */
+    transition: all .2s ease-out;
+    margin: 3px 0;
+    font-weight: 500;
+}
+
+.floating-menu a i {
+    margin-right: 10px;
+    font-size: 16px;
+    width: 20px;
+    color: var(--secondary-color);
+}
+
+.floating-menu a:hover {
+    color: var(--secondary-color);
+    background-color: #f5f8ff; /* Warna hover disederhanakan */
+    transform: translateX(3px); /* Translasi dikurangi */
+    box-shadow: 0 2px 5px rgba(37, 117, 252, 0.08);
+}
