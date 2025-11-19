@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <link rel="stylesheet" href="assets/css/style-admin.css">
 </head>
@@ -15,7 +16,7 @@
 
     <aside class="admin-sidebar" id="adminSidebar">
         <div class="sidebar-header">
-            <img src="../assets/images/logo-placeholder.png" alt="Logo" style="height: 40px;">
+            <img src="../assets/images/LAB MUTIMEDIA V2_TSP.png" alt="Logo" style="height: 40px;">
             <h3>Admin Panel</h3>
         </div>
         
@@ -23,43 +24,43 @@
             <ul>
                 <li>
                     <a href="dashboard.php">
-                        <span class="icon">📊</span>
+                        <span class="icon"><i class="bi bi-bar-chart-fill"></i></span>
                         <span class="text">Dashboard</span>
                     </a>
                 </li>
                 <li>
                     <a href="berita-admin.php">
-                        <span class="icon">📰</span>
+                        <span class="icon"><i class="bi bi-calendar-event-fill"></i></span>
                         <span class="text">Berita & Kegiatan</span>
                     </a>
                 </li>
                 <li>
                     <a href="proyek-admin.php">
-                        <span class="icon">💼</span>
+                        <span class="icon"><i class="bi bi-briefcase-fill"></i></span>
                         <span class="text">Proyek</span>
                     </a>
                 </li>
                 <li>
                     <a href="galeri-admin.php">
-                        <span class="icon">🖼️</span>
+                        <span class="icon"><i class="bi bi-image-fill"></i></span>
                         <span class="text">Galeri</span>
                     </a>
                 </li>
                 <li class="active">
                     <a href="profil-admin.php">
-                        <span class="icon">👥</span>
+                        <span class="icon"><i class="bi bi-building-fill-gear"></i></span>
                         <span class="text">Profil Lab</span>
                     </a>
                 </li>
                 <li>
                     <a href="pengguna-admin.php">
-                        <span class="icon">👤</span>
+                        <span class="icon"><i class="bi bi-people-fill"></i></span>
                         <span class="text">Pengguna</span>
                     </a>
                 </li>
                 <li>
                     <a href="pengaturan-admin.php">
-                        <span class="icon">⚙️</span>
+                        <span class="icon"><i class="bi bi-gear-fill"></i></span>
                         <span class="text">Pengaturan</span>
                     </a>
                 </li>
@@ -68,7 +69,7 @@
         
         <div class="sidebar-footer">
             <a href="../menu/login.php" class="logout-btn">
-                <span class="icon">🚪</span>
+                <i class="bi bi-door-closed-fill"></i>
                 <span class="text">Logout</span>
             </a>
         </div>
@@ -86,12 +87,12 @@
             <div class="topbar-right">
                 <div class="search-box">
                     <input type="search" placeholder="Cari...">
-                    <button type="button">🔍</button>
+                    <button type="button"><i class="bi bi-search"></i></button>
                 </div>
                 
                 <div class="notifications">
                     <button class="notif-btn" aria-label="Notifikasi">
-                        🔔
+                        <i class="bi bi-bell-fill"></i>
                         <span class="badge">3</span>
                     </button>
                 </div>
@@ -138,7 +139,7 @@
                     
                     <hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--color-border-light);">
 
-                    <h3>Manajemen/Dosen</h3>
+                    <!--<h3>Manajemen/Dosen</h3>
                     <div class="form-group">
                         <label for="dosenKonten">Konten Profil Dosen/Manajemen</label>
                         <textarea id="dosenKonten" name="dosen_konten" class="form-control" rows="10" placeholder="Tambahkan konten HTML untuk menampilkan profil dosen/manajemen..."></textarea>
@@ -147,7 +148,7 @@
 
                     <div style="text-align: right; margin-top: 24px;">
                         <button type="submit" class="btn-primary">Simpan Perubahan</button>
-                    </div>
+                    </div>-->
                 </form>
             </div>
         </main>

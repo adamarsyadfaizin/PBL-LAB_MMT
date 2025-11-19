@@ -28,7 +28,7 @@
                     <option value="" disabled selected>-- Pilih Peran --</option>
                     <option value="admin">Admin</option>
                     <option value="anggota">Anggota</option>
-                    <option value="kontributor">Kontributor</option>
+                    <!--<option value="kontributor">Kontributor</option>-->
                 </select>
             </div>
             

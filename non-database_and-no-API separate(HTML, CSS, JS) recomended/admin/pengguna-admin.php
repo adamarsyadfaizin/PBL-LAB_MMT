@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <link rel="stylesheet" href="assets/css/style-admin.css">
 </head>
@@ -15,7 +16,7 @@
 
     <aside class="admin-sidebar" id="adminSidebar">
         <div class="sidebar-header">
-            <img src="../assets/images/logo-placeholder.png" alt="Logo" style="height: 40px;">
+            <img src="../assets/images/LAB MUTIMEDIA V2_TSP.png" alt="Logo" style="height: 40px;">
             <h3>Admin Panel</h3>
         </div>
         
@@ -23,43 +24,43 @@
             <ul>
                 <li>
                     <a href="dashboard.php">
-                        <span class="icon">📊</span>
+                        <span class="icon"><i class="bi bi-bar-chart-fill"></i></span>
                         <span class="text">Dashboard</span>
                     </a>
                 </li>
                 <li>
                     <a href="berita-admin.php">
-                        <span class="icon">📰</span>
+                        <span class="icon"><i class="bi bi-calendar-event-fill"></i></span>
                         <span class="text">Berita & Kegiatan</span>
                     </a>
                 </li>
                 <li>
                     <a href="proyek-admin.php">
-                        <span class="icon">💼</span>
+                        <span class="icon"><i class="bi bi-briefcase-fill"></i></span>
                         <span class="text">Proyek</span>
                     </a>
                 </li>
                 <li>
                     <a href="galeri-admin.php">
-                        <span class="icon">🖼️</span>
+                        <span class="icon"><i class="bi bi-image-fill"></i></span>
                         <span class="text">Galeri</span>
                     </a>
                 </li>
                 <li>
                     <a href="profil-admin.php">
-                        <span class="icon">👥</span>
+                        <span class="icon"><i class="bi bi-building-fill-gear"></i></span>
                         <span class="text">Profil Lab</span>
                     </a>
                 </li>
                 <li class="active">
                     <a href="pengguna-admin.php">
-                        <span class="icon">👤</span>
+                        <span class="icon"><i class="bi bi-people-fill"></i></span>
                         <span class="text">Pengguna</span>
                     </a>
                 </li>
                 <li>
                     <a href="pengaturan-admin.php">
-                        <span class="icon">⚙️</span>
+                        <span class="icon"><i class="bi bi-gear-fill"></i></span>
                         <span class="text">Pengaturan</span>
                     </a>
                 </li>
@@ -68,7 +69,7 @@
         
         <div class="sidebar-footer">
             <a href="../menu/login.php" class="logout-btn">
-                <span class="icon">🚪</span>
+                <span class="icon"><i class="bi bi-door-closed-fill"></i></span>
                 <span class="text">Logout</span>
             </a>
         </div>
@@ -86,12 +87,12 @@
             <div class="topbar-right">
                 <div class="search-box">
                     <input type="search" placeholder="Cari pengguna..." id="searchPengguna">
-                    <button type="button">🔍</button>
+                    <button type="button"><i class="bi bi-search"></i></button>
                 </div>
                 
                 <div class="notifications">
                     <button class="notif-btn" aria-label="Notifikasi">
-                        🔔
+                        <i class="bi bi-bell-fill"></i>
                         <span class="badge">3</span>
                     </button>
                 </div>
@@ -157,11 +158,11 @@
                             <td>
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <img src="../assets/images/avatar-2.jpg" alt="Avatar" style="width: 32px; height: 32px; border-radius: 50%;">
-                                    <strong>Kontributor Satu</strong>
+                                    <strong>Anggota Satu</strong>
                                 </div>
                             </td>
                             <td>kontributor@polinema.ac.id</td>
-                            <td><span class="badge badge-info">Kontributor</span></td>
+                            <td><span class="badge badge-info">Anggota</span></td>
                             <td>15 Mar 2024</td>
                             <td><span class="badge badge-success">Aktif</span></td>
                             <td>
@@ -171,7 +172,7 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <!--<tr>
                             <td><input type="checkbox" class="item-checkbox"></td>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 8px;">
@@ -189,7 +190,7 @@
                                     <button class="btn-icon btn-delete" onclick="deletePengguna(3)" title="Hapus">🗑️</button>
                                 </div>
                             </td>
-                        </tr>
+                        </tr>-->
                     </tbody>
                 </table>
             </div>
