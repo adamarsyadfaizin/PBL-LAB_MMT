@@ -456,3 +456,50 @@ CREATE TABLE feedback (
     created_at TIMESTAMP DEFAULT NOW(),
     is_read BOOLEAN DEFAULT FALSE
 );
+
+--- BENERIN DATABASE ----
+ALTER TABLE project_members
+DROP CONSTRAINT fk_projects_members_member;
+
+ALTER TABLE project_tags
+DROP CONSTRAINT fk_pt_tag;
+
+ALTER TABLE project_tags
+DROP CONSTRAINT fk_pt_project;
+
+ALTER TABLE project_members
+DROP CONSTRAINT fk_projects_members_project;
+
+select*from galleries g ;
+drop table galleries;
+
+alter table "comments" add column comment_in varchar 
+
+INSERT INTO comments (entity_type, entity_id, author_name, content)
+VALUES ('news', 3, 'Budi', 'Beritanya bagus!');
+INSERT INTO comments (entity_type, entity_id, author_name, content)
+VALUES ('projects', 12, 'Siti', 'Projeknya keren!');
+INSERT INTO comments (entity_type, entity_id, author_name, content)
+VALUES ('media_assets', 7, 'Deni', 'Gambar bagus banget!');
+
+
+SELECT *
+FROM comments
+WHERE entity_type = 'news'
+  AND entity_id = 3
+ORDER BY created_at DESC;
+
+SELECT *
+FROM comments
+WHERE entity_type = 'projects'
+  AND entity_id = 12;
+
+SELECT *
+FROM comments
+WHERE entity_type = 'media_assets'
+  AND entity_id = 7;
+
+ALTER TABLE audit_logs 
+DROP CONSTRAINT fk_audit_logs_user;
+
+drop table audit_logs ;
