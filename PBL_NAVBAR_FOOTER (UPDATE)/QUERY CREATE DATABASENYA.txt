@@ -473,7 +473,6 @@ DROP CONSTRAINT fk_projects_members_project;
 select*from galleries g ;
 drop table galleries;
 
-alter table "comments" add column comment_in varchar 
 
 INSERT INTO comments (entity_type, entity_id, author_name, content)
 VALUES ('news', 3, 'Budi', 'Beritanya bagus!');
