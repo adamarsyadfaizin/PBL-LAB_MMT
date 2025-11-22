@@ -28,7 +28,10 @@
         <a href="pesan.php" class="<?= strpos($_SERVER['PHP_SELF'], 'pesan') !== false ? 'active' : '' ?>">
             <i class="fas fa-envelope"></i> Pesan Masuk
         </a>
-        
+
+        <a href="pengaturan.php" class="<?= strpos($_SERVER['PHP_SELF'], 'pengaturan') !== false ? 'active' : '' ?>">
+            <i class="fas fa-cogs"></i> Pengaturan
+        </a>
         <a href="../menu/process_logout.php" class="logout-btn">
             <i class="fas fa-sign-out-alt"></i> Logout
         </a>

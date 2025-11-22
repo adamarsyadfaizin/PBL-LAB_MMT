@@ -1,97 +1,123 @@
 <?php
-/**
- * menu/components/footer.php
- * Footer global - aman di semua level folder (pakai BASE_URL)
- */
-
-if (!defined('BASE_URL')) {
-    define('BASE_URL', '/PBL/'); // <- sesuaikan root project kamu
-}
+// menu/components/footer.php
 
 function renderFooter() {
-?>
-<footer class="site-footer">
-    <div class="container">
-        <div class="footer-grid">
-            
-            <!-- Kolom 1: Logo & Sosial Media -->
-            <div class="footer-col">
-                <img src="<?php echo BASE_URL; ?>assets/images/LAB MUTIMEDIA V2_TSP.png" 
-                     alt="Logo Lab Polinema Footer" 
-                     style="height: 60px; margin-bottom: 20px;">
-                <p>
-                    <strong>Laboratorium Mobile and Multimedia Tech</strong><br>
-                    Politeknik Negeri Malang<br>
-                    Malang, Indonesia
-                </p>
+    // Ambil variabel global $site_config dari settings.php
+    global $site_config; 
 
-                <!-- Media Sosial -->
-                <div class="social-links-footer">
-                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
-                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+    // Fallback data dummy jika config belum diload (untuk safety)
+    if (!isset($site_config)) {
+        $site_config = [
+            'alamat_lab' => 'Alamat Lab belum diatur di Admin Panel.',
+            'email_lab'  => 'info@polinema.ac.id',
+            'telepon_lab'=> '(0341) 404424',
+            'fb_link'    => '#',
+            'ig_link'    => '#',
+            'linkedin'   => '#',
+            'yt_link'    => '#'
+        ];
+    }
+
+    // --- LOGIKA PATH OTOMATIS (Sama seperti Navbar) ---
+    $path_prefix = "";
+    if (file_exists("assets/css/style.css")) {
+        $path_prefix = ""; // Root (beranda.php)
+    } elseif (file_exists("../assets/css/style.css")) {
+        $path_prefix = "../"; // Level 1 (menu/proyek.php)
+    } elseif (file_exists("../../assets/css/style.css")) {
+        $path_prefix = "../../"; // Level 2 (detail)
+    }
+    ?>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                
+                <div class="footer-col">
+                    <h4>Tentang Lab</h4>
+                    <p>
+                        Laboratorium Mobile & Multimedia Tech POLINEMA adalah pusat pengembangan 
+                        kreativitas dan inovasi mahasiswa di bidang teknologi digital.
+                    </p>
+                    <div class="policy-links">
+                        <ul style="list-style:none; padding:0;">
+                            <li><a href="#">Kebijakan Privasi</a></li>
+                            <li><a href="#">Syarat & Ketentuan</a></li>
+                        </ul>
+                    </div>
                 </div>
+
+                <div class="footer-col">
+                    <h4>Tautan Cepat</h4>
+                    <ul>
+                        <li><a href="<?= $path_prefix ?>beranda.php">Beranda</a></li>
+                        <li><a href="<?= $path_prefix ?>menu/profil.php">Profil</a></li>
+                        <li><a href="<?= $path_prefix ?>menu/berita.php">Berita & Kegiatan</a></li>
+                        <li><a href="<?= $path_prefix ?>menu/proyek.php">Proyek</a></li>
+                        <li><a href="<?= $path_prefix ?>menu/galeri.php">Galeri</a></li>
+                        <li><a href="<?= $path_prefix ?>menu/kontak.php">Kontak</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Kontak Kami</h4>
+                    <p>
+                        <i class="fas fa-map-marker-alt" style="width:20px;"></i> 
+                        <?= nl2br(htmlspecialchars($site_config['alamat_lab'] ?? '-')) ?>
+                    </p>
+                    
+                    <p style="margin-top: 10px;">
+                        <i class="fas fa-envelope" style="width:20px;"></i> 
+                        <a href="mailto:<?= htmlspecialchars($site_config['email_lab'] ?? '') ?>">
+                            <?= htmlspecialchars($site_config['email_lab'] ?? '-') ?>
+                        </a>
+                    </p>
+                    
+                    <p>
+                        <i class="fas fa-phone" style="width:20px;"></i> 
+                        <?= htmlspecialchars($site_config['telepon_lab'] ?? '-') ?>
+                    </p>
+
+                    <div class="social-links-footer">
+                        <?php if (!empty($site_config['fb_link'])): ?>
+                            <a href="<?= htmlspecialchars($site_config['fb_link']) ?>" target="_blank" aria-label="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                        <?php endif; ?>
+
+                        <?php if (!empty($site_config['x_link'])): ?>
+                            <a href="<?= htmlspecialchars($site_config['x_link']) ?>" target="_blank" aria-label="Twitter / X">
+                                <i class="fab fa-x-twitter"></i>
+                            </a>
+                        <?php endif; ?>
+
+                        <?php if (!empty($site_config['ig_link'])): ?>
+                            <a href="<?= htmlspecialchars($site_config['ig_link']) ?>" target="_blank" aria-label="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        <?php endif; ?>
+
+                        <?php if (!empty($site_config['yt_link'])): ?>
+                            <a href="<?= htmlspecialchars($site_config['yt_link']) ?>" target="_blank" aria-label="YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        <?php endif; ?>
+
+                        <?php if (!empty($site_config['linkedin'])): ?>
+                            <a href="<?= htmlspecialchars($site_config['linkedin']) ?>" target="_blank" aria-label="LinkedIn">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
             </div>
-            
-            <!-- Kolom 2: Tautan Cepat -->
-            <div class="footer-col">
-                <h4>Tautan Cepat</h4>
-                <ul>
-                    <li><a href="<?php echo BASE_URL; ?>beranda.php">Beranda</a></li>
-                    <li><a href="<?php echo BASE_URL; ?>menu/profil.php">Profil</a></li>
-                    <li><a href="<?php echo BASE_URL; ?>menu/berita.php">Berita & Kegiatan</a></li>
-                    <li><a href="<?php echo BASE_URL; ?>menu/proyek.php">Proyek</a></li>
-                    <li><a href="<?php echo BASE_URL; ?>menu/galeri.php">Galeri</a></li>
-                    <li><a href="<?php echo BASE_URL; ?>menu/kontak.php">Kontak</a></li>
-                </ul>
-            </div>
-            
-            <!-- Kolom 3: Kontak -->
-            <div class="footer-col">
-                <h4>Kontak & Kebijakan</h4>
-                <p>
-                    Jl. Soekarno Hatta No.9, Jatimulyo,<br>
-                    Kec. Lowokwaru, Kota Malang,<br>
-                    Jawa Timur 65141
-                </p>
-                <p>
-                    Email: <a href="mailto:info@polinema.ac.id">info@polinema.ac.id</a><br>
-                    Telepon: (0341) 404 424
-                </p>
-                <ul class="policy-links">
-                    <li><a href="#">Kebijakan Privasi</a></li>
-                    <li><a href="#">Ketentuan Layanan</a></li>
-                </ul>
+
+            <div class="footer-copyright">
+                <p>&copy; <?= date('Y') ?> Laboratorium Mobile & Multimedia Tech POLINEMA. All Rights Reserved.</p>
             </div>
         </div>
-        
-        <div class="footer-copyright">
-            <p>&copy; 2025 Laboratorium Mobile and Multimedia Tech POLINEMA. Hak Cipta Dilindungi.</p>
-        </div>
-    </div>
-</footer>
-
-<!-- Tombol ke atas -->
-<a href="#top" id="scrollTopBtn" class="scroll-top-btn" aria-label="Kembali ke atas">&uarr;</a>
-
-<!-- Font Awesome -->
-<link rel="stylesheet" 
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<style>
-    .social-links-footer a {
-        color: inherit;
-        text-decoration: none;
-        margin-right: 12px;
-        font-size: 18px;
-        transition: opacity 0.3s;
-    }
-    .social-links-footer a:hover {
-        opacity: 0.7;
-    }
-</style>
-<?php
+    </footer>
+    <?php
 }
 ?>
