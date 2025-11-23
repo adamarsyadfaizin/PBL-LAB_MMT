@@ -1,7 +1,8 @@
 <?php
 // menu/menu-proyek-detail/detail-proyek.php
 if (!isset($_SESSION)) session_start();
-require_once '../../config/db.php'; // Mundur 2 langkah
+require_once '../../config/db.php'; 
+require_once '../../config/settings.php'; // <-- PENTING: CMS Setting
 include '../components/floating_profile.php'; 
 renderFloatingProfile();
 require_once '../components/navbar.php';
@@ -16,7 +17,7 @@ if (!$slug) {
 $sql = "SELECT p.*, c.name as category_name 
         FROM projects p 
         LEFT JOIN categories c ON p.category_id = c.id 
-        WHERE p.slug = ? AND p.status = 'published'";
+        WHERE p.slug = ? AND (p.status = 'published' OR p.status = '1')";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$slug]);
 $project = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -38,97 +39,112 @@ $final_img = "../../" . $clean_img;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($project['title']) ?> - Proyek Lab MMT</title>
     
-    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <style>
-        .project-header {
-            background: #f4f4f4;
-            padding: 60px 0;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-        .project-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 40px;
-        }
-        .project-main img {
-            width: 100%;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        .project-sidebar {
-            background: #f9f9f9;
-            padding: 30px;
-            border-radius: 10px;
-            height: fit-content;
-        }
-        .info-item { margin-bottom: 20px; }
-        .info-item label { font-weight: bold; display: block; color: #666; }
-        .btn-demo {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background: var(--color-primary, #003b8e);
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        .btn-demo:hover { opacity: 0.9; }
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    
+    <link rel="stylesheet" href="assets/det-proyek/css/style-detail-proyek.css">
 
-        @media(max-width: 768px) {
-            .project-container { grid-template-columns: 1fr; }
+    <style>
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), 
+                        url('<?= $final_img ?>') center center/cover no-repeat;
+            height: 400px !important;
+        }
+        /* Penyesuaian Judul di Hero */
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .project-meta-hero {
+            font-size: 16px;
+            color: rgba(255,255,255,0.9);
+            font-weight: 500;
         }
     </style>
 </head>
-<body>
+<body id="top">
 
     <?php renderNavbar('proyek'); ?>
 
-    <div class="project-header">
+    <section class="hero">
         <div class="container">
             <h1><?= htmlspecialchars($project['title']) ?></h1>
-            <p><?= htmlspecialchars($project['summary']) ?></p>
+            <div class="project-meta-hero">
+                <i class="fas fa-folder"></i> <?= htmlspecialchars($project['category_name'] ?? 'Uncategorized') ?> 
+                &nbsp;&nbsp;|&nbsp;&nbsp; 
+                <i class="fas fa-calendar"></i> <?= htmlspecialchars($project['year']) ?>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <div class="project-container">
-        <div class="project-main">
-            <img src="<?= $final_img ?>" alt="<?= htmlspecialchars($project['title']) ?>">
+    <div class="main-content-area">
+        <div class="container">
             
-            <h3>Deskripsi Proyek</h3>
-            <p><?= nl2br(htmlspecialchars($project['description'])) ?></p>
-        </div>
+            <div class="primary-content">
+                <a href="../proyek.php" class="btn-secondary back-link" style="margin-top:0; margin-bottom:30px;">&larr; Kembali ke Daftar Proyek</a>
 
-        <div class="project-sidebar">
-            <div class="info-item">
-                <label>Kategori</label>
-                <span><?= htmlspecialchars($project['category_name'] ?? 'Uncategorized') ?></span>
-            </div>
-            <div class="info-item">
-                <label>Tahun</label>
-                <span><?= htmlspecialchars($project['year']) ?></span>
-            </div>
-            
-            <?php if (!empty($project['demo_url'])): ?>
-            <div class="info-item">
-                <a href="<?= htmlspecialchars($project['demo_url']) ?>" target="_blank" class="btn-demo">
-                    <i class="fas fa-external-link-alt"></i> Lihat Demo
-                </a>
-            </div>
-            <?php endif; ?>
+                <img src="<?= $final_img ?>" alt="<?= htmlspecialchars($project['title']) ?>" style="width:100%; border-radius:10px; margin-bottom:30px; box-shadow:0 5px 15px rgba(0,0,0,0.1);">
+                
+                <h3>Deskripsi Proyek</h3>
+                <div class="lead-paragraph">
+                    <?= nl2br(htmlspecialchars($project['summary'])) ?>
+                </div>
+                
+                <p><?= nl2br(htmlspecialchars($project['description'])) ?></p>
 
-            <div class="info-item" style="margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px;">
-                <a href="../proyek.php" style="text-decoration: none; color: #555;">&larr; Kembali ke Daftar Proyek</a>
+                <?php if (!empty($project['demo_url'])): ?>
+                <div style="margin-top: 30px;">
+                    <a href="<?= htmlspecialchars($project['demo_url']) ?>" target="_blank" class="btn">
+                        <i class="fas fa-external-link-alt"></i> Lihat Demo Proyek
+                    </a>
+                </div>
+                <?php endif; ?>
             </div>
+
+            <aside class="sidebar">
+                <div class="widget">
+                    <h3 class="widget-title">Informasi Proyek</h3>
+                    <ul style="list-style:none; padding:20px;">
+                        <li style="margin-bottom:15px;">
+                            <strong>Kategori:</strong><br>
+                            <?= htmlspecialchars($project['category_name'] ?? '-') ?>
+                        </li>
+                        <li style="margin-bottom:15px;">
+                            <strong>Tahun Pembuatan:</strong><br>
+                            <?= htmlspecialchars($project['year']) ?>
+                        </li>
+                        <?php if (!empty($project['repo_url'])): ?>
+                        <li style="margin-bottom:15px;">
+                            <strong>Repository:</strong><br>
+                            <a href="<?= htmlspecialchars($project['repo_url']) ?>" target="_blank">GitHub / GitLab</a>
+                        </li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+                
+                <div class="widget">
+                    <h3 class="widget-title">Proyek Lainnya</h3>
+                    <ul style="list-style:none; padding:20px;">
+                        <?php
+                       // Ganti RAND() menjadi RANDOM()
+                        $stmt_other = $pdo->prepare("SELECT title, slug, year FROM projects WHERE slug != ? AND (status = 'published' OR status = '1') ORDER BY RANDOM() LIMIT 3");
+                        $stmt_other->execute([$slug]);
+                        while($other = $stmt_other->fetch()):
+                        ?>
+                        <li style="margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">
+                            <a href="detail-proyek.php?slug=<?= $other['slug'] ?>" style="text-decoration:none; font-weight:600; color:#333;">
+                                <?= htmlspecialchars($other['title']) ?>
+                            </a>
+                            <span style="display:block; font-size:12px; color:#888;"><?= $other['year'] ?></span>
+                        </li>
+                        <?php endwhile; ?>
+                    </ul>
+                </div>
+            </aside>
+
         </div>
     </div>
 
@@ -137,6 +153,9 @@ $final_img = "../../" . $clean_img;
     renderFooter(); 
     ?>
 
+    <a href="#top" id="scrollTopBtn" class="scroll-top-btn" aria-label="Kembali ke atas">&uarr;</a>
+
     <script src="../../assets/js/navbar.js"></script>
+    <script src="assets/det-proyek/js/script-detail-proyek.js"></script>
 </body>
 </html>
