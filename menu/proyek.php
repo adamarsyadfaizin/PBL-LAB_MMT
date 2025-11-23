@@ -4,7 +4,7 @@ require_once '../config/db.php';
 require_once '../config/settings.php'; // CMS Setting
 
 // --- PENGATURAN HALAMAN ---
-$limit = 6; // Maksimal 4 proyek per halaman
+$limit = 6; // Tampilkan 6 proyek per halaman (agar pas 2 baris x 3 kolom)
 $page = (int)($_GET['page'] ?? 1);
 $offset = ($page - 1) * $limit;
 
@@ -20,7 +20,6 @@ $sql_base = "FROM projects p
              LEFT JOIN categories c ON p.category_id = c.id
              LEFT JOIN project_tags pt ON p.id = pt.project_id
              LEFT JOIN tags t ON pt.tag_id = t.id
-             -- PERBAIKAN: Menerima status 'published' ATAU '1'
              WHERE (p.status = 'published' OR p.status = '1')";
 
 $params = [];
@@ -48,7 +47,7 @@ if ($year != 'semua') {
 
 $sql_base .= " GROUP BY p.id";
 
-// --- HITUNG TOTAL DATA (Untuk Logika Paging Otomatis) ---
+// --- HITUNG TOTAL DATA ---
 $sql_count = "SELECT COUNT(DISTINCT p.id) " . $sql_base;
 $stmt_count = $pdo->prepare($sql_count);
 $stmt_count->execute($params);
@@ -61,7 +60,7 @@ if ($sort == 'a-z') {
     $order_by = " ORDER BY p.title ASC";
 }
 
-// --- AMBIL DATA SESUAI HALAMAN ---
+// --- AMBIL DATA ---
 $sql_final = "SELECT p.id, p.title, p.slug, p.summary, p.cover_image, p.demo_url
               " . $sql_base . 
               $order_by . 
@@ -75,7 +74,7 @@ $stmt_projects = $pdo->prepare($sql_final);
 $stmt_projects->execute($params_final);
 $projects = $stmt_projects->fetchAll(PDO::FETCH_ASSOC);
 
-// Data Dropdown untuk Filter
+// Data Dropdown
 try {
     $categories = $pdo->query("SELECT name, slug FROM categories ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
     $tags = $pdo->query("SELECT name, slug FROM tags ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
@@ -106,8 +105,6 @@ function build_pagination($current, $total, $adj = 2) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Katalog Proyek - Laboratorium MMT</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -193,8 +190,6 @@ function build_pagination($current, $total, $adj = 2) {
                         foreach ($projects as $project):
                             $stmt_tags->execute([ $project['id'] ]);
                             $tags_list = $stmt_tags->fetchAll(PDO::FETCH_ASSOC);
-                            
-                            // Fix path gambar
                             $img_proyek = str_replace('../', '', $project['cover_image']);
                             ?>
                             
@@ -218,7 +213,7 @@ function build_pagination($current, $total, $adj = 2) {
                     else:
                         echo "<div class='no-results' style='grid-column: 1/-1; text-align:center; padding:40px;'>
                                 <h3>Tidak ada proyek yang ditemukan.</h3>
-                                <p>Coba ubah kata kunci atau filter Anda.</p>
+                                <a href='proyek.php' class='btn' style='margin-top:10px;'>Lihat Semua</a>
                               </div>";
                     endif; 
                     ?>
@@ -227,30 +222,30 @@ function build_pagination($current, $total, $adj = 2) {
                 <?php if ($total_pages > 1): ?>
                 <div class="pagination-controls">
                     <?php 
-                    $q = $_GET; 
-                    $pages_to_show = build_pagination($page, $total_pages);
+                    $qs = $_GET; 
+                    $pages_show = build_pagination($page, $total_pages);
 
-                    // Tombol Prev
+                    // Prev
                     if ($page > 1) {
-                        $q['page'] = $page - 1;
-                        echo '<a href="?' . http_build_query($q) . '" class="btn-page">&laquo;</a>';
+                        $qs['page'] = $page - 1;
+                        echo '<a href="?' . http_build_query($qs) . '" class="btn-page">&laquo;</a>';
                     }
 
-                    // Angka Halaman
-                    foreach ($pages_to_show as $p):
+                    // Angka
+                    foreach ($pages_show as $p):
                         if ($p === '...') {
                             echo '<span class="page-ellipsis">...</span>';
                         } else {
-                            $q['page'] = $p;
+                            $qs['page'] = $p;
                             $activeClass = ($p == $page) ? 'active' : '';
-                            echo '<a href="?' . http_build_query($q) . '" class="btn-page ' . $activeClass . '">' . $p . '</a>';
+                            echo '<a href="?' . http_build_query($qs) . '" class="btn-page ' . $activeClass . '">' . $p . '</a>';
                         }
                     endforeach;
 
-                    // Tombol Next
+                    // Next
                     if ($page < $total_pages) {
-                        $q['page'] = $page + 1;
-                        echo '<a href="?' . http_build_query($q) . '" class="btn-page">&raquo;</a>';
+                        $qs['page'] = $page + 1;
+                        echo '<a href="?' . http_build_query($qs) . '" class="btn-page">&raquo;</a>';
                     }
                     ?>
                 </div>

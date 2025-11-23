@@ -1,19 +1,19 @@
 <?php
 if (!isset($_SESSION)) session_start();
-include 'components/floating_profile.php'; 
-renderFloatingProfile();
 require_once '../config/db.php';
-// Include navbar component
-require_once 'components/navbar.php';
-require_once 'components/footer.php';
+require_once '../config/settings.php'; // CMS Setting
 
-// Ambil parameter pencarian dan filter dari URL
+// --- LOGIKA FILTER & PAGINATION ---
+$limit = 6; 
+$page = (int)($_GET['page'] ?? 1);
+$offset = ($page - 1) * $limit;
+
 $search_term = $_GET['search'] ?? '';
 $filter_jenis = $_GET['jenis'] ?? 'semua';
 $filter_acara = $_GET['acara'] ?? 'semua';
 $filter_tahun = $_GET['tahun'] ?? 'semua';
 
-// Query dinamis berdasarkan filter
+// Query Builder
 $sql_conditions = "WHERE 1=1";
 $params = [];
 
@@ -38,352 +38,219 @@ if ($filter_tahun != 'semua') {
     $params[] = $filter_tahun;
 }
 
-// Query untuk mengambil media dengan filter
-$sql = "SELECT * FROM media_assets $sql_conditions ORDER BY created_at DESC";
+// Hitung Total Data
+$sql_count = "SELECT COUNT(*) FROM media_assets $sql_conditions";
+$stmt_count = $pdo->prepare($sql_count);
+$stmt_count->execute($params);
+$total_items = $stmt_count->fetchColumn();
+$total_pages = ceil($total_items / $limit);
+
+// Query Final
+$sql = "SELECT * FROM media_assets $sql_conditions ORDER BY created_at DESC LIMIT ? OFFSET ?";
+$params[] = $limit;
+$params[] = $offset;
+
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $media_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Ambil jenis media unik untuk filter
+// Data Dropdown
 try {
-    $types_sql = "SELECT DISTINCT type FROM media_assets WHERE type IS NOT NULL ORDER BY type";
-    $types_stmt = $pdo->query($types_sql);
+    $types_stmt = $pdo->query("SELECT DISTINCT type FROM media_assets WHERE type IS NOT NULL ORDER BY type");
     $available_types = $types_stmt->fetchAll(PDO::FETCH_COLUMN);
-} catch (PDOException $e) {
-    $available_types = ['foto', 'video', 'animasi'];
-}
 
-// Ambil acara unik untuk filter
-try {
-    $events_sql = "SELECT DISTINCT event_name FROM media_assets WHERE event_name IS NOT NULL AND event_name != '' ORDER BY event_name";
-    $events_stmt = $pdo->query($events_sql);
+    $events_stmt = $pdo->query("SELECT DISTINCT event_name FROM media_assets WHERE event_name IS NOT NULL AND event_name != '' ORDER BY event_name");
     $available_events = $events_stmt->fetchAll(PDO::FETCH_COLUMN);
-} catch (PDOException $e) {
-    $available_events = ['Dies Natalis', 'Wisuda', 'Seminar', 'Workshop'];
-}
 
-// Ambil tahun unik untuk filter
-try {
-    $years_sql = "SELECT DISTINCT EXTRACT(YEAR FROM created_at) as year FROM media_assets ORDER BY year DESC";
-    $years_stmt = $pdo->query($years_sql);
+    $years_stmt = $pdo->query("SELECT DISTINCT EXTRACT(YEAR FROM created_at) as year FROM media_assets ORDER BY year DESC");
     $available_years = $years_stmt->fetchAll(PDO::FETCH_COLUMN);
 } catch (PDOException $e) {
-    $available_years = [2025, 2024, 2023];
+    $available_types = []; $available_events = []; $available_years = [];
 }
 
+// Helper Pagination
+function build_pagination($current, $total, $adj = 2) {
+    $pages = [];
+    if ($total <= 1) return [1];
+    $pages[] = 1;
+    $start = max(2, $current - $adj);
+    $end = min($total - 1, $current + $adj);
+    if ($start > 2) $pages[] = '...';
+    for ($i = $start; $i <= $end; $i++) $pages[] = $i;
+    if ($end < $total - 1) $pages[] = '...';
+    if ($total > 1) $pages[] = $total;
+    return array_unique($pages);
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galeri Multimedia - Laboratorium Mobile and Multimedia Tech POLINEMA</title>
+    <title>Galeri Multimedia - Laboratorium MMT</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="assets/galeri/css/style-galeri.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    
+    <link rel="stylesheet" href="assets/galeri/css/style-galeri.css?v=<?php echo time(); ?>">
     
     <style>
         .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)), 
-                        url('../assets/images/hero.jpg') center center/cover no-repeat;
-            height: 300px;
-            display: flex;
-            align-items: center;
-            position: relative;
-            color: var(--color-white);
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), 
+                        url('../<?= htmlspecialchars($site_config['hero_image_path'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
+            height: 300px !important;
         }
-        .hero .container {
-            position: relative;
-            z-index: 2;
-        }
-        .hero h1 {
-            font-size: 36px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
-        }
-
-        /* Style untuk form pencarian dan filter */
-        .search-filter-container {
-            background: var(--color-bg-light);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-
-        .search-row {
-            display: flex;
-            gap: 15px;
-            align-items: end;
-            margin-bottom: 15px;
-        }
-
-        .search-input-group {
-            flex: 1;
-        }
-
-        .search-input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--color-text);
-        }
-
-        .search-input-group input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid var(--color-border-light);
-            border-radius: 4px;
-            font-size: 14px;
-            font-family: 'Open Sans', sans-serif;
-        }
-
-        .btn-search {
-            background: var(--color-primary);
-            color: var(--color-white);
-            border: none;
-            padding: 8px 20px;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 14px;
-            height: 35px;
-        }
-
-        .btn-search:hover {
-            background: var(--color-accent);
-            color: var(--color-text);
-        }
-
-        .filter-row {
-            display: flex;
-            gap: 15px;
-            align-items: end;
-        }
-
-        .filter-group {
-            flex: 1;
-        }
-
-        .filter-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--color-text);
-        }
-
-        .filter-group select {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid var(--color-border-light);
-            border-radius: 4px;
-            font-size: 14px;
-            font-family: 'Open Sans', sans-serif;
-        }
-
-        .btn-filter {
-            background: var(--color-primary);
-            color: var(--color-white);
-            border: none;
-            padding: 8px 20px;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 14px;
-            height: 35px;
-        }
-
-        .search-results-info {
-            background: var(--color-primary);
-            color: var(--color-white);
-            padding: 10px 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 60px 20px;
-            background: var(--color-bg-light);
-            border-radius: 8px;
-            margin: 40px 0;
-        }
-
-        .no-results h3 {
-            color: var(--color-text-secondary);
-            margin-bottom: 15px;
-        }
-
-        @media (max-width: 768px) {
-            .search-row,
-            .filter-row {
-                flex-direction: column;
-            }
-            
-            .search-input-group,
-            .filter-group {
-                width: 100%;
-            }
-        }
+        .hero h1 { margin-bottom: 0; }
     </style>
 </head>
 <body id="top">
 
     <?php
-    // Render navbar dengan halaman aktif 'galeri'
+    require_once 'components/navbar.php';
     renderNavbar('galeri');
     ?>
 
     <main>
-
         <section class="hero">
             <div class="container">
                 <h1>Galeri Multimedia</h1>
-                <p style="margin-top: 10px; font-size: 18px;">Koleksi foto, video, dan animasi dari berbagai kegiatan laboratorium</p>
+               
             </div>
         </section>
 
         <div class="main-content-area">
             <div class="container">
 
-                <!-- FORM PENCARIAN & FILTER -->
-                <div class="search-filter-container">
-                    <form action="" method="get">
-                        <!-- Baris Pencarian -->
-                        <div class="search-row">
-                            <div class="search-input-group">
-                                <label for="search">Cari Media</label>
-                                <input type="text" id="search" name="search" placeholder="Masukkan kata kunci..." value="<?php echo htmlspecialchars($search_term); ?>">
-                            </div>
-                            <button type="submit" class="btn-search">Cari</button>
+                <form class="search-filter-container" action="" method="get">
+                    <div class="search-row">
+                        <div class="search-input-group">
+                            <label for="search">Cari Media</label>
+                            <input type="text" id="search" name="search" placeholder="Kata kunci..." value="<?= htmlspecialchars($search_term) ?>">
                         </div>
+                        <button type="submit" class="btn-search">Cari</button>
+                    </div>
 
-                        <!-- Baris Filter -->
-                        <div class="filter-row">
-                            <div class="filter-group">
-                                <label for="jenis">Jenis Media</label>
-                                <select id="jenis" name="jenis">
-                                    <option value="semua">Semua Media</option>
-                                    <?php foreach ($available_types as $type): ?>
-                                        <option value="<?php echo htmlspecialchars($type); ?>" <?php echo ($filter_jenis == $type) ? 'selected' : ''; ?>>
-                                            <?php echo ucfirst(htmlspecialchars($type)); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            
-                            <div class="filter-group">
-                                <label for="acara">Acara</label>
-                                <select id="acara" name="acara">
-                                    <option value="semua">Semua Acara</option>
-                                    <?php foreach ($available_events as $event): ?>
-                                        <option value="<?php echo htmlspecialchars($event); ?>" <?php echo ($filter_acara == $event) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($event); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            
-                            <div class="filter-group">
-                                <label for="tahun">Tahun</label>
-                                <select id="tahun" name="tahun">
-                                    <option value="semua">Semua Tahun</option>
-                                    <?php foreach ($available_years as $year): ?>
-                                        <option value="<?php echo htmlspecialchars($year); ?>" <?php echo ($filter_tahun == $year) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($year); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            
-                            <button type="submit" class="btn-filter">Terapkan Filter</button>
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label>Jenis</label>
+                            <select name="jenis">
+                                <option value="semua">Semua</option>
+                                <?php foreach ($available_types as $type): ?>
+                                    <option value="<?= $type ?>" <?= ($filter_jenis == $type) ? 'selected' : '' ?>><?= ucfirst($type) ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
-                    </form>
-                </div>
+                        
+                        <div class="filter-group">
+                            <label>Acara</label>
+                            <select name="acara">
+                                <option value="semua">Semua</option>
+                                <?php foreach ($available_events as $event): ?>
+                                    <option value="<?= $event ?>" <?= ($filter_acara == $event) ? 'selected' : '' ?>><?= $event ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label>Tahun</label>
+                            <select name="tahun">
+                                <option value="semua">Semua</option>
+                                <?php foreach ($available_years as $y): ?>
+                                    <option value="<?= $y ?>" <?= ($filter_tahun == $y) ? 'selected' : '' ?>><?= $y ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn-filter">Filter</button>
+                    </div>
+                </form>
 
-                <!-- Info Hasil Pencarian -->
                 <?php if (!empty($search_term) || $filter_jenis != 'semua' || $filter_acara != 'semua' || $filter_tahun != 'semua'): ?>
                 <div class="search-results-info">
-                    <strong>
-                        <?php 
-                        $filter_info = [];
-                        if (!empty($search_term)) $filter_info[] = "kata kunci: \"$search_term\"";
-                        if ($filter_jenis != 'semua') $filter_info[] = "jenis: " . ucfirst($filter_jenis);
-                        if ($filter_acara != 'semua') $filter_info[] = "acara: $filter_acara";
-                        if ($filter_tahun != 'semua') $filter_info[] = "tahun: $filter_tahun";
-                        
-                        echo "Menampilkan " . count($media_items) . " media dengan " . implode(', ', $filter_info);
-                        ?>
-                    </strong>
-                    <a href="galeri.php" style="color: var(--color-accent); margin-left: 10px; font-weight: 600;">Tampilkan Semua</a>
+                    Menampilkan <?= $total_items ?> media.
+                    <a href="galeri.php" style="color:var(--color-accent); font-weight:bold; margin-left:10px;">Reset Filter</a>
                 </div>
                 <?php endif; ?>
 
-                <!-- Grid Galeri -->
                 <?php if (count($media_items) > 0): ?>
                 <div class="gallery-grid-main">
                     <?php foreach ($media_items as $item): 
-                        // Tentukan icon berdasarkan jenis media
-                        $icon = '&#128247;'; // default icon untuk foto
-                        $media_type = 'Foto';
+                        $icon = ($item['type'] === 'video') ? 'fa-play' : (($item['type'] === 'animasi') ? 'fa-film' : 'fa-camera');
+                        $media_type = ucfirst($item['type']);
                         
-                        if ($item['type'] === 'video') {
-                            $icon = '&#9658;';
-                            $media_type = 'Video';
-                        } elseif ($item['type'] === 'animasi') {
-                            $icon = '&#10022;';
-                            $media_type = 'Animasi';
-                        }
-                        
-                        // Ekstrak judul dari caption
-                        $caption_parts = explode(' ', $item['caption']);
-                        $title = $item['caption'];
-                        if (count($caption_parts) > 3) {
-                            $title = implode(' ', array_slice($caption_parts, 0, 3)) . '...';
-                        }
+                        // Fix path gambar
+                        $is_link = filter_var($item['url'], FILTER_VALIDATE_URL);
+                        $img_src = $is_link ? $item['url'] : "../" . str_replace('../', '', $item['url']);
                     ?>
-                    <a href="menu-detail-galeri/galeri-detail.php?id=<?php echo htmlspecialchars($item['id']); ?>" class="gallery-item" aria-label="Lihat <?php echo htmlspecialchars(strtolower($media_type)); ?> <?php echo htmlspecialchars($item['caption']); ?>">
+                    <a href="menu-detail-galeri/galeri-detail.php?id=<?= $item['id'] ?>" class="gallery-item">
                         <div class="image-container">
-                            <img src="<?php echo htmlspecialchars($item['url']); ?>" alt="<?php echo htmlspecialchars($item['caption']); ?>">
-                            <div class="overlay"><span class="icon"><?php echo $icon; ?></span></div>
+                            <img src="<?= htmlspecialchars($img_src) ?>" alt="<?= htmlspecialchars($item['caption']) ?>">
+                            <div class="overlay"><i class="fas <?= $icon ?>"></i></div>
+                            <span class="type-badge"><?= $media_type ?></span>
                         </div>
                         <div class="item-info">
-                            <h4><?php echo htmlspecialchars($title); ?></h4>
-                            <span><?php echo htmlspecialchars($media_type); ?></span>
+                            <h4><?= htmlspecialchars($item['caption']) ?></h4>
                             <?php if (!empty($item['event_name'])): ?>
-                            <span class="event-tag"><?php echo htmlspecialchars($item['event_name']); ?></span>
+                            <span class="event-tag"><?= htmlspecialchars($item['event_name']) ?></span>
                             <?php endif; ?>
                         </div>
                     </a>
                     <?php endforeach; ?>
                 </div>
+
+                <?php if ($total_pages > 1): ?>
+                <div class="pagination-controls">
+                    <?php 
+                    $qs = $_GET;
+                    $pages_show = build_pagination($page, $total_pages);
+
+                    if ($page > 1) {
+                        $qs['page'] = $page - 1;
+                        echo '<a href="?' . http_build_query($qs) . '" class="btn-page">&laquo;</a>';
+                    }
+
+                    foreach ($pages_show as $p):
+                        if ($p === '...') {
+                            echo '<span class="page-ellipsis">...</span>';
+                        } else {
+                            $qs['page'] = $p;
+                            $active = ($p == $page) ? 'active' : '';
+                            echo '<a href="?' . http_build_query($qs) . '" class="btn-page ' . $active . '">' . $p . '</a>';
+                        }
+                    endforeach;
+
+                    if ($page < $total_pages) {
+                        $qs['page'] = $page + 1;
+                        echo '<a href="?' . http_build_query($qs) . '" class="btn-page">&raquo;</a>';
+                    }
+                    ?>
+                </div>
+                <?php endif; ?>
+
                 <?php else: ?>
-                <div class="no-results">
-                    <h3>😔 Tidak ada media yang ditemukan</h3>
-                    <p>Silakan coba dengan kata kunci atau filter yang berbeda.</p>
-                    <a href="galeri.php" class="btn">Tampilkan Semua Media</a>
+                <div class="no-results" style="text-align:center; padding:50px; background:#f9f9f9; border-radius:8px;">
+                    <h3>Tidak ada media ditemukan.</h3>
+                    <a href="galeri.php" class="btn" style="margin-top:10px;">Lihat Semua</a>
                 </div>
                 <?php endif; ?>
                 
             </div>
         </div>
-        
     </main>
 
-    <?php renderFooter(); ?>
-    <a href="#top" id="scrollTopBtn" class="scroll-top-btn" aria-label="Kembali ke atas">
-        &uarr;
-    </a>
+    <?php
+    include 'components/floating_profile.php'; 
+    renderFloatingProfile();
+    require_once 'components/footer.php';
+    renderFooter();
+    ?>
 
-    <!-- Include JavaScript untuk navbar -->
-    <script src="assets/js/navbar.js"></script>
+    <a href="#top" id="scrollTopBtn" class="scroll-top-btn" aria-label="Kembali ke atas">&uarr;</a>
+
+    <script src="../assets/js/navbar.js"></script>
     <script src="assets/galeri/js/script-galeri.js"></script>
 
 </body>

@@ -188,3 +188,104 @@
     }
     .hero h1 { font-size: 28px; }
 }
+
+/* --- style-proyek.css --- */
+
+/* Filter Bar */
+.project-filter-bar {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 15px;
+    align-items: center;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #eee;
+    margin-bottom: 40px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.filter-group { display: flex; flex-direction: column; gap: 5px; }
+.filter-group label { font-weight: 700; font-size: 12px; text-transform: uppercase; color: #666; }
+.project-filter-bar input[type="search"], .project-filter-bar select { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd; font-size: 14px; background: #fff; height: 42px; }
+.project-filter-bar input:focus, .project-filter-bar select:focus { border-color: var(--color-primary); outline: none; }
+
+/* Grid Proyek */
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+/* Kartu Proyek */
+.project-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: #fff;
+    border: 1px solid #f0f0f0;
+    height: 100%;
+}
+.project-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+
+.project-card-thumbnail { height: 200px; overflow: hidden; position: relative; background: #eee; }
+.project-card-thumbnail img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+.project-card:hover .project-card-thumbnail img { transform: scale(1.05); }
+
+.project-card-content { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+.project-card-content h4 { font-size: 18px; color: var(--color-text); margin-bottom: 10px; font-weight: 700; line-height: 1.4; }
+.project-card-content p { font-size: 14px; color: #666; margin-bottom: 15px; line-height: 1.6; flex: 1; }
+
+.project-card-tags { display: flex; flex-wrap: wrap; gap: 8px; border-top: 1px solid #eee; padding-top: 15px; margin-top: auto; }
+.tag-badge { background: #f0f4f8; border: 1px solid #e1e4e8; color: #555; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+
+/* --- PAGINATION STYLE (SAMA DENGAN GALERI) --- */
+.pagination-controls {
+    text-align: center;
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.btn-page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #333;
+    text-decoration: none;
+    border-radius: 50%;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-page.active, .btn-page:hover {
+    background: var(--color-accent); /* Kuning */
+    color: #000;
+    border-color: var(--color-accent);
+    transform: scale(1.1);
+}
+
+.page-ellipsis { font-weight: bold; color: #999; }
+
+/* Responsive */
+@media (max-width: 992px) {
+    .project-filter-bar { grid-template-columns: 1fr 1fr; }
+    .filter-group-search { grid-column: 1 / -1; }
+    .project-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .project-filter-bar { grid-template-columns: 1fr; gap: 15px; }
+    .project-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 28px; }
+}
