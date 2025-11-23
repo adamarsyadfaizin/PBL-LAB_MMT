@@ -1,7 +1,7 @@
 <?php 
 include 'components/header.php'; 
 
-// Ambil data profil (ID 1 atau sesuaikan dengan ID di database kamu)
+// Ambil data profil
 $stmt = $pdo->query("SELECT * FROM lab_profile ORDER BY id ASC LIMIT 1");
 $data = $stmt->fetch();
 ?>
@@ -65,14 +65,27 @@ $data = $stmt->fetch();
             </div>
 
             <h4 style="margin-top:20px;">Sosial Media</h4>
+            
             <div class="form-group">
                 <label>Link Facebook</label>
                 <input type="text" name="fb_link" class="form-control" value="<?= htmlspecialchars($data['fb_link'] ?? '') ?>">
             </div>
+
+            <div class="form-group">
+                <label>Link Twitter / X</label>
+                <input type="text" name="x_link" class="form-control" value="<?= htmlspecialchars($data['x_link'] ?? '') ?>">
+            </div>
+
             <div class="form-group">
                 <label>Link Instagram</label>
                 <input type="text" name="ig_link" class="form-control" value="<?= htmlspecialchars($data['ig_link'] ?? '') ?>">
             </div>
+
+            <div class="form-group">
+                <label>Link YouTube</label>
+                <input type="text" name="yt_link" class="form-control" value="<?= htmlspecialchars($data['yt_link'] ?? '') ?>">
+            </div>
+
             <div class="form-group">
                 <label>Link LinkedIn</label>
                 <input type="text" name="linkedin" class="form-control" value="<?= htmlspecialchars($data['linkedin'] ?? '') ?>">

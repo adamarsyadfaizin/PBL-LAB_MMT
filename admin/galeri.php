@@ -9,8 +9,14 @@
     <form action="process_galeri.php" method="POST" enctype="multipart/form-data" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
         
         <div class="form-group">
-            <label>Caption / Judul</label>
-            <input type="text" name="caption" class="form-control" required placeholder="Contoh: Dokumentasi Workshop AI">
+            <label>Judul / Caption</label>
+            <input type="text" name="caption" class="form-control" required placeholder="Contoh: Suasana Lomba Game Dev">
+        </div>
+
+        <div class="form-group">
+            <label>Nama Acara / Event</label>
+            <input type="text" name="event_name" class="form-control" placeholder="Contoh: Dies Natalis 2025">
+            <small style="color:#888;">Kosongkan jika bukan bagian dari acara khusus.</small>
         </div>
 
         <div class="form-group">
@@ -22,15 +28,15 @@
             </select>
         </div>
 
-        <div class="form-group" style="grid-column: span 2;">
-            <label>Deskripsi (Opsional)</label>
-            <textarea name="deskripsi" class="form-control" rows="2" placeholder="Deskripsi singkat..."></textarea>
+        <div class="form-group">
+            <label>File Gambar/Video</label>
+            <input type="file" name="media_file" class="form-control" required>
+            <small>Format: JPG, PNG, MP4 (Max 10MB)</small>
         </div>
 
         <div class="form-group" style="grid-column: span 2;">
-            <label>File Gambar/Video</label>
-            <input type="file" name="media_file" class="form-control" required>
-            <small>Format: JPG, PNG, MP4 (Max 5MB)</small>
+            <label>Deskripsi (Opsional)</label>
+            <textarea name="deskripsi" class="form-control" rows="3" placeholder="Deskripsi detail media..."></textarea>
         </div>
 
         <div style="grid-column: span 2;">
@@ -46,8 +52,8 @@
             <tr>
                 <th width="50">No</th>
                 <th width="120">Preview</th>
-                <th>Caption</th>
-                <th>Tipe</th>
+                <th>Info Media</th>
+                <th>Acara</th>
                 <th>Tanggal</th>
                 <th>Aksi</th>
             </tr>
@@ -57,29 +63,32 @@
             $no = 1;
             $stmt = $pdo->query("SELECT * FROM media_assets ORDER BY created_at DESC");
             while ($row = $stmt->fetch()):
-                // Tentukan apakah url gambar lokal atau link luar
-                $is_local = !filter_var($row['url'], FILTER_VALIDATE_URL);
-                $img_src = $is_local ? "../" . $row['url'] : $row['url'];
+                // Cek apakah link luar atau file lokal
+                $is_link = filter_var($row['url'], FILTER_VALIDATE_URL);
+                // Jika lokal, tambah ../ agar admin bisa preview
+                $img_src = $is_link ? $row['url'] : "../" . str_replace('../', '', $row['url']);
             ?>
             <tr>
                 <td><?= $no++ ?></td>
                 <td>
                     <?php if ($row['type'] == 'video'): ?>
-                        <div style="background: #eee; padding: 10px; text-align: center; border-radius: 4px;">
-                            <i class="fas fa-video"></i> Video
+                        <div style="background: #eee; padding: 10px; text-align: center; border-radius: 4px; font-size: 20px;">
+                            <i class="fas fa-video"></i>
                         </div>
                     <?php else: ?>
-                        <img src="<?= htmlspecialchars($img_src) ?>" width="100" style="border-radius: 4px; object-fit: cover;">
+                        <img src="<?= htmlspecialchars($img_src) ?>" width="100" height="70" style="border-radius: 4px; object-fit: cover;">
                     <?php endif; ?>
                 </td>
                 <td>
                     <strong><?= htmlspecialchars($row['caption']) ?></strong><br>
-                    <small style="color: #666;"><?= htmlspecialchars(substr($row['deskripsi'] ?? '', 0, 50)) ?></small>
+                    <span class="badge badge-success"><?= htmlspecialchars($row['type']) ?></span>
                 </td>
-                <td><span class="badge badge-success"><?= htmlspecialchars($row['type']) ?></span></td>
+                <td>
+                    <?= htmlspecialchars($row['event_name'] ?? '-') ?>
+                </td>
                 <td><?= date('d/m/Y', strtotime($row['created_at'])) ?></td>
                 <td>
-                    <a href="process_galeri.php?action=delete&id=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus media ini?')"><i class="fas fa-trash"></i></a>
+                    <a href="process_galeri.php?action=delete&id=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus media ini? File fisik juga akan dihapus.')"><i class="fas fa-trash"></i></a>
                 </td>
             </tr>
             <?php endwhile; ?>

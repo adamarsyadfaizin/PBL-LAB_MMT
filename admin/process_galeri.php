@@ -1,16 +1,17 @@
 <?php
 session_start();
-require_once '../config/db.php'; // Pastikan path ini benar
+require_once '../config/db.php';
 
-// HANDLE UPLOAD
+// --- HANDLE UPLOAD ---
 if (isset($_POST['upload'])) {
     $caption = $_POST['caption'];
+    $event_name = $_POST['event_name']; // Ambil input acara
     $type = $_POST['type'];
     $deskripsi = $_POST['deskripsi'];
 
-    // Cek apakah ada file yang dipilih
+    // Cek file upload
     if (!empty($_FILES['media_file']['name'])) {
-        // Path folder tujuan (mundur 1 langkah dari admin ke root, lalu masuk assets/uploads)
+        // Path tujuan: mundur dari admin -> masuk assets/uploads
         $target_dir = "../assets/uploads/";
         
         // Buat folder jika belum ada
@@ -19,61 +20,61 @@ if (isset($_POST['upload'])) {
         }
 
         $file_ext = strtolower(pathinfo($_FILES["media_file"]["name"], PATHINFO_EXTENSION));
-        // Generate nama unik agar tidak bentrok
+        // Nama file unik: time_uniqid.ext
         $file_name = time() . '_' . uniqid() . '.' . $file_ext;
         $target_file = $target_dir . $file_name;
 
         // Validasi ekstensi
-        $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'mp4'];
+        $allowed_ext = ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'webp'];
         
         if (in_array($file_ext, $allowed_ext)) {
             if (move_uploaded_file($_FILES["media_file"]["tmp_name"], $target_file)) {
                 
-                // Simpan path untuk database (tanpa ../)
+                // Simpan path relatif untuk database (tanpa ../)
+                // Format: assets/uploads/namafile.jpg
                 $db_url = "assets/uploads/" . $file_name;
 
                 try {
-                    $sql = "INSERT INTO media_assets (type, url, caption, deskripsi, created_at) VALUES (?, ?, ?, ?, NOW())";
+                    $sql = "INSERT INTO media_assets (type, url, caption, deskripsi, event_name, created_at) VALUES (?, ?, ?, ?, ?, NOW())";
                     $stmt = $pdo->prepare($sql);
-                    $stmt->execute([$type, $db_url, $caption, $deskripsi]);
+                    $stmt->execute([$type, $db_url, $caption, $deskripsi, $event_name]);
                     
-                    // Redirect kembali ke galeri dengan sukses
                     header("Location: galeri.php?status=success");
                     exit();
                 } catch (PDOException $e) {
                     echo "Database Error: " . $e->getMessage();
                 }
             } else {
-                echo "Gagal mengupload file ke server.";
+                echo "Gagal mengupload file ke server (Permission Denied).";
             }
         } else {
-            echo "Format file tidak didukung. Hanya JPG, PNG, GIF, atau MP4.";
+            echo "Format file tidak didukung. Hanya JPG, PNG, GIF, MP4.";
         }
     } else {
         echo "Harap pilih file terlebih dahulu.";
     }
 }
 
-// HANDLE DELETE
+// --- HANDLE DELETE ---
 if (isset($_GET['action']) && $_GET['action'] == 'delete') {
     $id = $_GET['id'];
 
-    // Ambil info file dulu untuk dihapus dari folder
+    // 1. Ambil info file dulu untuk dihapus dari folder
     $stmt = $pdo->prepare("SELECT url FROM media_assets WHERE id = ?");
     $stmt->execute([$id]);
     $data = $stmt->fetch();
 
     if ($data) {
-        // Hapus file fisik jika ada di folder lokal
-        // Cek apakah url tidak mengandung http/https (berarti file lokal)
+        // Cek apakah ini file lokal (bukan link http)
         if (!filter_var($data['url'], FILTER_VALIDATE_URL)) {
+            // Tambahkan ../ untuk menghapus dari posisi admin
             $file_path = "../" . $data['url'];
             if (file_exists($file_path)) {
-                unlink($file_path);
+                unlink($file_path); // Hapus file fisik
             }
         }
 
-        // Hapus dari database
+        // 2. Hapus dari database
         $delStmt = $pdo->prepare("DELETE FROM media_assets WHERE id = ?");
         $delStmt->execute([$id]);
     }

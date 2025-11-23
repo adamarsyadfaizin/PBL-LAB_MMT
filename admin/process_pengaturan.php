@@ -30,7 +30,7 @@ if (isset($_POST['save'])) {
         }
     }
 
-    // 3. UPDATE DATABASE
+    // 3. UPDATE DATABASE (LENGKAP)
     $sql = "UPDATE lab_profile SET 
             logo_path = ?, 
             hero_image_path = ?, 
@@ -40,7 +40,9 @@ if (isset($_POST['save'])) {
             email_lab = ?,
             telepon_lab = ?,
             fb_link = ?,
+            x_link = ?,
             ig_link = ?,
+            yt_link = ?,
             linkedin = ?
             WHERE id = ?";
     
@@ -55,12 +57,13 @@ if (isset($_POST['save'])) {
             $_POST['email_lab'],
             $_POST['telepon_lab'],
             $_POST['fb_link'],
+            $_POST['x_link'],
             $_POST['ig_link'],
+            $_POST['yt_link'],
             $_POST['linkedin'],
             $id
         ]);
         
-        // Redirect sukses
         echo "<script>alert('Pengaturan berhasil disimpan!'); window.location='pengaturan.php';</script>";
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();

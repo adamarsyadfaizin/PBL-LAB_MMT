@@ -5,20 +5,21 @@ function renderFooter() {
     // Ambil variabel global $site_config dari settings.php
     global $site_config; 
 
-    // Fallback data dummy jika config belum diload (untuk safety)
+    // Fallback data dummy jika config belum diload
     if (!isset($site_config)) {
         $site_config = [
             'alamat_lab' => 'Alamat Lab belum diatur di Admin Panel.',
             'email_lab'  => 'info@polinema.ac.id',
             'telepon_lab'=> '(0341) 404424',
             'fb_link'    => '#',
+            'x_link'     => '#', // Tambahkan default
             'ig_link'    => '#',
-            'linkedin'   => '#',
-            'yt_link'    => '#'
+            'yt_link'    => '#', // Tambahkan default
+            'linkedin'   => '#'
         ];
     }
 
-    // --- LOGIKA PATH OTOMATIS (Sama seperti Navbar) ---
+    // --- LOGIKA PATH OTOMATIS ---
     $path_prefix = "";
     if (file_exists("assets/css/style.css")) {
         $path_prefix = ""; // Root (beranda.php)
