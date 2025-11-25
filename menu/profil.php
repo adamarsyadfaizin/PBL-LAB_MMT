@@ -34,23 +34,18 @@ $members = $pdo->query("SELECT * FROM members ORDER BY id ASC")->fetchAll(PDO::F
     <style>
         .hero {
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), 
-                        url('../<?= htmlspecialchars($site_config['hero_image_path'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
-            
-            /* Tinggi khusus halaman profil */
+                        url('../<?= htmlspecialchars($site_config['about_hero_image'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
             height: 350px !important; 
         }
         .hero h1 { margin-bottom: 0; }
     </style>
 </head>
 <body id="top">
-
     <?php renderNavbar('profil'); ?>
-
     <main>
-
         <section class="hero">
             <div class="container">
-                <h1>Profil Laboratorium</h1>
+                <h1><?= htmlspecialchars($site_config['about_title'] ?? 'Profil Laboratorium') ?></h1>
             </div>
         </section>
 

@@ -114,23 +114,18 @@ function build_pagination($current, $total, $adj = 2) {
     <style>
         .hero {
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), 
-                        url('../<?= htmlspecialchars($site_config['hero_image_path'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
+                        url('../<?= htmlspecialchars($site_config['project_hero_image'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
             height: 300px !important; 
         }
         .hero h1 { margin-bottom: 0; }
     </style>
 </head>
 <body id="top">
-
-    <?php
-    require_once 'components/navbar.php';
-    renderNavbar('proyek');
-    ?>
-
+    <?php require_once 'components/navbar.php'; renderNavbar('proyek'); ?>
     <main>
         <section class="hero">
             <div class="container">
-                <h1>Katalog Proyek</h1>
+                <h1><?= htmlspecialchars($site_config['project_title'] ?? 'Katalog Proyek') ?></h1>
             </div>
         </section>
 

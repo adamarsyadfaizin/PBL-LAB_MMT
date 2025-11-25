@@ -55,18 +55,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'])) {
     <style>
         .hero {
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), 
-                        url('../<?= htmlspecialchars($site_config['hero_image_path'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
+                        url('../<?= htmlspecialchars($site_config['contact_hero_image'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
             height: 300px !important;
         }
         .hero h1 { margin-bottom: 0; }
     </style>
 </head>
 <body id="top">
-
     <?php renderNavbar('kontak'); ?>
-
     <main>
-        <section class="hero"><div class="container"><h1>Kontak Kami</h1></div></section>
+        <section class="hero">
+            <div class="container">
+                <h1><?= htmlspecialchars($site_config['contact_title'] ?? 'Kontak Kami') ?></h1>
+            </div>
+        </section>
 
         <div class="main-content-area">
             <div class="container">

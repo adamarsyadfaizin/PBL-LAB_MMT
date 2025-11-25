@@ -97,27 +97,24 @@ function build_pagination($current, $total, $adj = 2) {
     
     <link rel="stylesheet" href="assets/galeri/css/style-galeri.css?v=<?php echo time(); ?>">
     
-    <style>
+   <style>
         .hero {
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), 
-                        url('../<?= htmlspecialchars($site_config['hero_image_path'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
+                        url('../<?= htmlspecialchars($site_config['gallery_hero_image'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
             height: 300px !important;
         }
         .hero h1 { margin-bottom: 0; }
     </style>
 </head>
 <body id="top">
-
-    <?php
-    require_once 'components/navbar.php';
-    renderNavbar('galeri');
-    ?>
-
+    <?php require_once 'components/navbar.php'; renderNavbar('galeri'); ?>
     <main>
         <section class="hero">
             <div class="container">
-                <h1>Galeri Multimedia</h1>
-               
+                <h1><?= htmlspecialchars($site_config['gallery_title'] ?? 'Galeri Multimedia') ?></h1>
+                <p style="margin-top: 10px; font-size: 18px; opacity:0.9; animation:fadeInUp 1s ease-out 0.3s forwards;">
+                    Koleksi foto, video, dan animasi dari kegiatan laboratorium
+                </p>
             </div>
         </section>
 
