@@ -1,0 +1,17 @@
+ALTER TABLE project_members
+DROP CONSTRAINT fk_projects_members_member;
+
+ALTER TABLE project_tags
+DROP CONSTRAINT fk_pt_tag;
+
+ALTER TABLE project_tags
+DROP CONSTRAINT fk_pt_project;
+
+ALTER TABLE project_members
+DROP CONSTRAINT fk_projects_members_project;
+
+ALTER TABLE audit_logs 
+DROP CONSTRAINT fk_audit_logs_user;
+
+drop table audit_logs ;
+delete from feedback where nama_lengkap ='DIANCOK';
