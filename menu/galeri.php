@@ -112,9 +112,6 @@ function build_pagination($current, $total, $adj = 2) {
         <section class="hero">
             <div class="container">
                 <h1><?= htmlspecialchars($site_config['gallery_title'] ?? 'Galeri Multimedia') ?></h1>
-                <p style="margin-top: 10px; font-size: 18px; opacity:0.9; animation:fadeInUp 1s ease-out 0.3s forwards;">
-                    Koleksi foto, video, dan animasi dari kegiatan laboratorium
-                </p>
             </div>
         </section>
 
