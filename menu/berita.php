@@ -1,18 +1,28 @@
 <?php
 if (!isset($_SESSION)) session_start();
-require_once '../config/db.php';
+// PATH: Naik satu tingkat dari /menu/ ke root /config/
+require_once '../config/db.php'; // KONEKSI DATABASE ANDA
 require_once '../config/settings.php'; // CMS Setting
+
+// Components
+require_once 'components/navbar.php';
+require_once 'components/footer.php';
+require_once 'components/floating_profile.php';
+
+// Utilities
+$path_prefix = "../"; // Digunakan untuk navigasi ke root dari /menu/
+$cache_buster = time(); // Untuk refresh CSS/JS
 
 // ==========================================
 // 1. LOGIKA UTAMA (Filter, Search, Paging)
+// (Kode Logika Anda yang sudah ada)
 // ==========================================
 
 $search_term = $_GET['search'] ?? '';
 $filter_kategori = $_GET['kategori'] ?? 'semua';
 $filter_tahun = $_GET['tahun'] ?? 'semua';
 
-// --- PERUBAHAN DISINI: LIMIT JADI 3 ---
-$limit = 3; // Hanya tampilkan 3 berita di list bawah
+$limit = 3; 
 $page = isset($_GET['page']) && is_numeric($_GET['page']) && (int)$_GET['page'] > 0 ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
@@ -33,7 +43,8 @@ if ($filter_kategori != 'semua') {
 }
 
 if ($filter_tahun != 'semua') {
-    $sql_conditions .= " AND EXTRACT(YEAR FROM created_at) = ?";
+    // Menggunakan YEAR() untuk kompatibilitas yang lebih luas, tetapi EXTRACT(YEAR FROM created_at) juga benar
+    $sql_conditions .= " AND YEAR(created_at) = ?";
     $params[] = $filter_tahun;
 }
 
@@ -79,10 +90,10 @@ try {
 
 // Data Dropdown
 try {
-    $years_stmt = $pdo->query("SELECT DISTINCT EXTRACT(YEAR FROM created_at) as year FROM news WHERE status = 'published' ORDER BY year DESC");
+    $years_stmt = $pdo->query("SELECT DISTINCT YEAR(created_at) as year FROM news WHERE status = 'published' ORDER BY year DESC");
     $available_years = $years_stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    $cat_stmt = $pdo->query("SELECT DISTINCT category FROM news WHERE status = 'published' AND category IS NOT NULL AND category != ''");
+    $cat_stmt = $pdo->query("SELECT DISTINCT category FROM news WHERE status = 'published' AND category IS NOT NULL AND category != '' ORDER BY category ASC");
     $available_categories = $cat_stmt->fetchAll(PDO::FETCH_COLUMN);
 } catch (PDOException $e) {
     $available_years = [];
@@ -97,11 +108,13 @@ try {
     foreach ($rows as $r) {
         $d = $r['event_date'];
         if (!isset($events_by_date[$d])) $events_by_date[$d] = [];
-        $events_by_date[$d][] = ['title' => $r['title'], 'slug' => $r['slug'], 'summary' => $r['summary']];
+        // Pastikan link detail berita sudah benar
+        $events_by_date[$d][] = ['title' => $r['title'], 'slug' => $r['slug'], 'summary' => $r['summary'], 'link' => "menu-detail-berita/detail-berita.php?slug={$r['slug']}"]; 
     }
 } catch (PDOException $e) { $events_by_date = []; }
 
-$events_json = json_encode($events_by_date, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+// Encode untuk JavaScript. Menggunakan JSON_UNESCAPED_UNICODE untuk kompatibilitas.
+$events_json = json_encode($events_by_date, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE);
 
 // Helper Pagination
 function build_pagination($current, $total, $adj = 2) {
@@ -113,7 +126,7 @@ function build_pagination($current, $total, $adj = 2) {
     if ($start > 2) $pages[] = '...';
     for ($i = $start; $i <= $end; $i++) $pages[] = $i;
     if ($end < $total - 1) $pages[] = '...';
-    if ($total > 1) $pages[] = $total;
+    if ($total > 1 && $total != 1) $pages[] = $total;
     return array_unique($pages);
 }
 ?>
@@ -125,25 +138,100 @@ function build_pagination($current, $total, $adj = 2) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Berita & Kegiatan - Laboratorium MMT</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="assets/berita/css/style-berita.css">
+    
+    <link rel="stylesheet" href="components/navbar.css?v=<?= $cache_buster ?>"> 
+    <link rel="stylesheet" href="../assets/css/style.css?v=<?= $cache_buster ?>"> 
+    <link rel="stylesheet" href="assets/berita/css/style-berita.css?v=<?= $cache_buster ?>">
     
     <style>
+        /* Background untuk seluruh halaman dengan wallpaper.jpg */
+        body {
+            background: url('<?= $path_prefix ?>assets/images/wallpaper.jpg') center center/cover fixed no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        
+        /* Efek transparansi halus untuk area konten utama - LEBIH TRANSPARAN */
+        .main-content-area {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: relative;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Container untuk memastikan konten tetap readable */
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Hero section styling */
         .hero {
             background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)),
-                        url('../<?= htmlspecialchars($site_config['news_hero_image'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
-            height: 300px !important; 
+                        url('<?= $path_prefix ?><?= htmlspecialchars($site_config['news_hero_image'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
         }
-        .hero h1 { margin-bottom: 0; }
+        
+        /* Tambahan styling untuk card/content agar lebih transparan */
+        .primary-content, .sidebar {
+            border-radius: 12px;
+            padding: 15px;
+        }
+        
+        .widget, .facility-item, .search-filter-container {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        /* Event highlight lebih transparan */
+        .event-highlight {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        
+        /* Pagination controls transparan */
+        .pagination-controls {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        /* No results transparan */
+        .no-results {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 10px;
+            padding: 30px;
+        }
     </style>
 </head>
 <body id="top">
-    <?php require_once 'components/navbar.php'; renderNavbar('berita'); ?>
+    <?php 
+        // Memanggil renderNavbar dengan path prefix dan site config
+        renderNavbar('berita', $path_prefix, $site_config); 
+    ?>
+    
     <main>
         <section class="hero">
             <div class="container">
+                <div class="hero-breadcrumb">
+                    <a href="<?= $path_prefix ?>index.php">Beranda</a> <i class="fas fa-chevron-right"></i> 
+                    <span>Berita & Kegiatan</span>
+                </div>
                 <h1><?= htmlspecialchars($site_config['news_title'] ?? 'Berita & Kegiatan') ?></h1>
             </div>
         </section>
@@ -158,13 +246,14 @@ function build_pagination($current, $total, $adj = 2) {
                     ?>
                     <section class="event-highlight">
                         <div class="event-highlight-img">
-                            <img src="../<?= htmlspecialchars($hl_img) ?>" alt="<?= htmlspecialchars($event_highlight['title']) ?>">
+                            <img src="<?= $path_prefix ?><?= htmlspecialchars($hl_img) ?>" alt="<?= htmlspecialchars($event_highlight['title']) ?>">
                         </div>
                         <div class="event-highlight-content">
-                            <span class="event-tag">Terbaru</span>
+                            <span class="event-tag"><?= htmlspecialchars($event_highlight['category'] ?? 'Terbaru') ?></span>
                             <h2><?= htmlspecialchars($event_highlight['title']) ?></h2>
-                            <p class="event-date"><?= date('d F Y', strtotime($event_highlight['created_at'])) ?></p>
+                            <p class="event-date"><i class="fas fa-calendar-alt"></i> <?= date('d F Y', strtotime($event_highlight['created_at'])) ?></p>
                             <p><?= htmlspecialchars(substr($event_highlight['summary'], 0, 150)) ?>...</p>
+                            
                             <a href="menu-detail-berita/detail-berita.php?slug=<?= htmlspecialchars($event_highlight['slug']) ?>" class="btn">Baca Selengkapnya</a>
                         </div>
                     </section>
@@ -206,10 +295,15 @@ function build_pagination($current, $total, $adj = 2) {
 
                     <?php if (!empty($search_term) || $filter_kategori != 'semua' || $filter_tahun != 'semua'): ?>
                     <div class="search-results-info">
-                        Ditemukan <?= count($news_items) ?> berita. 
-                        <a href="berita.php" style="color:#fff; text-decoration:underline; margin-left:10px;">Reset Filter</a>
+                        Ditemukan **<?= $total_news ?>** berita. 
+                        <a href="berita.php">Reset Filter</a>
                     </div>
                     <?php endif; ?>
+                    
+                    <div class="section-separator">
+                        <span class="separator-line"></span>
+                        <i class="fas fa-newspaper separator-icon"></i> <span class="separator-line"></span>
+                    </div>
 
                     <?php if (count($news_items) > 0): ?>
                         <?php 
@@ -217,15 +311,22 @@ function build_pagination($current, $total, $adj = 2) {
                         foreach ($news_items as $item): 
                             $class = ($pos == 'left') ? 'image-left' : 'image-right';
                             $pos = ($pos == 'left') ? 'right' : 'left';
+                            // Menghapus '../' pada path cover_image yang disimpan di DB
                             $img_news = str_replace('../', '', $item['cover_image']);
                         ?>
                         <article class="facility-item <?= $class ?>">
                             <div class="facility-image">
-                                <img src="../<?= htmlspecialchars($img_news) ?>" alt="<?= htmlspecialchars($item['title']) ?>">
+                                <img src="<?= $path_prefix ?><?= htmlspecialchars($img_news) ?>" alt="<?= htmlspecialchars($item['title']) ?>">
                             </div>
                             <div class="facility-text">
                                 <h2><?= htmlspecialchars($item['title']) ?></h2>
-                                <span class="article-metadata"><i class="fas fa-calendar-alt"></i> <?= date('d M Y', strtotime($item['created_at'])) ?></span>
+                                <span class="article-metadata">
+                                    <i class="fas fa-calendar-alt"></i> <?= date('d M Y', strtotime($item['created_at'])) ?>
+                                    <?php if (!empty($item['category'])): ?>
+                                    <span class="metadata-separator">|</span>
+                                    <i class="fas fa-tag"></i> <span class="article-category"><?= htmlspecialchars($item['category']) ?></span>
+                                    <?php endif; ?>
+                                </span>
                                 <p><?= htmlspecialchars(substr($item['summary'], 0, 120)) ?>...</p>
                                 <a href="menu-detail-berita/detail-berita.php?slug=<?= htmlspecialchars($item['slug']) ?>" class="btn">Lihat Detail</a>
                             </div>
@@ -236,13 +337,16 @@ function build_pagination($current, $total, $adj = 2) {
                         <div class="pagination-controls">
                             <?php 
                             $q = $_GET; 
+                            unset($q['page'], $q['cal_month'], $q['cal_year']); 
                             $pages = build_pagination($page, $total_pages);
                             
+                            // Tombol Previous
                             if($page > 1) {
                                 $q['page'] = $page - 1;
                                 echo '<a class="btn-page" href="?'.http_build_query($q).'">&laquo;</a>';
                             }
 
+                            // Angka Halaman
                             foreach($pages as $p) {
                                 if($p === '...') {
                                     echo '<span class="page-ellipsis">...</span>';
@@ -253,6 +357,7 @@ function build_pagination($current, $total, $adj = 2) {
                                 }
                             }
 
+                            // Tombol Next
                             if($page < $total_pages) {
                                 $q['page'] = $page + 1;
                                 echo '<a class="btn-page" href="?'.http_build_query($q).'">&raquo;</a>';
@@ -264,6 +369,7 @@ function build_pagination($current, $total, $adj = 2) {
                     <?php else: ?>
                         <div class="no-results">
                             <h3>Tidak ada berita ditemukan.</h3>
+                            <p>Coba reset filter pencarian atau cek kembali kata kunci Anda.</p>
                             <a href="berita.php" class="btn">Lihat Semua</a>
                         </div>
                     <?php endif; ?>
@@ -274,27 +380,49 @@ function build_pagination($current, $total, $adj = 2) {
                         <h3 class="widget-title">Kalender Kegiatan</h3>
                         <?php
                             $cMonth = isset($_GET['cal_month']) ? (int)$_GET['cal_month'] : date('n');
-                            $cYear  = isset($_GET['cal_year']) ? (int)$_GET['cal_year'] : date('Y');
+                            $cYear = isset($_GET['cal_year']) ? (int)$_GET['cal_year'] : date('Y');
                             $prevMonth = $cMonth - 1; $prevYear = $cYear; if ($prevMonth < 1) { $prevMonth = 12; $prevYear--; }
                             $nextMonth = $cMonth + 1; $nextYear = $cYear; if ($nextMonth > 12) { $nextMonth = 1; $nextYear++; }
-                            function getCalUrl($m, $y) { $p = $_GET; $p['cal_month'] = $m; $p['cal_year'] = $y; return '?' . http_build_query($p); }
+                            
+                            function getCalUrl($m, $y) { 
+                                $p = $_GET; 
+                                unset($p['page']); 
+                                $p['cal_month'] = $m; 
+                                $p['cal_year'] = $y; 
+                                return '?' . http_build_query($p); 
+                            }
+                            
                             $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $cMonth, $cYear);
-                            $firstDay = date('N', strtotime("$cYear-$cMonth-01"));
+                            $firstDay = date('N', strtotime("$cYear-$cMonth-01")); 
                             $mNames = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-                            echo "<div style='display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding:0 10px;'>
-                                  <a href='".getCalUrl($prevMonth, $prevYear)."' style='text-decoration:none; font-weight:bold; color:#003b8e;'>&laquo;</a>
-                                  <span style='font-weight:bold; color:#003b8e;'>{$mNames[$cMonth]} $cYear</span>
-                                  <a href='".getCalUrl($nextMonth, $nextYear)."' style='text-decoration:none; font-weight:bold; color:#003b8e;'>&raquo;</a></div>";
-                            echo "<table class='calendar-table'><thead><tr><th>Sn</th><th>Sl</th><th>Rb</th><th>Km</th><th>Jm</th><th>Sb</th><th>Mg</th></tr></thead><tbody><tr>";
+                            
+                            echo "<div class='calendar-header'>
+                                    <a href='".getCalUrl($prevMonth, $prevYear)."' class='cal-nav-prev' id='calNavPrev'>&laquo;</a>
+                                    <span class='cal-current-month' id='calCurrentMonth'>{$mNames[$cMonth]} $cYear</span>
+                                    <a href='".getCalUrl($nextMonth, $nextYear)."' class='cal-nav-next' id='calNavNext'>&raquo;</a></div>";
+                            echo "<table class='calendar-table' id='calendarTable'><thead><tr><th>Sn</th><th>Sl</th><th>Rb</th><th>Km</th><th>Jm</th><th>Sb</th><th>Mg</th></tr></thead><tbody><tr>";
+                            
                             for ($i = 1; $i < $firstDay; $i++) echo "<td></td>";
+                            
                             for ($day = 1; $day <= $daysInMonth; $day++) {
                                 $dStr = sprintf('%04d-%02d-%02d', $cYear, $cMonth, $day);
                                 $cls = isset($events_by_date[$dStr]) ? 'event-day' : '';
-                                $tdStyle = ($dStr == date('Y-m-d')) ? "style='border:2px solid #ffc700; border-radius:50%; font-weight:bold;'" : "";
-                                echo "<td class='$cls' data-date='$dStr' $tdStyle>$day</td>";
+                                $today_class = ($dStr == date('Y-m-d')) ? "today-day" : ""; // Class untuk hari ini
+                                
+                                // Tambahkan event listener inline atau biarkan JS dari script-berita.js menangani event-day
+                                echo "<td class='$cls $today_class' data-date='$dStr'>$day</td>";
+                                
                                 if ((($day + $firstDay - 1) % 7) == 0) echo "</tr><tr>";
                             }
-                            echo "</tr></tbody></table>";
+                            
+                            if ((($daysInMonth + $firstDay - 1) % 7) != 0) {
+                                while(((($daysInMonth + $firstDay - 1) % 7) != 0) && (((($daysInMonth + $firstDay - 1) % 7) < 7))) {
+                                    echo "<td></td>";
+                                    $daysInMonth++;
+                                }
+                                echo "</tr>";
+                            }
+                            echo "</tbody></table>";
                         ?>
                     </div>
                     <div class="widget widget-news">
@@ -312,39 +440,53 @@ function build_pagination($current, $total, $adj = 2) {
             </div>
         </div>
     </main>
+    
+    <a href="#top" id="scrollTopBtn" class="scroll-top-btn">&uarr;</a>
 
-    <?php include 'components/floating_profile.php'; renderFloatingProfile(); require_once 'components/footer.php'; renderFooter(); ?>
+    <?php 
+        renderFloatingProfile(); 
+        // Memanggil renderFooter dengan path prefix dan site config
+        renderFooter($path_prefix, $site_config); 
+    ?>
 
-    <div id="modalBackdrop" class="modal-backdrop"><div class="modal"><button class="close-btn" id="modalClose">&times;</button><h3>Agenda <span id="modalDate"></span></h3><div id="modalContent"></div></div></div>
+    <div id="modalBackdrop" class="modal-backdrop">
+        <div class="modal">
+            <button class="close-btn" id="modalCloseBtn">&times;</button>
+            <h3 id="modalDateTitle">Agenda <span id="modalDate"></span></h3>
+            <div id="modalEventsList"></div> 
+        </div>
+    </div>
+
     <script>
+        // DATA EVENT DIDEFINISIKAN DI SINI UNTUK DIAKSES OLEH script-berita.js
+        // Menggunakan nama variabel eventsByDate agar konsisten dengan PHP Anda ($events_by_date)
         const eventsByDate = <?= $events_json ?>;
+        
+        // Kode inline untuk Modal Callbacks (Disederhanakan untuk memastikan tidak bentrok)
         const backdrop = document.getElementById('modalBackdrop');
-        const modalDateEl = document.getElementById('modalDate');
-        const modalContent = document.getElementById('modalContent');
-        const modalClose = document.getElementById('modalClose');
-        function openModalForDate(dateStr) {
-            const dateObj = new Date(dateStr);
-            modalDateEl.textContent = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-            modalContent.innerHTML = '';
-            const events = eventsByDate[dateStr] || [];
-            if (events.length === 0) modalContent.innerHTML = '<p style="text-align:center; color:#666;">Tidak ada kegiatan.</p>';
-            else {
-                events.forEach(ev => {
-                    modalContent.innerHTML += `<div class="event-item" style="margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;"><h4><a href="menu-detail-berita/detail-berita.php?slug=${ev.slug}" style="color:#003b8e;">${ev.title}</a></h4><p style="font-size:13px; color:#555;">${ev.summary || ''}</p></div>`;
-                });
-            }
-            backdrop.style.display = 'flex';
-        }
-        function closeModal() { backdrop.style.display = 'none'; }
-        document.addEventListener('click', function(ev) {
-            const td = ev.target.closest('td[data-date]');
-            if (td) openModalForDate(td.getAttribute('data-date'));
-            if (ev.target === backdrop) closeModal();
+        const modalDateEl = document.getElementById('modalDateTitle'); // ID diubah
+        const modalContent = document.getElementById('modalEventsList'); // ID diubah
+        const modalClose = document.getElementById('modalCloseBtn'); // ID diubah
+        
+        // Fungsi openModalForDate akan didefinisikan ulang di script-berita.js, 
+        // tapi kita pastikan elemen HTML yang diakses sudah benar.
+        
+        if(modalClose) modalClose.addEventListener('click', () => { backdrop.style.display = 'none'; });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') backdrop.style.display = 'none'; });
+        if (backdrop) backdrop.addEventListener('click', function(e) {
+             if (e.target === backdrop) backdrop.style.display = 'none';
         });
-        if(modalClose) modalClose.addEventListener('click', closeModal);
-        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+        
+        // Event listener pada TD kalender akan diatur sepenuhnya oleh script-berita.js
+        // Hapus kode DOMContentLoaded yang mengakses td.event-day di sini jika Anda menggunakan script-berita.js.
+        // Jika Anda TIDAK menggunakan script-berita.js, biarkan kode ini ada.
+        
+        // Untuk saat ini, kita biarkan kode inline modal yang Anda buat, dan script-berita.js akan menimpanya/melengkapinya.
+        
     </script>
-    <script src="../assets/js/navbar.js"></script>
-    <script src="assets/berita/js/script-berita.js"></script>
+    
+    <script src="<?= $path_prefix ?>assets/js/navbar.js?v=<?= $cache_buster ?>"></script>
+    <script src="<?= $path_prefix ?>assets/js/scrolltop.js?v=<?= $cache_buster ?>"></script>
+    <script src="assets/berita/js/script-berita.js?v=<?= $cache_buster ?>"></script>
 </body>
 </html>

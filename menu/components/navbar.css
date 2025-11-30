@@ -1,296 +1,372 @@
-/* === NAV SEARCH STYLES === */
-.nav-search {
+/*
+ * File: navbar.css
+ * Deskripsi: Styling untuk Navbar Oranye (Soft Gradient) - TATA LETAK FINAL
+ * Fokus: Memastikan pemisahan yang jelas antara Logo | Menu | Search | Login.
+ * CATATAN: Membutuhkan struktur HTML yang membagi konten menjadi: 
+ * .logo-area, .nav-right-group, dan .nav-login-area.
+ */
+
+/* ======================================= */
+/* 🍊 1. VARIABEL CSS (CUSTOM PROPERTIES) */
+/* ======================================= */
+:root {
+    /* --- COLOR PALETTE --- */
+    --color-primary: #f7931e;         /* Oranye Terang */
+    --color-secondary: #ffb347;       /* Peach Muda */
+    --color-dark: #333333;            /* Teks Gelap (Mudah Dibaca) */
+    --color-light: #ffffff;           /* Teks Putih */
+    --bg-gradient: linear-gradient(to right, #ff9800, #ffb347);
+    --bg-blur: rgba(255, 255, 255, 0.15); /* Transparansi ringan untuk hover */
+
+    /* --- LAYOUT & SHADOWS --- */
+    --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.18);
+    --transition-speed: 0.3s;        
+    --border-radius-pill: 40px;
+    
+    /* --- SPACING & SIZE --- */
+    --padding-vertical: 16px;        
+    --navbar-height: 72px;           
+    --container-max-width: 1300px;
+}
+
+/* 🧼 Global Reset */
+* {
+    box-sizing: border-box;
+    /* font-family: 'Poppins', sans-serif; */
+}
+
+/* ======================================= */
+/* 🌐 2. CONTAINER UTAMA (HEADER) */
+/* ======================================= */
+.site-header {
+    background: var(--bg-gradient);
+    box-shadow: var(--shadow-soft); 
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    padding: var(--padding-vertical) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5); 
+    height: var(--navbar-height); 
+}
+
+.site-header .container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 30px; 
+    
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%; 
+    
+    /* Jarak antar kelompok elemen (Logo | Navigasi Kanan) */
+    gap: 40px; 
+}
+
+/* ======================================= */
+/* 🖼️ 3. AREA LOGO */
+/* ======================================= */
+.logo-area a {
+    color: var(--color-dark); 
+    text-decoration: none;
     display: flex;
     align-items: center;
-    margin-left: 16px;
-    position: relative;
+    transition: all var(--transition-speed);
 }
+.logo-area a:hover {
+    color: var(--color-light); 
+}
+
+.logo-area img {
+    height: 40px; 
+    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.2));
+    margin-right: 10px;
+}
+
+.logo-area span {
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+    color: var(--color-dark); 
+}
+
+/* ======================================= */
+/* 🧭 4. NAVIGASI KANAN (MENU & SEARCH GROUP) */
+/* ======================================= */
+/* Kunci: Wadah untuk menu, search, dan login */
+.nav-right-group {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; /* Memastikan grup ini mengisi ruang sisa */
+    justify-content: flex-start; /* Menu/Search mulai tepat setelah logo */
+}
+
+/* --- Menu Navigasi Utama --- */
+.main-navigation ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.main-navigation a {
+    color: var(--color-dark);
+    text-decoration: none;
+    font-size: 1rem; 
+    font-weight: 600; 
+    padding: 8px 15px;
+    position: relative;
+    transition: all var(--transition-speed);
+    border-radius: var(--border-radius-pill);
+    text-transform: uppercase;
+}
+
+.main-navigation a:hover {
+    color: var(--color-light); 
+    background-color: var(--bg-blur); 
+    transform: translateY(-1px);
+}
+
+.main-navigation a[aria-current="page"] {
+    font-weight: 700;
+    color: var(--color-light);
+    background-color: var(--color-dark); 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* ======================================= */
+/* 🔍 5. FORM PENCARIAN (SEARCH) */
+/* ======================================= */
+.nav-search {
+    /* Jarak antara menu utama dan search bar */
+    margin-left: 35px; 
+}
+
 .nav-search-form {
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.7); 
+    border-radius: var(--border-radius-pill);
+    background-color: rgba(255, 255, 255, 0.95);
+    transition: all 0.3s;
     overflow: hidden;
-    height: 36px;
-    margin-top: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
 }
+
+.nav-search-form:focus-within {
+    border-color: var(--color-dark);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
 .nav-search-input {
-    border: none;
     background: transparent;
-    padding: 0 16px;
-    font-size: 14px;
-    font-family: 'Open Sans', sans-serif;
-    color: var(--color-white);
-    height: 100%;
-    width: 160px;
-    transition: width 0.3s ease;
-}
-.nav-search-input:focus {
-    width: 200px;
+    border: none;
+    padding: 9px 15px; 
+    font-size: 0.95rem;
+    color: var(--color-dark);
     outline: none;
+    width: 130px; 
 }
+
 .nav-search-input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
-    opacity: 1;
+    color: rgba(0, 0, 0, 0.4);
 }
+
 .nav-search-button {
+    background: var(--color-dark);
     border: none;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-light);
+    padding: 9px 12px;
     cursor: pointer;
-    height: 100%;
-    padding: 0 16px;
-    font-size: 16px;
-    transition: color 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 1rem;
+    transition: background-color 0.2s;
 }
+
 .nav-search-button:hover {
-    color: var(--color-white);
+    background-color: var(--color-primary); 
 }
 
-/* Dropdown hasil pencarian */
-.nav-search-results {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: calc(100% + 10px);
-    background: rgba(15,23,42,0.98);
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow: 0 14px 40px rgba(2,6,23,0.5);
-    z-index: 1200;
-    max-height: 340px;
-    overflow-y: auto;
-    display: none;
-    padding: 6px;
-    backdrop-filter: blur(8px);
+/* ======================================= */
+/* 👤 6. AREA LOGIN (TOMBOL KANAN) */
+/* ======================================= */
+.nav-login-area {
+    /* Kunci: Mendorong tombol ini ke paling kanan di dalam .nav-right-group */
+    margin-left: auto; 
 }
 
-/* Item hasil */
-.nav-search-results .result-item {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    padding: 10px;
+.btn-login-nav {
+    display: inline-block;
+    padding: 9px 25px; 
+    background-color: var(--color-dark); 
+    color: var(--color-light); 
+    border-radius: var(--border-radius-pill); 
+    font-weight: 700;
     text-decoration: none;
-    color: #e2e8f0;
-    border-radius: 8px;
-    transition: background 0.2s ease, transform 0.15s ease;
-}
-.nav-search-results .result-item:hover,
-.nav-search-results .result-item.active {
-    background: rgba(96,165,250,0.15);
-    transform: scale(1.02);
+    text-transform: uppercase;
+    transition: all 0.3s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.nav-search-results .result-thumb {
-    width: 60px;
-    height: 44px;
-    flex: 0 0 60px;
-    border-radius: 6px;
-    object-fit: cover;
-    background: #475569;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+.btn-login-nav:hover {
+    background-color: var(--color-primary);
+    transform: translateY(-1px); 
 }
 
-.nav-search-results .result-meta { font-size: 13px; line-height: 1.2; }
-.nav-search-results .result-type { font-weight: 700; font-size: 11px; color: #93c5fd; margin-bottom: 3px; text-transform: uppercase; }
-.nav-search-results .result-title { font-weight: 600; color: #f1f5f9; }
-
-.nav-search-results .result-empty {
-    padding: 14px;
-    color: #94a3b8;
-    text-align: center;
-    font-style: italic;
+/* ======================================= */
+/* 📱 7. TOGGLE MENU (Mobile) */
+/* ======================================= */
+.menu-toggle {
+    display: none; /* Sembunyikan di desktop */
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    position: relative;
+    /* Dibuat di luar .nav-right-group di HTML agar bisa di kanan logo */
 }
 
-/* Responsif */
-@media (max-width: 900px) {
-    .nav-search { margin-left: 12px; }
-    .nav-search-input { width: 140px; }
-    .nav-search-input:focus { width: 180px; }
-}
-@media (max-width: 768px) {
-    .nav-search { margin-left: 8px; }
-    .nav-search-input { width: 120px; font-size: 13px; padding: 0 12px; }
-    .nav-search-input:focus { width: 160px; }
-    .nav-search-button { padding: 0 12px; }
-}
-@media (max-width: 520px) {
-    .nav-search { margin-left: 6px; }
-    .nav-search-input { width: 100px; }
-    .nav-search-input:focus { width: 140px; }
-    .nav-search-results .result-thumb { width: 48px; height: 36px; }
-}
-
-.main-navigation .has-dropdown > a { padding-right: 14px; }
-.main-navigation .has-dropdown > a::before {
-    content: '\25BC';
-    font-size: 10px;
+.menu-toggle span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: var(--color-dark);
+    border-radius: 3px;
     position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    opacity: 0.7;
-    transition: transform 0.2s ease;
-}
-.main-navigation .has-dropdown:hover > a::before { transform: translateY(-50%) rotate(180deg); }
-
-/* ---- 3.1 Dropdown Menu (Desktop) ---- */
-.dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
     left: 0;
-    min-width: 230px;
-    background: var(--color-dropdown-bg);
-    border: 1px solid var(--color-dropdown-border);
-    box-shadow: 0 5px 10px rgba(0,0,0,0.08);
-    z-index: 1000;
-    border-radius: 0 0 6px 6px;
-    border-top: 3px solid var(--color-accent);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
-    transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+    transition: all 0.3s ease;
 }
-@media (min-width: 769px) {
-    .main-navigation .has-dropdown:hover > .dropdown-menu {
+
+.menu-toggle span:nth-child(1) { top: 4px; }
+.menu-toggle span:nth-child(2) { top: 13px; }
+.menu-toggle span:nth-child(3) { top: 22px; }
+
+.site-header.menu-open .menu-toggle span:nth-child(1) {
+    transform: rotate(45deg);
+    top: 13px;
+}
+.site-header.menu-open .menu-toggle span:nth-child(2) {
+    opacity: 0;
+}
+.site-header.menu-open .menu-toggle span:nth-child(3) {
+    transform: rotate(-45deg);
+    top: 13px;
+}
+
+/* ======================================= */
+/* 📐 8. MEDIA QUERIES (RESPONSIVE DESIGN) */
+/* ======================================= */
+
+/* --- Tablet / Desktop Kecil --- */
+@media (max-width: 992px) { 
+    .menu-toggle {
         display: block;
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
+        order: 3; /* Posisikan Toggle di paling kanan di mobile */
+        margin-left: 20px;
+    }
+    
+    .nav-right-group {
+        display: none; /* Sembunyikan seluruh grup di mobile default */
+    }
+    
+    /* Tampilkan elemen-elemen ini saat menu dibuka menggunakan JavaScript */
+    .site-header.menu-open .nav-right-group {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        
+        position: absolute;
+        top: var(--navbar-height);
+        left: 0;
+        width: 100%;
+        height: auto; /* Biarkan konten menentukan tinggi */
+        background: var(--bg-gradient); 
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+        z-index: 999;
+        padding: 10px 0 20px 0;
+    }
+    
+    /* Hilangkan margin auto yang mendorong ke kanan, biarkan jadi full width */
+    .nav-login-area {
+        margin-left: 0; 
+        padding: 10px 30px 0;
+    }
+    
+    /* --- Gaya Menu Mobile --- */
+    .main-navigation {
+        width: 100%;
+        order: 2; /* Posisikan menu di bawah search (diubah di sini) */
+    }
+    
+    .main-navigation ul {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+    }
+    .main-navigation li {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .main-navigation li:last-child {
+        border-bottom: none;
+    }
+    
+    .main-navigation a {
+        display: block;
+        padding: 12px 30px; 
+        border-radius: 0;
+        color: var(--color-dark); 
+        text-transform: none;
+    }
+    
+    .main-navigation a:hover,
+    .main-navigation a[aria-current="page"] {
+        color: var(--color-light) !important;
+        background-color: var(--color-dark) !important;
+        transform: none;
+    }
+    
+    /* --- Search di Mobile --- */
+    .nav-search {
+        order: 1; /* Posisikan search paling atas */
+        width: 100%;
+        margin: 0;
+        padding: 0 30px 15px 30px; /* Padding untuk jarak dari atas/bawah */
+    }
+    .nav-search-form {
+        width: 100%;
+    }
+    .nav-search-input {
+        width: 100%;
+        flex-grow: 1;
+    }
+    
+    /* Tombol Login di Mobile (Diubah menjadi Link Penuh) */
+    .btn-login-nav {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 12px 25px;
+        border-radius: var(--border-radius-pill); 
+        background-color: var(--color-dark);
+        color: var(--color-light);
     }
 }
-/* PROFILE CIRCLE */
-.nav-profile {
-    position: relative;
-}
 
-.profile-circle {
-    width: 38px;
-    height: 38px;
-    background: #007bff;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 17px;
-}
-
-/* DROPDOWN */
-.profile-dropdown {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 48px;
-    background: white;
-    border: 1px solid #ddd;
-    width: 190px;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 999;
-}
-
-.nav-profile:hover .profile-dropdown {
-    display: block;
-}
-
-.profile-info {
-    padding: 12px 15px;
-}
-
-.profile-item {
-    display: block;
-    padding: 10px 15px;
-    text-decoration: none;
-    color: #333;
-}
-
-.profile-item:hover {
-    background: #f5f5f5;
-}
-/* === FIX NAVBAR ALIGNMENT === */
-.navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-/* === FIX SEARCH BAR BIAR GA KETINDIH === */
-.search-bar {
-    flex: 1;
-    max-width: 400px;
-    margin-right: 20px;
-}
-
-/* === FIX PROFILE SECTION (avatar + username) === */
-.profile-section {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Avatar container */
-.avatar-wrapper {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Avatar image */
-.avatar-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* Username text */
-.username {
-    display: flex;
-    align-items: center;
-    font-weight: 600;
-}
-
-/* === DROPDOWN FIX === */
-.dropdown {
-    position: relative;
-}
-
-.dropdown-menu {
-    position: absolute;
-    right: 0;
-    top: 45px;
-    min-width: 150px;
-    background: white;
-    border-radius: 8px;
-    padding: 8px 0;
-    display: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-/* Show dropdown */
-.dropdown:hover .dropdown-menu {
-    display: block;
-}
-
-/* Dropdown items */
-.dropdown-menu a {
-    display: block;
-    padding: 10px 15px;
-    color: #333;
-}
-
-.dropdown-menu a:hover {
-    background: #f5f5f5;
+/* Responsif untuk tampilan yang lebih kecil dari 480px */
+@media (max-width: 480px) {
+    .site-header .container {
+        padding: 0 15px;
+    }
+    .logo-area img {
+        height: 35px;
+    }
+    .logo-area span {
+        font-size: 1.1rem;
+    }
+    .nav-search {
+        padding: 0 15px 15px 15px;
+    }
+    .nav-login-area {
+        padding: 10px 15px 0;
+    }
 }

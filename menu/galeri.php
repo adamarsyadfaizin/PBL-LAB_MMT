@@ -1,7 +1,17 @@
 <?php
 if (!isset($_SESSION)) session_start();
-require_once '../config/db.php';
+// PATH: Naik satu tingkat dari /menu/ ke root /config/
+require_once '../config/db.php'; // KONEKSI DATABASE
 require_once '../config/settings.php'; // CMS Setting
+
+// Components
+require_once 'components/navbar.php';
+require_once 'components/footer.php';
+require_once 'components/floating_profile.php';
+
+// Utilities
+$path_prefix = "../"; // Digunakan untuk navigasi dari /menu/ ke root /
+$cache_buster = time(); // Untuk refresh CSS/JS
 
 // --- LOGIKA FILTER & PAGINATION ---
 $limit = 6; 
@@ -39,20 +49,34 @@ if ($filter_tahun != 'semua') {
 }
 
 // Hitung Total Data
-$sql_count = "SELECT COUNT(*) FROM media_assets $sql_conditions";
-$stmt_count = $pdo->prepare($sql_count);
-$stmt_count->execute($params);
-$total_items = $stmt_count->fetchColumn();
-$total_pages = ceil($total_items / $limit);
+try {
+    $sql_count = "SELECT COUNT(*) FROM media_assets $sql_conditions";
+    $stmt_count = $pdo->prepare($sql_count);
+    $stmt_count->execute($params);
+    $total_items = $stmt_count->fetchColumn();
+} catch (PDOException $e) {
+    $total_items = 0;
+}
+$total_pages = $total_items > 0 ? ceil($total_items / $limit) : 1;
 
 // Query Final
-$sql = "SELECT * FROM media_assets $sql_conditions ORDER BY created_at DESC LIMIT ? OFFSET ?";
-$params[] = $limit;
-$params[] = $offset;
+if ($page > $total_pages) {
+    $page = $total_pages;
+    $offset = ($page - 1) * $limit;
+}
 
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$media_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+try {
+    $params_fetch = $params;
+    $params_fetch[] = $limit;
+    $params_fetch[] = $offset;
+
+    $sql = "SELECT * FROM media_assets $sql_conditions ORDER BY created_at DESC LIMIT ? OFFSET ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params_fetch);
+    $media_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $media_items = [];
+}
 
 // Data Dropdown
 try {
@@ -93,24 +117,91 @@ function build_pagination($current, $total, $adj = 2) {
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="components/navbar.css?v=<?= $cache_buster ?>"> 
+    <link rel="stylesheet" href="<?= $path_prefix ?>assets/css/style.css?v=<?= $cache_buster ?>"> 
+    <link rel="stylesheet" href="assets/galeri/css/style-galeri.css?v=<?= $cache_buster ?>"> 
     
-    <link rel="stylesheet" href="assets/galeri/css/style-galeri.css?v=<?php echo time(); ?>">
-    
-   <style>
-        .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), 
-                        url('../<?= htmlspecialchars($site_config['gallery_hero_image'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
-            height: 300px !important;
+    <style>
+        /* Background untuk seluruh halaman dengan wallpaper.jpg */
+        body {
+            background: url('<?= $path_prefix ?>assets/images/wallpaper.jpg') center center/cover fixed no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
         }
-        .hero h1 { margin-bottom: 0; }
+        
+        /* Efek transparansi halus untuk area konten utama - LEBIH TRANSPARAN */
+        .main-content-area {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: relative;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Container untuk memastikan konten tetap readable */
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Hero section styling */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)),
+                        url('<?= $path_prefix ?><?= htmlspecialchars($site_config['gallery_hero_image'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
+        }
+        
+        /* Tambahan styling untuk card/content agar lebih transparan */
+        .primary-content, .sidebar {
+            border-radius: 12px;
+            padding: 15px;
+        }
+        
+        .search-filter-container, .gallery-grid-main, .pagination-controls, .no-results {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        /* Gallery item styling */
+        .gallery-item {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        /* Search results info */
+        .search-results-info {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body id="top">
-    <?php require_once 'components/navbar.php'; renderNavbar('galeri'); ?>
+    <?php renderNavbar('galeri', $path_prefix, $site_config); ?>
+    
     <main>
         <section class="hero">
             <div class="container">
+                <div class="hero-breadcrumb">
+                    <a href="<?= $path_prefix ?>index.php">Beranda</a> <i class="fas fa-chevron-right"></i> 
+                    <span>Galeri Multimedia</span>
+                </div>
                 <h1><?= htmlspecialchars($site_config['gallery_title'] ?? 'Galeri Multimedia') ?></h1>
             </div>
         </section>
@@ -164,8 +255,8 @@ function build_pagination($current, $total, $adj = 2) {
 
                 <?php if (!empty($search_term) || $filter_jenis != 'semua' || $filter_acara != 'semua' || $filter_tahun != 'semua'): ?>
                 <div class="search-results-info">
-                    Menampilkan <?= $total_items ?> media.
-                    <a href="galeri.php" style="color:var(--color-accent); font-weight:bold; margin-left:10px;">Reset Filter</a>
+                    Menampilkan **<?= $total_items ?>** media.
+                    <a href="galeri.php" style="color:var(--color-primary); font-weight:bold; margin-left:10px;">Reset Filter</a>
                 </div>
                 <?php endif; ?>
 
@@ -177,7 +268,7 @@ function build_pagination($current, $total, $adj = 2) {
                         
                         // Fix path gambar
                         $is_link = filter_var($item['url'], FILTER_VALIDATE_URL);
-                        $img_src = $is_link ? $item['url'] : "../" . str_replace('../', '', $item['url']);
+                        $img_src = $is_link ? $item['url'] : $path_prefix . str_replace('../', '', $item['url']);
                     ?>
                     <a href="menu-detail-galeri/galeri-detail.php?id=<?= $item['id'] ?>" class="gallery-item">
                         <div class="image-container">
@@ -199,6 +290,7 @@ function build_pagination($current, $total, $adj = 2) {
                 <div class="pagination-controls">
                     <?php 
                     $qs = $_GET;
+                    unset($qs['page']); 
                     $pages_show = build_pagination($page, $total_pages);
 
                     if ($page > 1) {
@@ -225,9 +317,10 @@ function build_pagination($current, $total, $adj = 2) {
                 <?php endif; ?>
 
                 <?php else: ?>
-                <div class="no-results" style="text-align:center; padding:50px; background:#f9f9f9; border-radius:8px;">
+                <div class="no-results">
                     <h3>Tidak ada media ditemukan.</h3>
-                    <a href="galeri.php" class="btn" style="margin-top:10px;">Lihat Semua</a>
+                    <p>Coba reset filter pencarian atau cek kembali kata kunci Anda.</p>
+                    <a href="galeri.php" class="btn">Lihat Semua</a>
                 </div>
                 <?php endif; ?>
                 
@@ -236,16 +329,15 @@ function build_pagination($current, $total, $adj = 2) {
     </main>
 
     <?php
-    include 'components/floating_profile.php'; 
     renderFloatingProfile();
-    require_once 'components/footer.php';
-    renderFooter();
+    renderFooter($path_prefix, $site_config);
     ?>
 
     <a href="#top" id="scrollTopBtn" class="scroll-top-btn" aria-label="Kembali ke atas">&uarr;</a>
 
-    <script src="../assets/js/navbar.js"></script>
-    <script src="assets/galeri/js/script-galeri.js"></script>
+    <script src="<?= $path_prefix ?>assets/js/navbar.js?v=<?= $cache_buster ?>"></script>
+    <script src="<?= $path_prefix ?>assets/js/scrolltop.js?v=<?= $cache_buster ?>"></script>
+    <script src="assets/galeri/js/script-galeri.js?v=<?= $cache_buster ?>"></script>
 
 </body>
 </html>

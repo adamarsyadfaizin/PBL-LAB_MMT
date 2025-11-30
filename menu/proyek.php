@@ -1,7 +1,17 @@
 <?php
 if (!isset($_SESSION)) session_start();
+// PATH: Naik satu tingkat dari /menu/ ke root /config/
 require_once '../config/db.php';
 require_once '../config/settings.php'; // CMS Setting
+
+// Include components (Agar fungsi render Navbar/Footer/Profile tersedia)
+require_once 'components/navbar.php';
+require_once 'components/footer.php';
+include 'components/floating_profile.php';
+
+// Utilities
+$path_prefix = "../"; // Digunakan untuk navigasi dari /menu/ ke root /
+$cache_buster = time(); // Untuk refresh CSS/JS
 
 // --- PENGATURAN HALAMAN ---
 $limit = 6; // Tampilkan 6 proyek per halaman (agar pas 2 baris x 3 kolom)
@@ -16,6 +26,7 @@ $year = $_GET['tahun'] ?? 'semua';
 $sort = $_GET['sort'] ?? 'terbaru';
 
 // --- QUERY BUILDER ---
+// Memastikan hanya status published/1 yang diambil
 $sql_base = "FROM projects p
              LEFT JOIN categories c ON p.category_id = c.id
              LEFT JOIN project_tags pt ON p.id = pt.project_id
@@ -36,7 +47,8 @@ if ($category_slug != 'semua') {
 }
 
 if ($tech_slug != 'semua') {
-    $sql_base .= " AND t.slug = ?";
+    // Memastikan tag yang difilter adalah tag yang benar
+    $sql_base .= " AND EXISTS (SELECT 1 FROM project_tags pt_inner JOIN tags t_inner ON pt_inner.tag_id = t_inner.id WHERE pt_inner.project_id = p.id AND t_inner.slug = ?)";
     $params[] = $tech_slug;
 }
 
@@ -45,14 +57,18 @@ if ($year != 'semua') {
     $params[] = (int)$year;
 }
 
-$sql_base .= " GROUP BY p.id";
+$sql_base .= " GROUP BY p.id"; // Penting untuk menghindari duplikasi saat join tags
 
 // --- HITUNG TOTAL DATA ---
-$sql_count = "SELECT COUNT(DISTINCT p.id) " . $sql_base;
-$stmt_count = $pdo->prepare($sql_count);
-$stmt_count->execute($params);
-$total_projects = $stmt_count->fetchColumn();
-$total_pages = ceil($total_projects / $limit);
+try {
+    $sql_count = "SELECT COUNT(DISTINCT p.id) " . $sql_base;
+    $stmt_count = $pdo->prepare($sql_count);
+    $stmt_count->execute($params);
+    $total_projects = $stmt_count->fetchColumn();
+} catch (PDOException $e) {
+    $total_projects = 0;
+}
+$total_pages = $total_projects > 0 ? ceil($total_projects / $limit) : 1;
 
 // Sorting
 $order_by = " ORDER BY p.created_at DESC";
@@ -61,18 +77,22 @@ if ($sort == 'a-z') {
 }
 
 // --- AMBIL DATA ---
-$sql_final = "SELECT p.id, p.title, p.slug, p.summary, p.cover_image, p.demo_url
-              " . $sql_base . 
-              $order_by . 
-              " LIMIT ? OFFSET ?";
+try {
+    $sql_final = "SELECT p.id, p.title, p.slug, p.summary, p.cover_image, p.demo_url
+                  " . $sql_base . 
+                  $order_by . 
+                  " LIMIT ? OFFSET ?";
 
-$params_final = $params;
-$params_final[] = $limit;
-$params_final[] = $offset;
+    $params_final = $params;
+    $params_final[] = $limit;
+    $params_final[] = $offset;
 
-$stmt_projects = $pdo->prepare($sql_final);
-$stmt_projects->execute($params_final);
-$projects = $stmt_projects->fetchAll(PDO::FETCH_ASSOC);
+    $stmt_projects = $pdo->prepare($sql_final);
+    $stmt_projects->execute($params_final);
+    $projects = $stmt_projects->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $projects = [];
+}
 
 // Data Dropdown
 try {
@@ -83,7 +103,7 @@ try {
     $categories = []; $tags = []; $years = [];
 }
 
-// Helper Pagination
+// Helper Pagination (sama seperti file sebelumnya)
 function build_pagination($current, $total, $adj = 2) {
     $pages = [];
     if ($total <= 1) return [1];
@@ -108,23 +128,92 @@ function build_pagination($current, $total, $adj = 2) {
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="assets/proyek/css/style-proyek.css">
+    <link rel="stylesheet" href="components/navbar.css?v=<?= $cache_buster ?>">
+    <link rel="stylesheet" href="<?= $path_prefix ?>assets/css/style.css?v=<?= $cache_buster ?>">
+    <link rel="stylesheet" href="assets/proyek/css/style-proyek.css?v=<?= $cache_buster ?>">
     
     <style>
-        .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), 
-                        url('../<?= htmlspecialchars($site_config['project_hero_image'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
-            height: 300px !important; 
+        /* Background untuk seluruh halaman dengan wallpaper.jpg */
+        body {
+            background: url('<?= $path_prefix ?>assets/images/wallpaper.jpg') center center/cover fixed no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
         }
-        .hero h1 { margin-bottom: 0; }
+        
+        /* Efek transparansi halus untuk area konten utama - LEBIH TRANSPARAN */
+        .main-content-area {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: relative;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Container untuk memastikan konten tetap readable */
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Hero section styling */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)),
+                        url('<?= $path_prefix ?><?= htmlspecialchars($site_config['project_hero_image'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
+        }
+        
+        /* Tambahan styling untuk card/content agar lebih transparan */
+        .project-filter-bar, .project-grid, .pagination-controls, .no-results {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        /* Project card styling */
+        .project-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .project-card:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        /* Search results info */
+        .search-results-info {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        /* Tag badges styling */
+        .project-card-tags .tag-badge {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
     </style>
 </head>
 <body id="top">
-    <?php require_once 'components/navbar.php'; renderNavbar('proyek'); ?>
+    <?php renderNavbar('proyek', $path_prefix, $site_config); ?>
     <main>
         <section class="hero">
             <div class="container">
+                <div class="hero-breadcrumb">
+                    <a href="<?= $path_prefix ?>index.php">Beranda</a> <i class="fas fa-chevron-right"></i> 
+                    <span>Katalog Proyek</span>
+                </div>
                 <h1><?= htmlspecialchars($site_config['project_title'] ?? 'Katalog Proyek') ?></h1>
             </div>
         </section>
@@ -170,11 +259,21 @@ function build_pagination($current, $total, $adj = 2) {
                             <?php endforeach; ?>
                         </select>
                     </div>
+                    <?php if (isset($_GET['sort'])): ?>
+                    <input type="hidden" name="sort" value="<?= htmlspecialchars($sort) ?>">
+                    <?php endif; ?>
                     <div class="filter-group">
                         <label>&nbsp;</label>
-                        <button type="submit" class="btn" style="width:100%; height:42px; padding:0;">Filter</button>
+                        <button type="submit" class="btn" style="width:100%; height:42px; padding:0;"><i class="fas fa-filter"></i> Filter</button>
                     </div>
                 </form>
+
+                <div class="search-results-info">
+                    Menampilkan **<?= $total_projects ?>** proyek. 
+                    <?php if (!empty($search_term) || $category_slug != 'semua' || $tech_slug != 'semua' || $year != 'semua'): ?>
+                    <a href="proyek.php" style="color:var(--color-primary); font-weight:bold; margin-left:10px;">Reset Filter</a>
+                    <?php endif; ?>
+                </div>
 
                 <div class="project-grid">
                     <?php
@@ -183,14 +282,21 @@ function build_pagination($current, $total, $adj = 2) {
                         $stmt_tags = $pdo->prepare($sql_tags);
 
                         foreach ($projects as $project):
+                            // Ambil tags untuk setiap proyek
                             $stmt_tags->execute([ $project['id'] ]);
                             $tags_list = $stmt_tags->fetchAll(PDO::FETCH_ASSOC);
-                            $img_proyek = str_replace('../', '', $project['cover_image']);
+                            
+                            // Fix path gambar proyek
+                            $img_proyek_raw = $project['cover_image'] ?? 'assets/images/default.jpg';
+                            $img_proyek = $path_prefix . str_replace('../', '', $img_proyek_raw);
+                            
+                            // Tentukan link detail proyek
+                            $detail_link = "menu-proyek-detail/detail-proyek.php?slug=" . htmlspecialchars($project['slug']);
                             ?>
                             
-                            <a href="menu-proyek-detail/detail-proyek.php?slug=<?= htmlspecialchars($project['slug']) ?>" class="project-card">
+                            <a href="<?= $detail_link ?>" class="project-card">
                                 <div class="project-card-thumbnail">
-                                    <img src="../<?= htmlspecialchars($img_proyek) ?>" alt="<?= htmlspecialchars($project['title']) ?>">
+                                    <img src="<?= htmlspecialchars($img_proyek) ?>" alt="<?= htmlspecialchars($project['title']) ?>">
                                 </div>
                                 <div class="project-card-content">
                                     <h4><?= htmlspecialchars($project['title']) ?></h4>
@@ -206,10 +312,11 @@ function build_pagination($current, $total, $adj = 2) {
                         <?php 
                         endforeach;
                     else:
-                        echo "<div class='no-results' style='grid-column: 1/-1; text-align:center; padding:40px;'>
-                                <h3>Tidak ada proyek yang ditemukan.</h3>
-                                <a href='proyek.php' class='btn' style='margin-top:10px;'>Lihat Semua</a>
-                              </div>";
+                        echo "<div class='no-results'>
+                                    <h3>Tidak ada proyek yang ditemukan.</h3>
+                                    <p>Coba reset filter pencarian atau cek kembali kata kunci Anda.</p>
+                                    <a href='proyek.php' class='btn'>Lihat Semua</a>
+                                </div>";
                     endif; 
                     ?>
                 </div>
@@ -218,6 +325,7 @@ function build_pagination($current, $total, $adj = 2) {
                 <div class="pagination-controls">
                     <?php 
                     $qs = $_GET; 
+                    unset($qs['page']); // Hapus parameter page sebelumnya agar tidak duplikat
                     $pages_show = build_pagination($page, $total_pages);
 
                     // Prev
@@ -252,16 +360,15 @@ function build_pagination($current, $total, $adj = 2) {
     </main>
 
     <?php
-    include 'components/floating_profile.php'; 
     renderFloatingProfile();
-    require_once 'components/footer.php';
-    renderFooter();
+    renderFooter($path_prefix, $site_config);
     ?>
 
     <a href="#top" id="scrollTopBtn" class="scroll-top-btn" aria-label="Kembali ke atas">&uarr;</a>
 
-    <script src="../assets/js/navbar.js"></script>
-    <script src="assets/proyek/js/script-proyek.js"></script>
+    <script src="<?= $path_prefix ?>assets/js/navbar.js?v=<?= $cache_buster ?>"></script>
+    <script src="<?= $path_prefix ?>assets/js/scrolltop.js?v=<?= $cache_buster ?>"></script>
+    <script src="assets/proyek/js/script-proyek.js?v=<?= $cache_buster ?>"></script>
 
 </body>
 </html>
