@@ -43,7 +43,23 @@ $cache_buster = time();
             background-attachment: fixed;
             min-height: 100vh;
         }
-        
+        /* ============================================
+   FIX FOOTER COLOR FOR HOMEPAGE
+   ============================================ */
+
+/* Footer background */
+.site-footer,
+body > footer,
+footer.site-footer {
+    background: #FE7927 !important;
+}
+
+/* Social icons in footer hover */
+.site-footer .social-links-footer a:hover {
+    background: #ffffff !important;
+    border-color: #ffffff !important;
+    color: #FE7927 !important;
+}
         /* Hero section styling */
         .hero {
             background:
@@ -174,6 +190,7 @@ $cache_buster = time();
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
+        
     </style>
 </head>
 <body id="top">
