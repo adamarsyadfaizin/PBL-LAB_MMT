@@ -35,7 +35,7 @@ function renderNavbar($activePage = 'beranda') {
             <div class="logo-area">
                 <a href="' . $path_prefix . 'beranda.php" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
                     <img src="' . htmlspecialchars($logo_src) . '" alt="Logo Laboratorium" style="height: 45px; width: auto;">
-                    <span style="font-weight: 700; font-size: 18px; color: #fff; letter-spacing: 0.5px;">LAB MMT</span>
+                    <span style="font-weight: 700; font-size: 18px; color: #fff; letter-spacing: 0.5px;"> </span>
                 </a>
             </div>
 

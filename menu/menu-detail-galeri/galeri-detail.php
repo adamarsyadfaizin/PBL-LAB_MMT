@@ -35,6 +35,78 @@ if (!$media) {
     die("Media tidak ditemukan atau telah dihapus.");
 }
 
+// --- VARIABEL KOMENTAR ---
+$comment_success = false;
+$comment_error = '';
+$comments = [];
+
+// --- PROSES TAMBAH KOMENTAR ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_comment'])) {
+    // Cek apakah user sudah login
+    if (!isset($_SESSION['user_id'])) {
+        $comment_error = "Anda harus login terlebih dahulu untuk memberikan komentar.";
+    } else {
+        // Ambil data dari form
+        $rating = !empty($_POST['rating']) ? (int)$_POST['rating'] : NULL;
+        $content = trim($_POST['content'] ?? '');
+        $author_name = $_SESSION['user_name'] ?? '';
+        $author_email = $_SESSION['user_email'] ?? '';
+        
+        // Validasi
+        if (empty($content)) {
+            $comment_error = "Komentar tidak boleh kosong.";
+        } elseif (strlen($content) < 5) {
+            $comment_error = "Komentar terlalu pendek.";
+        } else {
+            // Simpan komentar ke database
+            $stmt = $pdo->prepare("INSERT INTO comments 
+                (entity_type, entity_id, author_name, author_email, rating, content, status, created_at, updated_at) 
+                VALUES (?, ?, ?, ?, ?, ?, 'approved', NOW(), NOW())");
+            
+            try {
+                $stmt->execute([
+                    'media', // entity_type untuk media_assets
+                    $media['id'], // entity_id (media_assets id)
+                    $author_name,
+                    $author_email,
+                    $rating,
+                    $content
+                ]);
+                
+                $comment_success = true;
+                $_POST = []; // Reset form
+            } catch (PDOException $e) {
+                $comment_error = "Terjadi kesalahan saat menyimpan komentar: " . $e->getMessage();
+            }
+        }
+    }
+}
+
+// --- AMBIL KOMENTAR YANG SUDAH ADA ---
+$stmt = $pdo->prepare("SELECT * FROM comments 
+    WHERE entity_type = 'media' 
+    AND entity_id = ? 
+    AND status = 'approved'
+    ORDER BY created_at DESC");
+$stmt->execute([$media['id']]);
+$comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Hitung rata-rata rating
+$avg_rating = 0;
+if (count($comments) > 0) {
+    $total_rating = 0;
+    $rated_comments = 0;
+    foreach ($comments as $comment) {
+        if ($comment['rating'] !== NULL && $comment['rating'] > 0) {
+            $total_rating += $comment['rating'];
+            $rated_comments++;
+        }
+    }
+    if ($rated_comments > 0) {
+        $avg_rating = round($total_rating / $rated_comments, 1);
+    }
+}
+
 // Fix Path Gambar/Video
 $is_link = filter_var($media['url'], FILTER_VALIDATE_URL);
 // Tambahkan $root_prefix (../../) agar mundur 2 langkah ke root
@@ -252,12 +324,208 @@ renderFloatingProfile();
             transform: translateY(-2px);
         }
         
+        /* --- STYLE UNTUK KOMENTAR --- */
+        .comments-section {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 30px;
+            margin-top: 40px;
+        }
+        
+        .comments-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .rating-summary {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .average-rating {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f39c12;
+        }
+        
+        .star-rating {
+            color: #f39c12;
+            font-size: 18px;
+        }
+        
+        .comment-form {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .rating-input {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .rating-input input[type="radio"] {
+            display: none;
+        }
+        
+        .rating-input label {
+            font-size: 24px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .rating-input label:hover,
+        .rating-input label:hover ~ label,
+        .rating-input input:checked ~ label {
+            color: #f39c12;
+        }
+        
+        .rating-input input:checked + label {
+            color: #f39c12;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .login-prompt {
+            background: rgba(255, 243, 205, 0.9);
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .login-prompt a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-prompt a:hover {
+            text-decoration: underline;
+        }
+        
+        .comment-list {
+            margin-top: 30px;
+        }
+        
+        .comment-item {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .comment-author {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .comment-date {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .comment-rating {
+            color: #f39c12;
+            margin-bottom: 10px;
+        }
+        
+        .comment-content {
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: rgba(212, 237, 218, 0.9);
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
+        
+        .alert-error {
+            background: rgba(248, 215, 218, 0.9);
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+        
         @media (max-width: 768px) {
             .hero { height: 300px; }
             .hero h1 { font-size: 24px; }
             .media-content iframe { min-height: 300px; }
             .article-meta-detail { flex-direction: column; align-items: flex-start; }
             .social-share { margin-top: 15px; }
+            .comments-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
         }
     </style>
 </head>
@@ -324,6 +592,103 @@ renderFloatingProfile();
                     </div>
                     <?php endif; ?>
 
+                    <!-- SECTION KOMENTAR -->
+                    <section class="comments-section">
+                        <div class="comments-header">
+                            <h2>Komentar (<?= count($comments) ?>)</h2>
+                            <?php if (count($comments) > 0 && $avg_rating > 0): ?>
+                            <div class="rating-summary">
+                                <span class="average-rating"><?= $avg_rating ?></span>
+                                <div class="star-rating">
+                                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                                        <i class="fas fa-star<?= $i <= $avg_rating ? '' : '-o' ?>"></i>
+                                    <?php endfor; ?>
+                                </div>
+                                <span>(<?= count($comments) ?> ulasan)</span>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <!-- FORM KOMENTAR -->
+                        <div class="comment-form">
+                            <h3>Tambahkan Komentar</h3>
+                            
+                            <?php if ($comment_success): ?>
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle"></i> Komentar Anda berhasil dikirim dan akan ditampilkan setelah disetujui.
+                                </div>
+                            <?php endif; ?>
+                            
+                            <?php if ($comment_error): ?>
+                                <div class="alert alert-error">
+                                    <i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($comment_error) ?>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <?php if (!isset($_SESSION['user_id'])): ?>
+                                <div class="login-prompt">
+                                    <p><i class="fas fa-info-circle"></i> Anda harus <a href="<?= $root_prefix ?>login.php">login</a> terlebih dahulu untuk memberikan komentar.</p>
+                                </div>
+                            <?php else: ?>
+                                <form method="POST" action="">
+                                    <div class="form-group">
+                                        <label>Rating (opsional):</label>
+                                        <div class="rating-input">
+                                            <?php for ($i = 5; $i >= 1; $i--): ?>
+                                                <input type="radio" id="star<?= $i ?>" name="rating" value="<?= $i ?>" <?= ($_POST['rating'] ?? 0) == $i ? 'checked' : '' ?>>
+                                                <label for="star<?= $i ?>"><i class="fas fa-star"></i></label>
+                                            <?php endfor; ?>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="content">Komentar Anda:</label>
+                                        <textarea name="content" id="content" placeholder="Tulis komentar Anda tentang media ini..." required><?= htmlspecialchars($_POST['content'] ?? '') ?></textarea>
+                                    </div>
+                                    
+                                    <button type="submit" name="submit_comment" class="btn-submit">
+                                        <i class="fas fa-paper-plane"></i> Kirim Komentar
+                                    </button>
+                                </form>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <!-- DAFTAR KOMENTAR -->
+                        <div class="comment-list">
+                            <?php if (count($comments) > 0): ?>
+                                <?php foreach ($comments as $comment): ?>
+                                    <div class="comment-item">
+                                        <div class="comment-header">
+                                            <div class="comment-author">
+                                                <i class="fas fa-user-circle"></i> <?= htmlspecialchars($comment['author_name']) ?>
+                                            </div>
+                                            <div class="comment-date">
+                                                <?= date('d M Y H:i', strtotime($comment['created_at'])) ?>
+                                            </div>
+                                        </div>
+                                        
+                                        <?php if ($comment['rating'] > 0): ?>
+                                            <div class="comment-rating">
+                                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                    <i class="fas fa-star<?= $i <= $comment['rating'] ? '' : '-o' ?>"></i>
+                                                <?php endfor; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <div class="comment-content">
+                                            <?= nl2br(htmlspecialchars($comment['content'])) ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div style="text-align: center; padding: 30px; color: #666;">
+                                    <i class="far fa-comment-alt" style="font-size: 48px; margin-bottom: 15px; opacity: 0.5;"></i>
+                                    <p>Belum ada komentar. Jadilah yang pertama berkomentar!</p>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </section>
+
                     <a href="../galeri.php" class="btn-secondary back-link">&larr; Kembali ke Galeri</a>
 
                 </div>
@@ -341,6 +706,61 @@ renderFloatingProfile();
     <script src="<?= $root_prefix ?>assets/js/navbar.js?v=<?= $cache_buster ?>"></script>
     <script src="<?= $root_prefix ?>assets/js/scrolltop.js?v=<?= $cache_buster ?>"></script>
     <script src="assets/det-gel/js/script-galeri-detail.js?v=<?= $cache_buster ?>"></script>
+
+    <script>
+        // Script untuk rating stars
+        document.addEventListener('DOMContentLoaded', function() {
+            const ratingInputs = document.querySelectorAll('.rating-input input[type="radio"]');
+            const ratingLabels = document.querySelectorAll('.rating-input label');
+            
+            ratingLabels.forEach(label => {
+                label.addEventListener('mouseenter', function() {
+                    const starValue = this.getAttribute('for').replace('star', '');
+                    highlightStars(starValue);
+                });
+                
+                label.addEventListener('mouseleave', function() {
+                    const checkedInput = document.querySelector('.rating-input input[type="radio"]:checked');
+                    if (checkedInput) {
+                        highlightStars(checkedInput.value);
+                    } else {
+                        resetStars();
+                    }
+                });
+            });
+            
+            ratingInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    highlightStars(this.value);
+                });
+            });
+            
+            function highlightStars(value) {
+                resetStars();
+                for (let i = 1; i <= value; i++) {
+                    const label = document.querySelector(`.rating-input label[for="star${i}"]`);
+                    if (label) {
+                        label.style.color = '#f39c12';
+                    }
+                }
+            }
+            
+            function resetStars() {
+                ratingLabels.forEach(label => {
+                    label.style.color = '#ddd';
+                });
+            }
+            
+            // Auto-resize textarea
+            const textarea = document.getElementById('content');
+            if (textarea) {
+                textarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                });
+            }
+        });
+    </script>
 
 </body>
 </html>
