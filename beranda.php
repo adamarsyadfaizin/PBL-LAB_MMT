@@ -44,22 +44,23 @@ $cache_buster = time();
             min-height: 100vh;
         }
         /* ============================================
-   FIX FOOTER COLOR FOR HOMEPAGE
-   ============================================ */
+           FIX FOOTER COLOR FOR HOMEPAGE
+        ============================================ */
 
-/* Footer background */
-.site-footer,
-body > footer,
-footer.site-footer {
-    background: #FE7927 !important;
-}
+        /* Footer background */
+        .site-footer,
+        body > footer,
+        footer.site-footer {
+            background: #FE7927 !important;
+        }
 
-/* Social icons in footer hover */
-.site-footer .social-links-footer a:hover {
-    background: #ffffff !important;
-    border-color: #ffffff !important;
-    color: #FE7927 !important;
-}
+        /* Social icons in footer hover */
+        .site-footer .social-links-footer a:hover {
+            background: #ffffff !important;
+            border-color: #ffffff !important;
+            color: #FE7927 !important;
+        }
+        
         /* Hero section styling */
         .hero {
             background:
@@ -98,23 +99,37 @@ footer.site-footer {
             border: 1px solid rgba(255, 255, 255, 0.4);
             transition: all 0.3s ease;
             overflow: hidden;
+            display: block;
+            text-decoration: none;
+            color: inherit;
         }
         
         .home-project-card:hover, .home-news-card:hover {
             background: rgba(255, 255, 255, 0.9);
             transform: translateY(-5px);
             box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+            text-decoration: none;
+        }
+        
+        /* Grid untuk cards */
+        .highlight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 0 auto;
+            max-width: 1200px;
         }
         
         /* Card thumbnails */
         .card-thumbnail {
             position: relative;
             overflow: hidden;
+            height: 200px;
         }
         
         .card-thumbnail img {
             width: 100%;
-            height: 200px;
+            height: 100%;
             object-fit: cover;
             transition: transform 0.3s ease;
         }
@@ -136,30 +151,48 @@ footer.site-footer {
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
+            color: #333;
         }
         
         /* Card content */
         .card-content {
             padding: 20px;
+            position: relative;
         }
         
         .card-title {
             color: #333;
             margin-bottom: 10px;
             line-height: 1.4;
+            font-size: 1.2rem;
+            font-weight: 600;
         }
         
         .card-date, .card-year {
             color: #666;
             font-size: 14px;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             display: block;
+        }
+        
+        /* Garis tipis di atas summary */
+        .summary-divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.1);
+            margin: 15px 0;
+            width: 100%;
         }
         
         .card-excerpt {
             color: #666;
             line-height: 1.6;
             margin: 0;
+            font-size: 0.95rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* Batasi menjadi 3 baris */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         /* Section titles - DIUBAH MENJADI PUTIH */
@@ -169,12 +202,13 @@ footer.site-footer {
             margin-bottom: 50px;
             font-size: 2.5rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-weight: 700;
         }
         
         /* CTA buttons */
         .section-cta {
             text-align: center;
-            margin-top: 40px;
+            margin-top: 50px;
         }
         
         .btn {
@@ -183,12 +217,62 @@ footer.site-footer {
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: #333;
             transition: all 0.3s ease;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            font-size: 1rem;
         }
         
         .btn:hover {
             background: rgba(255, 255, 255, 0.95);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: #333;
+        }
+        
+        /* Hero section styling */
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        .hero-inner {
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 5px;
+        }
+        
+        .hero-title-main {
+            display: block;
+            font-size: 3rem;
+            font-weight: 700;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            opacity: 0.9;
         }
         
     </style>
@@ -247,6 +331,11 @@ footer.site-footer {
 
                 foreach ($projects as $p):
                     $img = str_replace('../', '', $p['cover_image']);
+                    // Potong summary maksimal 150 karakter
+                    $summary = htmlspecialchars($p['summary']);
+                    if (strlen($summary) > 150) {
+                        $summary = substr($summary, 0, 150) . '...';
+                    }
                 ?>
                 <a href="menu/menu-proyek-detail/detail-proyek.php?slug=<?= rawurlencode($p['slug']) ?>" class="home-project-card">
                     <div class="card-thumbnail">
@@ -256,6 +345,12 @@ footer.site-footer {
                     <div class="card-content">
                         <h4 class="card-title"><?= htmlspecialchars($p['title']) ?></h4>
                         <span class="card-year"><?= htmlspecialchars($p['year']) ?></span>
+                        
+                        <!-- Garis tipis di atas summary -->
+                        <?php if (!empty($p['summary'])): ?>
+                        <div class="summary-divider"></div>
+                        <p class="card-excerpt"><?= $summary ?></p>
+                        <?php endif; ?>
                     </div>
                 </a>
                 <?php endforeach; ?>
@@ -288,6 +383,11 @@ footer.site-footer {
 
                 foreach ($news as $n):
                     $img = str_replace('../', '', $n['cover_image']);
+                    // Potong summary untuk berita juga
+                    $newsSummary = htmlspecialchars($n['summary']);
+                    if (strlen($newsSummary) > 150) {
+                        $newsSummary = substr($newsSummary, 0, 150) . '...';
+                    }
                 ?>
                 <a href="menu/menu-detail-berita/detail-berita.php?slug=<?= rawurlencode($n['slug']) ?>" class="home-news-card">
                     <div class="card-thumbnail">
@@ -296,7 +396,12 @@ footer.site-footer {
                     <div class="card-content">
                         <span class="card-date"><?= date('d F Y', strtotime($n['created_at'])) ?></span>
                         <h4 class="card-title"><?= htmlspecialchars($n['title']) ?></h4>
-                        <p class="card-excerpt"><?= htmlspecialchars($n['summary']) ?></p>
+                        
+                        <!-- Garis tipis di atas summary berita -->
+                        <?php if (!empty($n['summary'])): ?>
+                        <div class="summary-divider"></div>
+                        <p class="card-excerpt"><?= $newsSummary ?></p>
+                        <?php endif; ?>
                     </div>
                 </a>
                 <?php endforeach; ?>
