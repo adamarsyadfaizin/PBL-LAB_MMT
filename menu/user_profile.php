@@ -347,8 +347,8 @@ renderFloatingProfile();
         <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center;">
             <!-- Logo -->
             <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="../assets/images/logo.png" alt="Logo" style="height: 40px;">
-                <span style="font-family: 'Poppins', sans-serif; font-weight: 700; color: #333;">LAB MMT</span>
+                <img src="../assets/images/logo-placeholder.png" alt="Logo" style="height: 40px;">
+               
             </div>
             
             <!-- Hanya tombol kembali ke beranda -->
