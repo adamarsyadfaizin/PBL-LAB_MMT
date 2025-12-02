@@ -15,3 +15,23 @@ DROP CONSTRAINT fk_audit_logs_user;
 
 drop table audit_logs ;
 delete from feedback where nama_lengkap ='DIANCOK';
+
+======================================================================================
+CREATE MATERIALIZED VIEW mv_feedback_summary AS
+SELECT 
+    id,
+    nama_lengkap,
+    email,
+    subjek,
+    LEFT(pesan, 50) as pesan_preview,
+    created_at,
+    is_read,
+    EXTRACT(EPOCH FROM created_at) as created_epoch
+FROM feedback
+ORDER BY created_at DESC;
+CREATE UNIQUE INDEX mv_feedback_id ON mv_feedback_summary (id);
+CREATE INDEX mv_feedback_created ON mv_feedback_summary (created_epoch);
+CREATE INDEX mv_feedback_read ON mv_feedback_summary (is_read);
+
+-- Manual refresh
+REFRESH MATERIALIZED VIEW mv_feedback_summary;
