@@ -15,7 +15,6 @@ $cache_buster = time(); // Untuk refresh CSS/JS
 
 // ==========================================
 // 1. LOGIKA UTAMA (Filter, Search, Paging)
-// (Kode Logika Anda yang sudah ada)
 // ==========================================
 
 $search_term = $_GET['search'] ?? '';
@@ -43,8 +42,8 @@ if ($filter_kategori != 'semua') {
 }
 
 if ($filter_tahun != 'semua') {
-    // Menggunakan YEAR() untuk kompatibilitas yang lebih luas, tetapi EXTRACT(YEAR FROM created_at) juga benar
-    $sql_conditions .= " AND YEAR(created_at) = ?";
+    // PERBAIKAN: Gunakan EXTRACT(YEAR FROM created_at) sesuai hasil debug
+    $sql_conditions .= " AND EXTRACT(YEAR FROM created_at) = ?";
     $params[] = $filter_tahun;
 }
 
@@ -88,19 +87,35 @@ try {
     $event_highlight = null;
 }
 
-// Data Dropdown
+// Data Dropdown - PERBAIKAN: Gunakan EXTRACT untuk query tahun juga
 try {
-    $years_stmt = $pdo->query("SELECT DISTINCT YEAR(created_at) as year FROM news WHERE status = 'published' ORDER BY year DESC");
+    // Query tahun dengan EXTRACT yang sama dengan filter
+    $years_stmt = $pdo->query("SELECT DISTINCT EXTRACT(YEAR FROM created_at) as year FROM news WHERE status = 'published' AND created_at IS NOT NULL ORDER BY year DESC");
     $available_years = $years_stmt->fetchAll(PDO::FETCH_COLUMN);
-
+    
+    // Pastikan tahun dalam format integer
+    $available_years = array_map('intval', $available_years);
+    
+    // Jika tidak ada tahun di database, gunakan default 2022-2025
+    if (empty($available_years)) {
+        $available_years = [2025, 2024, 2023, 2022];
+    }
+    
+    // Untuk kategori, ambil dari database
     $cat_stmt = $pdo->query("SELECT DISTINCT category FROM news WHERE status = 'published' AND category IS NOT NULL AND category != '' ORDER BY category ASC");
     $available_categories = $cat_stmt->fetchAll(PDO::FETCH_COLUMN);
+    
+    // Jika tidak ada kategori di database, gunakan default
+    if (empty($available_categories)) {
+        $available_categories = ['berita', 'kegiatan'];
+    }
+    
 } catch (PDOException $e) {
-    $available_years = [];
-    $available_categories = [];
+    $available_years = [2025, 2024, 2023, 2022];
+    $available_categories = ['berita', 'kegiatan'];
 }
 
-// Kalender Data
+// Kalender Data - PERBAIKAN: Gunakan EXTRACT atau DATE() untuk konsistensi
 $events_by_date = [];
 try {
     $stmt_events = $pdo->query("SELECT id, title, slug, summary, DATE(created_at) as event_date FROM news WHERE status = 'published' ORDER BY created_at DESC");
@@ -146,9 +161,67 @@ function build_pagination($current, $total, $adj = 2) {
     
     <link rel="stylesheet" href="components/navbar.css?v=<?= $cache_buster ?>"> 
     <link rel="stylesheet" href="../assets/css/style.css?v=<?= $cache_buster ?>"> 
-    <link rel="stylesheet" href="assets/berita/css/style-berita.css?v=<?= $cache_buster ?>">
     
     <style>
+        /* 
+        |--------------------------------------------------------------------------
+        | STYLE BERITA - CSS yang digabungkan dari style-berita.css
+        |--------------------------------------------------------------------------
+        */
+        
+        :root {
+            /* Definisi Warna yang diperbarui: Lebih cerah dan premium */
+            --color-primary: #FE7927 !important; /* DIUBAH: #FF7043 menjadi #FE7927 dengan !important */
+            --color-accent: #FFC107;
+            --color-contrast: #003B8E;
+            --color-text: #333333;
+            --color-light-bg: #F9F9F9;
+            --color-light-hover: #EDEDED;
+            --color-shadow: rgba(0, 0, 0, 0.08);
+            --border-radius: 8px;
+        }
+
+        /* OVERRIDE SUPER STRONG UNTUK WARNA OREN #FE7927 - Tambahkan di bagian ATAS */
+        .navbar,
+        .site-header,
+        .header {
+            background-color: #FE7927 !important;
+        }
+
+        .navbar .nav-links a.active,
+        .navbar .nav-links a:hover,
+        .header .nav-links a.active,
+        .header .nav-links a:hover {
+            color: #FE7927 !important;
+        }
+
+        .navbar .nav-links a.active::after,
+        .header .nav-links a.active::after {
+            background-color: #FE7927 !important;
+        }
+
+        /* Override untuk semua elemen dengan warna biru/orange lama */
+        [style*="background-color: #003b8e"],
+        [style*="background-color:#003b8e"],
+        [style*="background-color: #FF7043"],
+        [style*="background-color:#FF7043"] {
+            background-color: #FE7927 !important;
+        }
+
+        [style*="color: #003b8e"],
+        [style*="color:#003b8e"],
+        [style*="color: #FF7043"],
+        [style*="color:#FF7043"] {
+            color: #FE7927 !important;
+        }
+
+        [style*="border-color: #003b8e"],
+        [style*="border-color:#003b8e"],
+        [style*="border-color: #FF7043"],
+        [style*="border-color:#FF7043"] {
+            border-color: #FE7927 !important;
+        }
+
         /* Background untuk seluruh halaman dengan wallpaper.jpg */
         body {
             background: url('<?= $path_prefix ?>assets/images/wallpaper.jpg') center center/cover fixed no-repeat;
@@ -217,6 +290,727 @@ function build_pagination($current, $total, $adj = 2) {
             border-radius: 10px;
             padding: 30px;
         }
+
+        /* --- Global Layout/Hero Overrides --- */
+/* ============================================
+   HERO SECTION - SAMA PERSIS DENGAN PROFIL.PHP
+   ============================================ */
+/* HAPUS SEMUA CSS HERO YANG ADA */
+/* TAMBAHKAN INI DI BAGIAN INLINE STYLE (di dalam <style> tag) */
+
+/* RESET DAN BUAT SAMA PERSIS */
+.hero {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)),
+                url('<?= $path_prefix ?><?= htmlspecialchars($site_config['news_hero_image'] ?? 'assets/images/hero.jpg') ?>') center center/cover no-repeat;
+    padding: 60px 0 30px 0 !important; /* ATAS 60px, BAWAH 30px */
+}
+
+.hero-breadcrumb {
+    font-size: 14px !important;
+    margin-bottom: 5px !important;
+    opacity: 0.9;
+}
+
+.hero h1 {
+    font-size: 2rem !important; /* UKURAN YANG SAMA DENGAN PROFIL */
+    margin-top: 0 !important;
+}n styling - COPY DARI PROFIL.PHP */
+
+        .main-content-area .container {
+            display: grid;
+            grid-template-columns: 2.5fr 1fr;
+            gap: 50px; 
+            padding: 60px 15px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content-area .container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                padding: 40px 15px;
+            }
+            .hero {
+                height: 250px !important;
+                padding-bottom: 30px;
+            }
+        }
+
+        /* --- Event Highlight Section (Banner Atas) --- */
+        .event-highlight {
+            display: flex;
+            background-color: #FFFFFF;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: 50px;
+            box-shadow: 0 8px 20px var(--color-shadow); 
+            transition: transform 0.3s ease;
+        }
+
+        .event-highlight:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .event-highlight-img {
+            flex: 1.5;
+            max-height: 400px;
+            min-height: 300px;
+            background-color: var(--color-light-bg);
+        }
+
+        .event-highlight-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .event-highlight-content {
+            flex: 1;
+            padding: 35px;
+            background-color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            color: white;
+        }
+
+        .event-tag {
+            display: inline-block;
+            background-color: var(--color-accent);
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .event-highlight-content h2 {
+            font-size: 2rem;
+            line-height: 1.2;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .event-date {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .event-date i {
+            margin-right: 5px;
+        }
+
+        .event-highlight-content p {
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .event-highlight-content .btn {
+            background-color: white;
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            border: 2px solid white;
+            font-weight: 700;
+            padding: 10px 25px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .event-highlight-content .btn:hover {
+            background-color: var(--color-accent);
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            border-color: var(--color-accent);
+        }
+
+        @media (max-width: 768px) {
+            .event-highlight {
+                flex-direction: column;
+            }
+            .event-highlight-img {
+                min-height: 250px;
+                flex: none;
+            }
+            .event-highlight-content {
+                padding: 30px;
+            }
+            .event-highlight-content h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* --- Search & Filter Container (Diperbaiki & Disempurnakan) --- */
+        .search-filter-container {
+            margin-bottom: 30px;
+            padding: 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: var(--color-light-bg);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-filter-container form {
+            width: 100%;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end; /* Memastikan input dan tombol sejajar di bawah */
+            margin-bottom: 20px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end; /* Memastikan select dan tombol sejalar di bawah */
+            margin-bottom: 15px;
+        }
+
+        .search-input-group, .filter-group {
+            flex-grow: 1;
+        }
+
+        .search-input-group label, .filter-group label {
+            display: block;
+            color: var(--color-text);
+            font-weight: 700;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .search-input-group input[type="text"], .filter-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #DDDDDD;
+            border-radius: 5px;
+            transition: border-color 0.3s;
+            background-color: white;
+            height: 44px; 
+            box-sizing: border-box; 
+        }
+
+        .search-input-group input[type="text"]:focus, .filter-group select:focus {
+            border-color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            outline: none;
+            box-shadow: 0 0 5px rgba(254, 121, 39, 0.5);
+        }
+
+        .btn-search {
+            flex-shrink: 0; 
+            padding: 12px 25px;
+            background-color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            color: white;
+            border: none;
+            font-weight: 700;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            height: 44px; 
+        }
+
+        .btn-search:hover {
+            background-color: #e56a1e !important; /* DIUBAH: #f76036 menjadi #e56a1e */
+        }
+
+        .btn-filter {
+            flex-shrink: 0; 
+            padding: 12px 25px;
+            background-color: var(--color-accent); /* Kuning */
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            border: none;
+            font-weight: 700;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            height: 44px; 
+        }
+        .btn-filter:hover {
+            background-color: #ffaa00;
+        }
+
+        .search-results-info {
+            padding: 15px 0 0;
+            border-top: 1px dashed #DDD;
+            font-weight: 600;
+            color: #555;
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+
+        .search-results-info a {
+            color: var(--color-contrast) !important; /* Biru sebagai link reset */
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .search-row, .filter-row {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+            .search-input-group, .filter-group {
+                margin-bottom: 5px;
+            }
+            .btn-search, .btn-filter {
+                width: 100%;
+                margin-top: 5px;
+            }
+        }
+
+        /* --- Dekorasi Pemisah Visual (BARU) --- */
+        .section-separator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 40px 0;
+            opacity: 0.7;
+        }
+
+        .separator-line {
+            height: 1px;
+            background-color: #DDD;
+            flex-grow: 1;
+        }
+
+        .separator-icon {
+            color: var(--color-accent); /* Kuning/Emas */
+            font-size: 1.5rem;
+            margin: 0 20px;
+        }
+
+        /* --- News Item List (Card Berita) - Peningkatan Estetika --- */
+        .facility-item {
+            display: flex;
+            align-items: flex-start; 
+            gap: 30px;
+            margin-bottom: 40px;
+            padding: 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: #FFFFFF;
+            
+            /* Bayangan baru (lebih 3D) */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); 
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Transisi halus */
+        }
+
+        .facility-item:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15); /* Bayangan dramatis saat hover */
+            transform: translateY(-5px); /* Sedikit naik untuk efek melayang */
+        }
+
+        .facility-image {
+            flex: 0 0 280px; 
+            height: 200px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .facility-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease-in-out; /* Animasi zoom gambar */
+        }
+
+        .facility-item:hover .facility-image img {
+            transform: scale(1.05); 
+        }
+
+        .facility-text {
+            flex-grow: 1;
+        }
+
+        .facility-text h2 {
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            line-height: 1.3;
+        }
+
+        .article-metadata {
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .article-metadata i {
+            color: var(--color-accent); /* Kuning */
+            margin-right: 5px;
+        }
+
+        /* Pemisah Metadata */
+        .metadata-separator {
+            color: #CCC;
+            margin: 0 10px;
+        }
+
+        /* Kategori di Metadata */
+        .article-category {
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .facility-text p {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .facility-text .btn {
+            margin-top: 15px;
+            background-color: transparent;
+            border: 2px solid #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            padding: 6px 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .facility-text .btn:hover {
+            background-color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            color: white;
+            box-shadow: 0 4px 10px rgba(254, 121, 39, 0.4); /* Bayangan pada tombol hover */
+        }
+
+        @media (min-width: 769px) {
+            .facility-item.image-right {
+                flex-direction: row-reverse;
+            }
+        }
+        @media (max-width: 768px) {
+            .facility-item {
+                flex-direction: column;
+                text-align: left;
+                padding: 20px;
+                margin-bottom: 30px;
+            }
+            .facility-image {
+                width: 100%;
+                height: 220px;
+                flex: none;
+                margin-bottom: 15px;
+            }
+            .facility-text h2 {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* --- Pagination Controls --- */
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 30px;
+        }
+
+/* ==== PAGINATION CONTROLS - Kembali ke warna asli yang bagus ===== */
+
+.btn-page, .page-ellipsis {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #DDD;
+    border-radius: 50%;
+    font-size: 1rem;
+    color: var(--color-primary); /* Kembali ke variable, tanpa !important */
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-page:hover {
+    background-color: var(--color-accent);
+    color: var(--color-primary); /* Kembali ke variable, tanpa !important */
+    border-color: var(--color-accent);
+}
+
+.btn-page.active {
+    background-color: var(--color-primary); /* Kembali ke variable, tanpa !important */
+    color: white; /* Tetap putih untuk kontras */
+    border-color: var(--color-primary); /* Kembali ke variable, tanpa !important */
+    transform: scale(1.1);
+}
+
+        .page-ellipsis {
+            border: none;
+            color: #999;
+        }
+
+        /* --- Sidebar (Aside) --- */
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            align-self: flex-start;
+        }
+
+        .widget {
+            margin-bottom: 40px;
+            padding: 25px;
+            background-color: #FFFFFF;
+            box-shadow: 0 4px 15px var(--color-shadow);
+            border-radius: var(--border-radius);
+        }
+
+        .widget-title {
+            font-size: 1.5rem;
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            border-bottom: 3px solid var(--color-accent); /* Kuning */
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            font-weight: 700;
+        }
+
+        /* Kalender Widget */
+        .widget-calendar {
+            text-align: center;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 0 10px;
+        }
+        .cal-nav-prev, .cal-nav-next {
+            text-decoration: none; 
+            font-weight: bold; 
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            font-size: 1.2rem;
+        }
+        .cal-current-month {
+            font-weight: bold; 
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+        }
+
+        .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .calendar-table th {
+            font-weight: 700;
+            color: #555;
+            font-size: 0.9rem;
+            padding-bottom: 10px;
+        }
+
+        .calendar-table td {
+            padding: 8px 0;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            height: 40px;
+            width: calc(100% / 7);
+        }
+
+        .calendar-table td:hover:not(.event-day) {
+            background-color: var(--color-light-bg);
+            border-radius: 50%;
+        }
+
+        .calendar-table td.event-day {
+            background-color: var(--color-accent); /* Kuning */
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            border-radius: 50%;
+            font-weight: 700;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 2px 5px rgba(255, 193, 7, 0.4);
+        }
+
+        .calendar-table td.event-day:hover {
+            background-color: #ffaa00; /* Kuning lebih gelap saat hover */
+            transform: scale(1.05);
+        }
+
+        /* Style untuk hari ini di kalender */
+        .calendar-table td.today-day {
+            border: 2px solid #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            border-radius: 50%;
+        }
+
+        /* Widget Terkini (Kontras Kuat) */
+/* Widget Terkini (Kontras Kuat) */
+.widget-news {
+    background-color: #FFFFFF; /* Diubah dari var(--color-primary) ke putih */
+    box-shadow: 0 4px 15px var(--color-shadow); /* Kembali ke bayangan standar */
+    color: var(--color-text); /* Teks kembali ke warna gelap */
+}
+
+.widget-news ul {
+    list-style: none;
+    padding: 0;
+}
+
+.widget-news li {
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Border lebih gelap */
+}
+
+.widget-news li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.widget-news .widget-title {
+    color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+    border-bottom: 3px solid var(--color-accent); /* Kuning/Emas tetap menjadi aksen */
+}
+
+.widget-news li a {
+    transition: padding-left 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+}
+.widget-news li a:hover {
+    padding-left: 5px;
+}
+
+.widget-news li h4 {
+    font-size: 1.05rem;
+    color: var(--color-text); /* Kembali ke warna teks gelap */
+    line-height: 1.3;
+    margin-bottom: 3px;
+    transition: color 0.3s;
+}
+
+.widget-news li a:hover h4 {
+    color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+}
+
+.widget-news li .date {
+    font-size: 0.85rem;
+    color: #777; /* Warna abu-abu untuk tanggal */
+}
+
+        .no-results {
+            background-color: var(--color-light-bg);
+            border: 1px dashed #CCC;
+            border-radius: var(--border-radius);
+            text-align: center;
+            padding: 50px 0;
+            margin-bottom: 30px;
+        }
+
+        .no-results h3 {
+            color: var(--color-text);
+        }
+
+        /* --- CSS untuk Modal Kalender --- */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none; 
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            background-color: white;
+            padding: 35px;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 550px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal h3 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 1.6rem;
+            border-bottom: 2px solid #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            padding-bottom: 10px;
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+        }
+
+        .modal .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            line-height: 1;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        /* Footer background */
+.site-footer,
+body > footer,
+footer.site-footer {
+    background: #FE7927 !important;
+}
+
+/* Social icons in footer hover */
+.site-footer .social-links-footer a:hover {
+    background: #ffffff !important;
+    border-color: #ffffff !important;
+    color: #FE7927 !important;
+}
+        .modal .close-btn:hover {
+            opacity: 1;
+        }
+
+        .event-item {
+            padding: 15px 0;
+            border-bottom: 1px dashed #DDD;
+        }
+        .event-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .event-item h4 {
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+        .event-item h4 a {
+            font-weight: 700;
+            color: var(--color-contrast); /* Biru */
+            transition: color 0.3s;
+        }
+        .event-item h4 a:hover {
+            color: var(--color-accent);
+            text-decoration: underline;
+        }
+
+        .event-item p {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body id="top">
@@ -275,7 +1069,13 @@ function build_pagination($current, $total, $adj = 2) {
                                     <select name="kategori">
                                         <option value="semua">Semua</option>
                                         <?php foreach ($available_categories as $cat): ?>
-                                            <option value="<?= $cat ?>" <?= ($filter_kategori == $cat) ? 'selected' : '' ?>><?= $cat ?></option>
+                                            <?php 
+                                            // Tampilkan nama kategori yang lebih user-friendly
+                                            $cat_display = ($cat == 'berita') ? 'Berita' : (($cat == 'kegiatan') ? 'Kegiatan' : $cat);
+                                            ?>
+                                            <option value="<?= $cat ?>" <?= ($filter_kategori == $cat) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($cat_display) ?>
+                                            </option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -396,33 +1196,35 @@ function build_pagination($current, $total, $adj = 2) {
                             $firstDay = date('N', strtotime("$cYear-$cMonth-01")); 
                             $mNames = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
                             
-                            echo "<div class='calendar-header'>
-                                    <a href='".getCalUrl($prevMonth, $prevYear)."' class='cal-nav-prev' id='calNavPrev'>&laquo;</a>
-                                    <span class='cal-current-month' id='calCurrentMonth'>{$mNames[$cMonth]} $cYear</span>
-                                    <a href='".getCalUrl($nextMonth, $nextYear)."' class='cal-nav-next' id='calNavNext'>&raquo;</a></div>";
-                            echo "<table class='calendar-table' id='calendarTable'><thead><tr><th>Sn</th><th>Sl</th><th>Rb</th><th>Km</th><th>Jm</th><th>Sb</th><th>Mg</th></tr></thead><tbody><tr>";
+                            echo "<div class='calendar-header'>\n";
+                            echo "<a href='".getCalUrl($prevMonth, $prevYear)."' class='cal-nav-prev' id='calNavPrev'>&laquo;</a>\n";
+                            echo "<span class='cal-current-month' id='calCurrentMonth'>{$mNames[$cMonth]} $cYear</span>\n";
+                            echo "<a href='".getCalUrl($nextMonth, $nextYear)."' class='cal-nav-next' id='calNavNext'>&raquo;</a>\n";
+                            echo "</div>\n";
+                            echo "<table class='calendar-table' id='calendarTable'>\n";
+                            echo "<thead><tr><th>Sn</th><th>Sl</th><th>Rb</th><th>Km</th><th>Jm</th><th>Sb</th><th>Mg</th></tr></thead>\n";
+                            echo "<tbody><tr>\n";
                             
-                            for ($i = 1; $i < $firstDay; $i++) echo "<td></td>";
+                            for ($i = 1; $i < $firstDay; $i++) echo "<td></td>\n";
                             
                             for ($day = 1; $day <= $daysInMonth; $day++) {
                                 $dStr = sprintf('%04d-%02d-%02d', $cYear, $cMonth, $day);
                                 $cls = isset($events_by_date[$dStr]) ? 'event-day' : '';
-                                $today_class = ($dStr == date('Y-m-d')) ? "today-day" : ""; // Class untuk hari ini
+                                $today_class = ($dStr == date('Y-m-d')) ? "today-day" : "";
                                 
-                                // Tambahkan event listener inline atau biarkan JS dari script-berita.js menangani event-day
-                                echo "<td class='$cls $today_class' data-date='$dStr'>$day</td>";
+                                echo "<td class='$cls $today_class' data-date='$dStr'>$day</td>\n";
                                 
-                                if ((($day + $firstDay - 1) % 7) == 0) echo "</tr><tr>";
+                                if ((($day + $firstDay - 1) % 7) == 0) echo "</tr>\n<tr>\n";
                             }
                             
                             if ((($daysInMonth + $firstDay - 1) % 7) != 0) {
                                 while(((($daysInMonth + $firstDay - 1) % 7) != 0) && (((($daysInMonth + $firstDay - 1) % 7) < 7))) {
-                                    echo "<td></td>";
+                                    echo "<td></td>\n";
                                     $daysInMonth++;
                                 }
-                                echo "</tr>";
+                                echo "</tr>\n";
                             }
-                            echo "</tbody></table>";
+                            echo "</tbody></table>\n";
                         ?>
                     </div>
                     <div class="widget widget-news">
@@ -458,9 +1260,200 @@ function build_pagination($current, $total, $adj = 2) {
     </div>
 
     <script>
-        // DATA EVENT DIDEFINISIKAN DI SINI UNTUK DIAKSES OLEH script-berita.js
-        // Menggunakan nama variabel eventsByDate agar konsisten dengan PHP Anda ($events_by_date)
+        // ==========================================================
+        // JAVASCRIPT YANG DIGABUNGKAN DARI script-berita.js
+        // ==========================================================
+        
+        // DATA EVENT DIDEFINISIKAN DI SINI UNTUK DIAKSES OLEH SCRIPT
         const eventsByDate = <?= $events_json ?>;
+        
+        // Variabel global untuk modal
+        const calendarModal = document.getElementById('calendarModal');
+        const modalBackdrop = document.getElementById('modalBackdrop');
+        const modalEventsList = document.getElementById('modalEventsList');
+        const modalDateTitle = document.getElementById('modalDateTitle');
+        
+        // ==========================================================
+        // 1. FUNGSI KALENDER WIDGET
+        // ==========================================================
+        
+        function showModal(date, events) {
+            if (!calendarModal || !modalBackdrop || !modalEventsList || !modalDateTitle) return;
+
+            modalDateTitle.textContent = `Kegiatan pada Tanggal ${date}`;
+            modalEventsList.innerHTML = ''; 
+
+            if (events.length > 0) {
+                events.forEach(event => {
+                    const item = document.createElement('div');
+                    item.className = 'event-item';
+                    item.innerHTML = `
+                        <h4><a href="${event.link}" onclick="closeModal(event);">${event.title}</a></h4>
+                        <p>Lihat detail berita/kegiatan.</p>
+                    `;
+                    modalEventsList.appendChild(item);
+                });
+            } else {
+                modalEventsList.innerHTML = '<p class="text-center">Tidak ada kegiatan terjadwal pada tanggal ini.</p>';
+            }
+
+            modalBackdrop.style.display = 'flex';
+        }
+
+        function closeModal(event) {
+            event.preventDefault();
+            if (modalBackdrop) {
+                modalBackdrop.style.display = 'none';
+            }
+        }
+
+        function generateCalendar(year, month, events) {
+            const calendarTable = document.getElementById('calendarTable');
+            if (!calendarTable) return;
+
+            calendarTable.innerHTML = '';
+            
+            const date = new Date(year, month - 1);
+            const firstDay = new Date(year, month - 1, 1).getDay(); // 0 = Sunday, 1 = Monday
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth() + 1;
+            const currentDay = today.getDate();
+
+            // Header Hari
+            const headerRow = calendarTable.insertRow();
+            ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].forEach(day => {
+                const th = document.createElement('th');
+                th.textContent = day;
+                headerRow.appendChild(th);
+            });
+
+            let dateCounter = 1;
+            for (let i = 0; i < 6; i++) { // Maksimum 6 baris (minggu)
+                const row = calendarTable.insertRow();
+                let weekCompleted = true;
+
+                for (let j = 0; j < 7; j++) {
+                    const cell = row.insertCell();
+                    cell.dataset.day = j;
+
+                    if (i === 0 && j < firstDay) {
+                        // Sel kosong sebelum hari pertama bulan
+                        cell.innerHTML = '';
+                    } else if (dateCounter > daysInMonth) {
+                        // Sel kosong setelah hari terakhir bulan
+                        cell.innerHTML = '';
+                        weekCompleted = false; // Baris ini belum diisi penuh, tapi sudah lewat
+                    } else {
+                        const dayNumber = dateCounter;
+                        const fullDate = `${year}-${String(month).padStart(2, '0')}-${String(dayNumber).padStart(2, '0')}`;
+                        
+                        cell.textContent = dayNumber;
+
+                        // Tanda Hari Ini (Today)
+                        if (year === currentYear && month === currentMonth && dayNumber === currentDay) {
+                            cell.classList.add('today-day');
+                        }
+
+                        // Tanda Hari Event
+                        if (events[fullDate]) {
+                            cell.classList.add('event-day');
+                            cell.onclick = () => showModal(fullDate, events[fullDate]);
+                        } else {
+                            cell.onclick = () => {}; // Biarkan klik kosong jika tidak ada event
+                        }
+                        
+                        dateCounter++;
+                    }
+                }
+                // Hentikan looping jika sudah melewati hari terakhir dan tidak ada lagi hari di baris ini
+                if (dateCounter > daysInMonth && row.lastChild.textContent === '') break;
+            }
+        }
+
+        // Inisialisasi Kalender
+        let currentCalDate = new Date();
+
+        function updateCalendar() {
+            const year = currentCalDate.getFullYear();
+            const month = currentCalDate.getMonth() + 1;
+
+            // Perbarui judul
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            const monthTitle = document.getElementById('calCurrentMonth');
+            if (monthTitle) {
+                monthTitle.textContent = `${monthNames[month - 1]} ${year}`;
+            }
+
+            // Generate kalender
+            generateCalendar(year, month, eventsByDate);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCalendar();
+
+            // Handler tombol navigasi kalender
+            const prevBtn = document.getElementById('calNavPrev');
+            const nextBtn = document.getElementById('calNavNext');
+            const closeBtn = document.getElementById('modalCloseBtn');
+            
+            if (prevBtn) {
+                prevBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+                    updateCalendar();
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+                    updateCalendar();
+                });
+            }
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeModal);
+            }
+            if (modalBackdrop) {
+                modalBackdrop.addEventListener('click', (e) => {
+                    if (e.target === modalBackdrop) {
+                        closeModal(e);
+                    }
+                });
+            }
+            
+            // Panggil fungsi scroll animation
+            handleScrollAnimation();
+        });
+        
+        // ==========================================================
+        // 2. FUNGSI ANIMASI SCROLL (Scroll Reveal)
+        // ==========================================================
+        
+        function handleScrollAnimation() {
+            // Memilih semua elemen yang memiliki kelas animasi scroll
+            const animatedElements = document.querySelectorAll(
+                '.event-highlight, .search-filter-container, .section-separator, .facility-item, .pagination-controls, .widget, .no-results'
+            );
+
+            animatedElements.forEach((element) => {
+                const rect = element.getBoundingClientRect();
+                // Titik pemicu: ketika elemen berada di 90% dari tinggi viewport
+                const triggerPoint = window.innerHeight * 0.9; 
+
+                if (rect.top <= triggerPoint && rect.bottom >= 0) {
+                    // Menambahkan kelas 'animate-in' untuk memicu transisi CSS
+                    element.classList.add('animate-in');
+                } 
+            });
+        }
+
+        // Menghubungkan fungsi ke event scroll dan load
+        window.addEventListener('scroll', handleScrollAnimation);
+        window.addEventListener('load', handleScrollAnimation);
         
         // Kode inline untuk Modal Callbacks (Disederhanakan untuk memastikan tidak bentrok)
         const backdrop = document.getElementById('modalBackdrop');
@@ -468,25 +1461,14 @@ function build_pagination($current, $total, $adj = 2) {
         const modalContent = document.getElementById('modalEventsList'); // ID diubah
         const modalClose = document.getElementById('modalCloseBtn'); // ID diubah
         
-        // Fungsi openModalForDate akan didefinisikan ulang di script-berita.js, 
-        // tapi kita pastikan elemen HTML yang diakses sudah benar.
-        
         if(modalClose) modalClose.addEventListener('click', () => { backdrop.style.display = 'none'; });
         document.addEventListener('keydown', function(e) { if (e.key === 'Escape') backdrop.style.display = 'none'; });
         if (backdrop) backdrop.addEventListener('click', function(e) {
-             if (e.target === backdrop) backdrop.style.display = 'none';
+            if (e.target === backdrop) backdrop.style.display = 'none';
         });
-        
-        // Event listener pada TD kalender akan diatur sepenuhnya oleh script-berita.js
-        // Hapus kode DOMContentLoaded yang mengakses td.event-day di sini jika Anda menggunakan script-berita.js.
-        // Jika Anda TIDAK menggunakan script-berita.js, biarkan kode ini ada.
-        
-        // Untuk saat ini, kita biarkan kode inline modal yang Anda buat, dan script-berita.js akan menimpanya/melengkapinya.
-        
     </script>
     
     <script src="<?= $path_prefix ?>assets/js/navbar.js?v=<?= $cache_buster ?>"></script>
     <script src="<?= $path_prefix ?>assets/js/scrolltop.js?v=<?= $cache_buster ?>"></script>
-    <script src="assets/berita/js/script-berita.js?v=<?= $cache_buster ?>"></script>
 </body>
 </html>

@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict 1TQfElY0cnu0FDUf4b5StB4X9PmfQbtPbveirGR7YDNgPNgGbZrsbiWk7mzlY9u
+\restrict oCR4Vq7rG0cXIjhyChnqjOLFIrUUBV5YYCLdJC9s0kXiy6RpMfSjdWuPXj0WELH
 
 -- Dumped from database version 15.14
 -- Dumped by pg_dump version 15.14
 
--- Started on 2025-11-29 06:09:26
+-- Started on 2025-12-01 20:47:58
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -71,7 +71,7 @@ CREATE SEQUENCE public.categories_id_seq
 ALTER TABLE public.categories_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3498 (class 0 OID 0)
+-- TOC entry 3500 (class 0 OID 0)
 -- Dependencies: 215
 -- Name: categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -96,7 +96,7 @@ CREATE TABLE public.comments (
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     user_id integer,
-    CONSTRAINT comments_rating_check CHECK (((rating >= 1) AND (rating <= 5)))
+    CONSTRAINT comments_rating_check CHECK (((rating IS NULL) OR ((rating >= 1) AND (rating <= 5))))
 );
 
 
@@ -119,7 +119,7 @@ CREATE SEQUENCE public.comments_id_seq
 ALTER TABLE public.comments_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3499 (class 0 OID 0)
+-- TOC entry 3501 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -162,7 +162,7 @@ CREATE SEQUENCE public.feedback_id_seq
 ALTER TABLE public.feedback_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3500 (class 0 OID 0)
+-- TOC entry 3502 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: feedback_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -225,7 +225,7 @@ CREATE SEQUENCE public.lab_profile_id_seq
 ALTER TABLE public.lab_profile_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3501 (class 0 OID 0)
+-- TOC entry 3503 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: lab_profile_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -244,7 +244,9 @@ CREATE TABLE public.media_assets (
     url character varying(2048) NOT NULL,
     caption character varying(512),
     created_at timestamp with time zone DEFAULT now(),
-    deskripsi text
+    deskripsi text,
+    rating integer,
+    CONSTRAINT media_assets_rating_check CHECK (((rating IS NULL) OR ((rating >= 1) AND (rating <= 5))))
 );
 
 
@@ -266,7 +268,7 @@ CREATE SEQUENCE public.media_assets_id_seq
 ALTER TABLE public.media_assets_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3502 (class 0 OID 0)
+-- TOC entry 3504 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: media_assets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -308,7 +310,7 @@ CREATE SEQUENCE public.members_id_seq
 ALTER TABLE public.members_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3503 (class 0 OID 0)
+-- TOC entry 3505 (class 0 OID 0)
 -- Dependencies: 225
 -- Name: members_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -332,7 +334,8 @@ CREATE TABLE public.news (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     user_id integer,
-    type character varying(20) DEFAULT 'news'::character varying
+    type character varying(20) DEFAULT 'news'::character varying,
+    category character varying(100)
 );
 
 
@@ -354,7 +357,7 @@ CREATE SEQUENCE public.news_id_seq
 ALTER TABLE public.news_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3504 (class 0 OID 0)
+-- TOC entry 3506 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: news_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -394,7 +397,7 @@ CREATE SEQUENCE public.news_tags_id_seq
 ALTER TABLE public.news_tags_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3505 (class 0 OID 0)
+-- TOC entry 3507 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: news_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -433,7 +436,7 @@ CREATE SEQUENCE public.project_members_id_seq
 ALTER TABLE public.project_members_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3506 (class 0 OID 0)
+-- TOC entry 3508 (class 0 OID 0)
 -- Dependencies: 231
 -- Name: project_members_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -473,7 +476,9 @@ CREATE TABLE public.projects (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     category_id bigint,
-    user_id integer
+    user_id integer,
+    rating integer,
+    CONSTRAINT projects_rating_check CHECK (((rating IS NULL) OR ((rating >= 1) AND (rating <= 5))))
 );
 
 
@@ -495,7 +500,7 @@ CREATE SEQUENCE public.projects_id_seq
 ALTER TABLE public.projects_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3507 (class 0 OID 0)
+-- TOC entry 3509 (class 0 OID 0)
 -- Dependencies: 234
 -- Name: projects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -533,7 +538,7 @@ CREATE SEQUENCE public.tags_id_seq
 ALTER TABLE public.tags_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3508 (class 0 OID 0)
+-- TOC entry 3510 (class 0 OID 0)
 -- Dependencies: 236
 -- Name: tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -575,7 +580,7 @@ CREATE SEQUENCE public.users_id_seq
 ALTER TABLE public.users_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3509 (class 0 OID 0)
+-- TOC entry 3511 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -680,7 +685,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 
 --
--- TOC entry 3468 (class 0 OID 41933)
+-- TOC entry 3470 (class 0 OID 41933)
 -- Dependencies: 214
 -- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -702,17 +707,22 @@ COPY public.categories (id, name, slug) FROM stdin;
 
 
 --
--- TOC entry 3470 (class 0 OID 41937)
+-- TOC entry 3472 (class 0 OID 41937)
 -- Dependencies: 216
 -- Data for Name: comments; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.comments (id, entity_type, entity_id, author_name, author_email, rating, content, status, created_at, updated_at, user_id) FROM stdin;
+4	news	7	serigala		2	Halo tes tes tes tes	approved	2025-12-01 11:11:37.361597	2025-12-01 11:11:37.361597	\N
+5	news	6	serigala		5	Halo halo halo jjjjjjj	approved	2025-12-01 11:12:21.685575	2025-12-01 11:12:21.685575	\N
+6	media	7	serigala		1	Sangat bagus ekali woow wow wow	approved	2025-12-01 11:24:18.103887	2025-12-01 11:24:18.103887	\N
+7	media	7	serigala		3	tessssssss sbbsbsbsbbs	approved	2025-12-01 13:06:27.53489	2025-12-01 13:06:27.53489	\N
+8	news	7	admin2		3	tes vvvvvvvvvvvvvv	approved	2025-12-01 14:11:42.046448	2025-12-01 14:11:42.046448	\N
 \.
 
 
 --
--- TOC entry 3472 (class 0 OID 41947)
+-- TOC entry 3474 (class 0 OID 41947)
 -- Dependencies: 218
 -- Data for Name: feedback; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -781,11 +791,12 @@ COPY public.feedback (id, nama_lengkap, email, subjek, pesan, created_at, is_rea
 74	MA Qvhvh	RAWR@gmail.com	diuvqudvq3udvucvdyu21	sjkjbcehj cehj ew vuyvdg23idg2gdg2qd	2025-11-18 18:10:05.649432	f
 75	raihan	adamkian09@gmail.com	tugas	testting	2025-11-26 09:01:48.016737	f
 76	raihan	buje@gmail.com	test	test\r\n<script>\r\nfunction say(){\r\nalert('hello');\r\nsay();\r\n}\r\n\r\nsay();\r\n</script>	2025-11-26 09:03:09.996582	t
+77	raihan akbar	adamkull36@gmail.com	test	haiiiiiiiiiiiiiiii	2025-12-01 14:16:31.518804	t
 \.
 
 
 --
--- TOC entry 3474 (class 0 OID 41955)
+-- TOC entry 3476 (class 0 OID 41955)
 -- Dependencies: 220
 -- Data for Name: lab_profile; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -797,25 +808,25 @@ COPY public.lab_profile (id, visi, misi, sejarah, updated_at, alamat_lab, email_
 
 
 --
--- TOC entry 3476 (class 0 OID 41972)
+-- TOC entry 3478 (class 0 OID 41972)
 -- Dependencies: 222
 -- Data for Name: media_assets; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.media_assets (id, type, url, caption, created_at, deskripsi) FROM stdin;
-1	image	../assets/images/gallery/1.jpg	Workshop Pengembangan Aplikasi Android	2025-11-10 19:14:16.769618+07	\N
-2	image	../assets/images/gallery/2.jpg	Kegiatan Pameran Multimedia 2025	2025-11-10 19:14:16.769618+07	\N
-4	foto	https://files.catbox.moe/vgd0xe.png	Workshop AI di Polinema	2025-11-12 10:00:00+07	\N
-5	foto	https://files.catbox.moe/vgd0xe.png	Workshop AI di Polinema	2025-11-12 10:00:00+07	Kegiatan workshop pengenalan teknologi Artificial Intelligence bersama mahasiswa jurusan Multimedia MMT POLINEMA. Acara ini bertujuan untuk memperkenalkan penerapan AI dalam dunia industri kreatif dan pendidikan.
-8	video	https://www.youtube.com/embed/abcdefghij	Video Dokumentasi Lomba Game Dev	2025-11-17 13:41:05.691975+07	Lomba Game 2025
-3	video	../assets/images/gallery/videos/1.mp4	Demo Sistem Mobile Smart Attendance	2025-11-10 19:14:16.769618+07	\N
-6	foto	../assets/images/gallery/3.jpg	Kegiatan Dies Natalis	2025-11-17 13:41:05.691975+07	Hari ulang tahun kampus
-7	foto	../assets/images/gallery/4.jpg	Wisuda Mahasiswa	2025-11-17 13:41:05.691975+07	Hari kelulusan mahasiswa
+COPY public.media_assets (id, type, url, caption, created_at, deskripsi, rating) FROM stdin;
+1	image	../assets/images/gallery/1.jpg	Workshop Pengembangan Aplikasi Android	2025-11-10 19:14:16.769618+07	\N	\N
+2	image	../assets/images/gallery/2.jpg	Kegiatan Pameran Multimedia 2025	2025-11-10 19:14:16.769618+07	\N	\N
+4	foto	https://files.catbox.moe/vgd0xe.png	Workshop AI di Polinema	2025-11-12 10:00:00+07	\N	\N
+5	foto	https://files.catbox.moe/vgd0xe.png	Workshop AI di Polinema	2025-11-12 10:00:00+07	Kegiatan workshop pengenalan teknologi Artificial Intelligence bersama mahasiswa jurusan Multimedia MMT POLINEMA. Acara ini bertujuan untuk memperkenalkan penerapan AI dalam dunia industri kreatif dan pendidikan.	\N
+8	video	https://www.youtube.com/embed/abcdefghij	Video Dokumentasi Lomba Game Dev	2025-11-17 13:41:05.691975+07	Lomba Game 2025	\N
+3	video	../assets/images/gallery/videos/1.mp4	Demo Sistem Mobile Smart Attendance	2025-11-10 19:14:16.769618+07	\N	\N
+6	foto	../assets/images/gallery/3.jpg	Kegiatan Dies Natalis	2025-11-17 13:41:05.691975+07	Hari ulang tahun kampus	\N
+7	foto	../assets/images/gallery/4.jpg	Wisuda Mahasiswa	2025-11-17 13:41:05.691975+07	Hari kelulusan mahasiswa	\N
 \.
 
 
 --
--- TOC entry 3478 (class 0 OID 41979)
+-- TOC entry 3480 (class 0 OID 41979)
 -- Dependencies: 224
 -- Data for Name: members; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -829,24 +840,24 @@ COPY public.members (id, name, role, avatar_url, linkedin_url, tags, scholar_url
 
 
 --
--- TOC entry 3480 (class 0 OID 41985)
+-- TOC entry 3482 (class 0 OID 41985)
 -- Dependencies: 226
 -- Data for Name: news; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.news (id, title, slug, summary, content, cover_image, status, created_at, updated_at, user_id, type) FROM stdin;
-4	Pelatihan Internet of Things (IoT) untuk Dosen dan Mahasiswa	pelatihan-iot	Pelatihan ini memperkenalkan konsep dasar dan penerapan IoT.	Kegiatan pelatihan ini melibatkan dosen dan mahasiswa untuk memahami penerapan IoT dalam sistem pintar, serta implementasi sensor dan mikrokontroler untuk proyek real-time.	../assets/images/news/pelatihan-iot.jpg	published	2025-11-10 19:28:25.7442+07	2025-11-10 19:28:25.7442+07	\N	news
-5	Kuliah Tamu: Inovasi Teknologi AI di Dunia Industri	kuliah-tamu-ai	Kegiatan kuliah tamu membahas penerapan AI dalam dunia industri modern.	Departemen Sistem Informasi mengadakan kuliah tamu bertema “Inovasi Teknologi AI di Dunia Industri” yang menghadirkan pembicara dari startup teknologi ternama. Kegiatan ini bertujuan memperkenalkan mahasiswa pada perkembangan terbaru dalam teknologi kecerdasan buatan.	../assets/images/news/kuliah-tamu-ai.jpg	published	2025-11-10 19:28:40.780585+07	2025-11-10 19:28:40.780585+07	\N	news
-6	Workshop UI/UX Design untuk Mahasiswa	workshop-uiux	Workshop ini mengajarkan dasar-dasar desain antarmuka dan pengalaman pengguna.	Mahasiswa belajar langsung konsep desain UI/UX dari praktisi industri. Workshop ini juga membahas pentingnya user-centered design dalam pengembangan aplikasi modern.	../assets/images/news/workshop-uiux.jpg	published	2025-11-10 19:28:57.473885+07	2025-11-10 19:28:57.473885+07	\N	news
-7	Rapat Persiapan Kompetisi Gemastik 2025	rapat-persiapan-kompetisi-gemastik-2025	Rapat koordinasi internal menjelang kompetisi Gemastik tahun 2025.	Seluruh tim dari Laboratorium Mobile and Multimedia Tech melakukan rapat persiapan untuk mengikuti Gemastik 2025. Fokus utama adalah pengembangan aplikasi dengan teknologi terbaru dan manajemen tim yang solid.	../assets/images/news/gemastik-2025.jpg	published	2025-11-10 19:29:10.914884+07	2025-11-24 01:27:03.440257+07	\N	news
-1	Workshop Flutter 2025	workshop-flutter-2025	Pelatihan pengembangan aplikasi Flutter untuk mahasiswa tingkat akhir.	Laboratorium Mobile & Multimedia Tech mengadakan workshop pengembangan aplikasi Flutter untuk membantu mahasiswa memahami dasar cross-platform mobile app development.	../assets/images/news/flutter-workshop.jpg	published	2025-11-10 19:15:15.466339+07	2025-11-10 19:15:15.466339+07	\N	news
-2	AI dan Multimedia: Kolaborasi Masa Depan	ai-dan-multimedia	Membahas potensi integrasi AI dalam teknologi multimedia modern.	Seminar AI dan Multimedia membahas penerapan machine learning dalam pengolahan gambar dan video untuk meningkatkan pengalaman pengguna.	../assets/images/news/ai-multimedia.jpg	published	2025-11-10 19:15:28.421072+07	2025-11-10 19:15:28.421072+07	\N	news
-3	Pameran Proyek Akhir Mahasiswa	pameran-proyek-akhir	Pameran tahunan karya mahasiswa di bidang mobile dan multimedia.	Acara ini menampilkan hasil riset dan proyek inovatif mahasiswa yang dikembangkan di Laboratorium Mobile and Multimedia Tech.	../assets/images/news/exhibition.jpg	published	2025-11-10 19:15:46.951029+07	2025-11-10 19:15:46.951029+07	\N	news
+COPY public.news (id, title, slug, summary, content, cover_image, status, created_at, updated_at, user_id, type, category) FROM stdin;
+4	Pelatihan Internet of Things (IoT) untuk Dosen dan Mahasiswa	pelatihan-iot	Pelatihan ini memperkenalkan konsep dasar dan penerapan IoT.	Kegiatan pelatihan ini melibatkan dosen dan mahasiswa untuk memahami penerapan IoT dalam sistem pintar, serta implementasi sensor dan mikrokontroler untuk proyek real-time.	../assets/images/news/pelatihan-iot.jpg	published	2025-11-10 19:28:25.7442+07	2025-11-10 19:28:25.7442+07	\N	news	berita
+1	Workshop Flutter 2025	workshop-flutter-2025	Pelatihan pengembangan aplikasi Flutter untuk mahasiswa tingkat akhir.	Laboratorium Mobile & Multimedia Tech mengadakan workshop pengembangan aplikasi Flutter untuk membantu mahasiswa memahami dasar cross-platform mobile app development.	../assets/images/news/flutter-workshop.jpg	published	2025-11-10 19:15:15.466339+07	2025-11-10 19:15:15.466339+07	\N	news	berita
+2	AI dan Multimedia: Kolaborasi Masa Depan	ai-dan-multimedia	Membahas potensi integrasi AI dalam teknologi multimedia modern.	Seminar AI dan Multimedia membahas penerapan machine learning dalam pengolahan gambar dan video untuk meningkatkan pengalaman pengguna.	../assets/images/news/ai-multimedia.jpg	published	2025-11-10 19:15:28.421072+07	2025-11-10 19:15:28.421072+07	\N	news	berita
+3	Pameran Proyek Akhir Mahasiswa	pameran-proyek-akhir	Pameran tahunan karya mahasiswa di bidang mobile dan multimedia.	Acara ini menampilkan hasil riset dan proyek inovatif mahasiswa yang dikembangkan di Laboratorium Mobile and Multimedia Tech.	../assets/images/news/exhibition.jpg	published	2025-11-10 19:15:46.951029+07	2025-11-10 19:15:46.951029+07	\N	news	berita
+5	Kuliah Tamu: Inovasi Teknologi AI di Dunia Industri	kuliah-tamu-ai	Kegiatan kuliah tamu membahas penerapan AI dalam dunia industri modern.	Departemen Sistem Informasi mengadakan kuliah tamu bertema “Inovasi Teknologi AI di Dunia Industri” yang menghadirkan pembicara dari startup teknologi ternama. Kegiatan ini bertujuan memperkenalkan mahasiswa pada perkembangan terbaru dalam teknologi kecerdasan buatan.	../assets/images/news/kuliah-tamu-ai.jpg	published	2025-11-10 19:28:40.780585+07	2025-11-10 19:28:40.780585+07	\N	news	kegiatan
+6	Workshop UI/UX Design untuk Mahasiswa	workshop-uiux	Workshop ini mengajarkan dasar-dasar desain antarmuka dan pengalaman pengguna.	Mahasiswa belajar langsung konsep desain UI/UX dari praktisi industri. Workshop ini juga membahas pentingnya user-centered design dalam pengembangan aplikasi modern.	../assets/images/news/workshop-uiux.jpg	published	2025-11-10 19:28:57.473885+07	2025-11-10 19:28:57.473885+07	\N	news	kegiatan
+7	Rapat Persiapan Kompetisi Gemastik 2025	rapat-persiapan-kompetisi-gemastik-2025	Rapat koordinasi internal menjelang kompetisi Gemastik tahun 2025.	Seluruh tim dari Laboratorium Mobile and Multimedia Tech melakukan rapat persiapan untuk mengikuti Gemastik 2025. Fokus utama adalah pengembangan aplikasi dengan teknologi terbaru dan manajemen tim yang solid.	../assets/images/news/gemastik-2025.jpg	published	2025-11-10 19:29:10.914884+07	2025-11-24 01:27:03.440257+07	\N	news	kegiatan
 \.
 
 
 --
--- TOC entry 3482 (class 0 OID 41995)
+-- TOC entry 3484 (class 0 OID 41995)
 -- Dependencies: 228
 -- Data for Name: news_tags; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -856,7 +867,7 @@ COPY public.news_tags (id, news_id, tag_id, created_at) FROM stdin;
 
 
 --
--- TOC entry 3484 (class 0 OID 42000)
+-- TOC entry 3486 (class 0 OID 42000)
 -- Dependencies: 230
 -- Data for Name: project_members; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -868,7 +879,7 @@ COPY public.project_members (id, project_id, member_id) FROM stdin;
 
 
 --
--- TOC entry 3486 (class 0 OID 42004)
+-- TOC entry 3488 (class 0 OID 42004)
 -- Dependencies: 232
 -- Data for Name: project_tags; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -878,22 +889,22 @@ COPY public.project_tags (project_id, tag_id) FROM stdin;
 
 
 --
--- TOC entry 3487 (class 0 OID 42007)
+-- TOC entry 3489 (class 0 OID 42007)
 -- Dependencies: 233
 -- Data for Name: projects; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.projects (id, title, slug, summary, description, year, cover_image, repo_url, demo_url, status, created_at, updated_at, category_id, user_id) FROM stdin;
-1	IoT Smart Home Controller	iot-smart-home	Sistem pengendali rumah pintar berbasis IoT.	Proyek ini memungkinkan pengguna mengontrol perangkat rumah tangga dari jarak jauh melalui aplikasi mobile dan integrasi sensor IoT.	2023	../assets/images/projects/smarthome.jpg	https://github.com/labpolinema/smarthome	https://demo.labpolinema.ac.id/smarthome	1	2025-11-10 19:18:16.366231+07	2025-11-10 19:18:16.366231+07	4	\N
-2	Augmented Reality Learning App	ar-learning-app	Aplikasi pembelajaran interaktif berbasis AR untuk anak sekolah.	Proyek ini menggabungkan teknologi Augmented Reality untuk menciptakan pengalaman belajar yang menyenangkan dan imersif.	2024	../assets/images/projects/ar-learning.jpg	https://github.com/labpolinema/ar-learning	https://demo.labpolinema.ac.id/ar-learning	1	2025-11-10 19:18:30.048209+07	2025-11-10 19:18:30.048209+07	2	\N
-4	Smart Attendance System	smart-attendance	Aplikasi presensi berbasis pengenalan wajah untuk perkuliahan.	Proyek ini menggunakan teknologi face recognition untuk mencatat kehadiran mahasiswa secara otomatis dan real-time. Sistem ini dikembangkan menggunakan Python dan database PostgreSQL.	2025	../assets/images/projects/attendance.jpg	https://github.com/labpolinema/smart-attendance	https://demo.labpolinema.ac.id/attendance	published	2025-11-10 19:31:01.213185+07	2025-11-10 19:31:01.213185+07	1	\N
-6	Virtual Reality Tourism Experience	vr-tourism	Aplikasi tur virtual untuk destinasi wisata Indonesia.	Aplikasi VR ini menghadirkan pengalaman menjelajahi tempat wisata Indonesia dengan teknologi virtual reality, dikembangkan menggunakan Unity dan Oculus SDK.	2024	../assets/images/projects/vr-tourism.jpg	https://github.com/labpolinema/vr-tourism	https://demo.labpolinema.ac.id/vr-tourism	published	2025-11-10 19:31:42.529039+07	2025-11-10 19:31:42.529039+07	4	\N
-3	Game Edukasi Bahasa Indonesia	game-edukasi-bahasa-indonesia	Game ini dirancang untuk membantu anak-anak belajar kosakata dan tata bahasa melalui permainan interaktif yang menyenangkan dan edukatif.	Game ini dirancang untuk membantu anak-anak belajar kosakata dan tata bahasa melalui permainan interaktif yang menyenangkan dan edukatif.	2025	../assets/images/projects/game-edukasi.jpg	https://github.com/labpolinema/game-edukasi	https://demo.labpolinema.ac.id/game-edukasi	published	2025-11-10 19:30:41.150439+07	2025-11-24 01:30:19.435286+07	2	\N
+COPY public.projects (id, title, slug, summary, description, year, cover_image, repo_url, demo_url, status, created_at, updated_at, category_id, user_id, rating) FROM stdin;
+1	IoT Smart Home Controller	iot-smart-home	Sistem pengendali rumah pintar berbasis IoT.	Proyek ini memungkinkan pengguna mengontrol perangkat rumah tangga dari jarak jauh melalui aplikasi mobile dan integrasi sensor IoT.	2023	../assets/images/projects/smarthome.jpg	https://github.com/labpolinema/smarthome	https://demo.labpolinema.ac.id/smarthome	1	2025-11-10 19:18:16.366231+07	2025-11-10 19:18:16.366231+07	4	\N	\N
+2	Augmented Reality Learning App	ar-learning-app	Aplikasi pembelajaran interaktif berbasis AR untuk anak sekolah.	Proyek ini menggabungkan teknologi Augmented Reality untuk menciptakan pengalaman belajar yang menyenangkan dan imersif.	2024	../assets/images/projects/ar-learning.jpg	https://github.com/labpolinema/ar-learning	https://demo.labpolinema.ac.id/ar-learning	1	2025-11-10 19:18:30.048209+07	2025-11-10 19:18:30.048209+07	2	\N	\N
+4	Smart Attendance System	smart-attendance	Aplikasi presensi berbasis pengenalan wajah untuk perkuliahan.	Proyek ini menggunakan teknologi face recognition untuk mencatat kehadiran mahasiswa secara otomatis dan real-time. Sistem ini dikembangkan menggunakan Python dan database PostgreSQL.	2025	../assets/images/projects/attendance.jpg	https://github.com/labpolinema/smart-attendance	https://demo.labpolinema.ac.id/attendance	published	2025-11-10 19:31:01.213185+07	2025-11-10 19:31:01.213185+07	1	\N	\N
+6	Virtual Reality Tourism Experience	vr-tourism	Aplikasi tur virtual untuk destinasi wisata Indonesia.	Aplikasi VR ini menghadirkan pengalaman menjelajahi tempat wisata Indonesia dengan teknologi virtual reality, dikembangkan menggunakan Unity dan Oculus SDK.	2024	../assets/images/projects/vr-tourism.jpg	https://github.com/labpolinema/vr-tourism	https://demo.labpolinema.ac.id/vr-tourism	published	2025-11-10 19:31:42.529039+07	2025-11-10 19:31:42.529039+07	4	\N	\N
+3	Game Edukasi Bahasa Indonesia	game-edukasi-bahasa-indonesia	Game ini dirancang untuk membantu anak-anak belajar kosakata dan tata bahasa melalui permainan interaktif yang menyenangkan dan edukatif.	Game ini dirancang untuk membantu anak-anak belajar kosakata dan tata bahasa melalui permainan interaktif yang menyenangkan dan edukatif.	2025	../assets/images/projects/game-edukasi.jpg	https://github.com/labpolinema/game-edukasi	https://demo.labpolinema.ac.id/game-edukasi	published	2025-11-10 19:30:41.150439+07	2025-11-24 01:30:19.435286+07	2	\N	\N
 \.
 
 
 --
--- TOC entry 3489 (class 0 OID 42016)
+-- TOC entry 3491 (class 0 OID 42016)
 -- Dependencies: 235
 -- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -913,7 +924,7 @@ COPY public.tags (id, name, slug) FROM stdin;
 
 
 --
--- TOC entry 3491 (class 0 OID 42020)
+-- TOC entry 3493 (class 0 OID 42020)
 -- Dependencies: 237
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -925,11 +936,12 @@ COPY public.users (id, name, email, password, role, created_at, updated_at) FROM
 1	Admin Lab	admin@labpolinema.ac.id	admin123	admin	2025-11-10 19:13:54.974842+07	2025-11-10 19:13:54.974842+07
 6	admin2	admin2@dummy.com	12345	admin	2025-11-22 20:52:31.324255+07	2025-11-22 20:52:31.324255+07
 7	sandy	sandy@gmail.com	admin	admin	2025-11-25 17:24:05.003777+07	2025-11-25 17:24:05.003777+07
+8	serigala	serigala@gmail.com	12345	anggota	2025-12-01 11:03:53.351061+07	2025-12-01 11:03:53.351061+07
 \.
 
 
 --
--- TOC entry 3510 (class 0 OID 0)
+-- TOC entry 3512 (class 0 OID 0)
 -- Dependencies: 215
 -- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -938,25 +950,25 @@ SELECT pg_catalog.setval('public.categories_id_seq', 12, true);
 
 
 --
--- TOC entry 3511 (class 0 OID 0)
+-- TOC entry 3513 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.comments_id_seq', 1, false);
+SELECT pg_catalog.setval('public.comments_id_seq', 8, true);
 
 
 --
--- TOC entry 3512 (class 0 OID 0)
+-- TOC entry 3514 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: feedback_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.feedback_id_seq', 76, true);
+SELECT pg_catalog.setval('public.feedback_id_seq', 77, true);
 
 
 --
--- TOC entry 3513 (class 0 OID 0)
+-- TOC entry 3515 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: lab_profile_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -965,7 +977,7 @@ SELECT pg_catalog.setval('public.lab_profile_id_seq', 2, true);
 
 
 --
--- TOC entry 3514 (class 0 OID 0)
+-- TOC entry 3516 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: media_assets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -974,7 +986,7 @@ SELECT pg_catalog.setval('public.media_assets_id_seq', 9, true);
 
 
 --
--- TOC entry 3515 (class 0 OID 0)
+-- TOC entry 3517 (class 0 OID 0)
 -- Dependencies: 225
 -- Name: members_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -983,7 +995,7 @@ SELECT pg_catalog.setval('public.members_id_seq', 4, true);
 
 
 --
--- TOC entry 3516 (class 0 OID 0)
+-- TOC entry 3518 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: news_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -992,7 +1004,7 @@ SELECT pg_catalog.setval('public.news_id_seq', 7, true);
 
 
 --
--- TOC entry 3517 (class 0 OID 0)
+-- TOC entry 3519 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: news_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -1001,7 +1013,7 @@ SELECT pg_catalog.setval('public.news_tags_id_seq', 1, false);
 
 
 --
--- TOC entry 3518 (class 0 OID 0)
+-- TOC entry 3520 (class 0 OID 0)
 -- Dependencies: 231
 -- Name: project_members_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -1010,16 +1022,16 @@ SELECT pg_catalog.setval('public.project_members_id_seq', 2, true);
 
 
 --
--- TOC entry 3519 (class 0 OID 0)
+-- TOC entry 3521 (class 0 OID 0)
 -- Dependencies: 234
 -- Name: projects_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.projects_id_seq', 7, true);
+SELECT pg_catalog.setval('public.projects_id_seq', 8, true);
 
 
 --
--- TOC entry 3520 (class 0 OID 0)
+-- TOC entry 3522 (class 0 OID 0)
 -- Dependencies: 236
 -- Name: tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -1028,16 +1040,16 @@ SELECT pg_catalog.setval('public.tags_id_seq', 10, true);
 
 
 --
--- TOC entry 3521 (class 0 OID 0)
+-- TOC entry 3523 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 6, true);
+SELECT pg_catalog.setval('public.users_id_seq', 7, true);
 
 
 --
--- TOC entry 3275 (class 2606 OID 42042)
+-- TOC entry 3277 (class 2606 OID 42042)
 -- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1046,7 +1058,7 @@ ALTER TABLE ONLY public.categories
 
 
 --
--- TOC entry 3277 (class 2606 OID 42044)
+-- TOC entry 3279 (class 2606 OID 42044)
 -- Name: categories categories_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1055,7 +1067,7 @@ ALTER TABLE ONLY public.categories
 
 
 --
--- TOC entry 3279 (class 2606 OID 42046)
+-- TOC entry 3281 (class 2606 OID 42046)
 -- Name: comments comments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1064,7 +1076,7 @@ ALTER TABLE ONLY public.comments
 
 
 --
--- TOC entry 3281 (class 2606 OID 42048)
+-- TOC entry 3283 (class 2606 OID 42048)
 -- Name: feedback feedback_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1073,7 +1085,7 @@ ALTER TABLE ONLY public.feedback
 
 
 --
--- TOC entry 3283 (class 2606 OID 42050)
+-- TOC entry 3285 (class 2606 OID 42050)
 -- Name: lab_profile lab_profile_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1082,7 +1094,7 @@ ALTER TABLE ONLY public.lab_profile
 
 
 --
--- TOC entry 3285 (class 2606 OID 42052)
+-- TOC entry 3287 (class 2606 OID 42052)
 -- Name: media_assets media_assets_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1091,7 +1103,7 @@ ALTER TABLE ONLY public.media_assets
 
 
 --
--- TOC entry 3287 (class 2606 OID 42054)
+-- TOC entry 3289 (class 2606 OID 42054)
 -- Name: members members_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1100,7 +1112,7 @@ ALTER TABLE ONLY public.members
 
 
 --
--- TOC entry 3290 (class 2606 OID 42056)
+-- TOC entry 3292 (class 2606 OID 42056)
 -- Name: news news_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1109,7 +1121,7 @@ ALTER TABLE ONLY public.news
 
 
 --
--- TOC entry 3292 (class 2606 OID 42058)
+-- TOC entry 3294 (class 2606 OID 42058)
 -- Name: news news_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1118,7 +1130,7 @@ ALTER TABLE ONLY public.news
 
 
 --
--- TOC entry 3295 (class 2606 OID 42060)
+-- TOC entry 3297 (class 2606 OID 42060)
 -- Name: news_tags news_tags_news_id_tag_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1127,7 +1139,7 @@ ALTER TABLE ONLY public.news_tags
 
 
 --
--- TOC entry 3297 (class 2606 OID 42062)
+-- TOC entry 3299 (class 2606 OID 42062)
 -- Name: news_tags news_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1136,7 +1148,7 @@ ALTER TABLE ONLY public.news_tags
 
 
 --
--- TOC entry 3299 (class 2606 OID 42064)
+-- TOC entry 3301 (class 2606 OID 42064)
 -- Name: project_members project_members_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1145,7 +1157,7 @@ ALTER TABLE ONLY public.project_members
 
 
 --
--- TOC entry 3301 (class 2606 OID 42066)
+-- TOC entry 3303 (class 2606 OID 42066)
 -- Name: project_tags project_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1154,7 +1166,7 @@ ALTER TABLE ONLY public.project_tags
 
 
 --
--- TOC entry 3304 (class 2606 OID 42068)
+-- TOC entry 3306 (class 2606 OID 42068)
 -- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1163,7 +1175,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- TOC entry 3306 (class 2606 OID 42070)
+-- TOC entry 3308 (class 2606 OID 42070)
 -- Name: projects projects_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1172,7 +1184,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- TOC entry 3308 (class 2606 OID 42072)
+-- TOC entry 3310 (class 2606 OID 42072)
 -- Name: tags tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1181,7 +1193,7 @@ ALTER TABLE ONLY public.tags
 
 
 --
--- TOC entry 3310 (class 2606 OID 42074)
+-- TOC entry 3312 (class 2606 OID 42074)
 -- Name: tags tags_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1190,7 +1202,7 @@ ALTER TABLE ONLY public.tags
 
 
 --
--- TOC entry 3312 (class 2606 OID 42076)
+-- TOC entry 3314 (class 2606 OID 42076)
 -- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1199,7 +1211,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3314 (class 2606 OID 42078)
+-- TOC entry 3316 (class 2606 OID 42078)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1208,7 +1220,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3288 (class 1259 OID 42079)
+-- TOC entry 3290 (class 1259 OID 42079)
 -- Name: idx_news_created_at; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1216,7 +1228,7 @@ CREATE INDEX idx_news_created_at ON public.news USING btree (created_at);
 
 
 --
--- TOC entry 3293 (class 1259 OID 42080)
+-- TOC entry 3295 (class 1259 OID 42080)
 -- Name: idx_news_tags_tag; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1224,7 +1236,7 @@ CREATE INDEX idx_news_tags_tag ON public.news_tags USING btree (tag_id);
 
 
 --
--- TOC entry 3302 (class 1259 OID 42081)
+-- TOC entry 3304 (class 1259 OID 42081)
 -- Name: idx_projects_created_at; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1232,7 +1244,7 @@ CREATE INDEX idx_projects_created_at ON public.projects USING btree (created_at)
 
 
 --
--- TOC entry 3325 (class 2620 OID 42082)
+-- TOC entry 3327 (class 2620 OID 42082)
 -- Name: comments update_comments_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1240,7 +1252,7 @@ CREATE TRIGGER update_comments_updated_at BEFORE UPDATE ON public.comments FOR E
 
 
 --
--- TOC entry 3315 (class 2606 OID 42083)
+-- TOC entry 3317 (class 2606 OID 42083)
 -- Name: comments fk_comments_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1249,7 +1261,7 @@ ALTER TABLE ONLY public.comments
 
 
 --
--- TOC entry 3317 (class 2606 OID 42088)
+-- TOC entry 3319 (class 2606 OID 42088)
 -- Name: news_tags fk_news_tags_news; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1258,7 +1270,7 @@ ALTER TABLE ONLY public.news_tags
 
 
 --
--- TOC entry 3318 (class 2606 OID 42093)
+-- TOC entry 3320 (class 2606 OID 42093)
 -- Name: news_tags fk_news_tags_tag; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1267,7 +1279,7 @@ ALTER TABLE ONLY public.news_tags
 
 
 --
--- TOC entry 3316 (class 2606 OID 42098)
+-- TOC entry 3318 (class 2606 OID 42098)
 -- Name: news fk_news_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1276,7 +1288,7 @@ ALTER TABLE ONLY public.news
 
 
 --
--- TOC entry 3323 (class 2606 OID 42103)
+-- TOC entry 3325 (class 2606 OID 42103)
 -- Name: projects fk_projects_category; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1285,7 +1297,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- TOC entry 3321 (class 2606 OID 42108)
+-- TOC entry 3323 (class 2606 OID 42108)
 -- Name: project_tags fk_projects_tags_project; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1294,7 +1306,7 @@ ALTER TABLE ONLY public.project_tags
 
 
 --
--- TOC entry 3322 (class 2606 OID 42113)
+-- TOC entry 3324 (class 2606 OID 42113)
 -- Name: project_tags fk_projects_tags_tag; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1303,7 +1315,7 @@ ALTER TABLE ONLY public.project_tags
 
 
 --
--- TOC entry 3324 (class 2606 OID 42118)
+-- TOC entry 3326 (class 2606 OID 42118)
 -- Name: projects fk_projects_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1312,7 +1324,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- TOC entry 3319 (class 2606 OID 42123)
+-- TOC entry 3321 (class 2606 OID 42123)
 -- Name: project_members project_members_member_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1321,7 +1333,7 @@ ALTER TABLE ONLY public.project_members
 
 
 --
--- TOC entry 3320 (class 2606 OID 42128)
+-- TOC entry 3322 (class 2606 OID 42128)
 -- Name: project_members project_members_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1329,11 +1341,11 @@ ALTER TABLE ONLY public.project_members
     ADD CONSTRAINT project_members_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id) ON DELETE CASCADE;
 
 
--- Completed on 2025-11-29 06:09:26
+-- Completed on 2025-12-01 20:47:59
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 1TQfElY0cnu0FDUf4b5StB4X9PmfQbtPbveirGR7YDNgPNgGbZrsbiWk7mzlY9u
+\unrestrict oCR4Vq7rG0cXIjhyChnqjOLFIrUUBV5YYCLdJC9s0kXiy6RpMfSjdWuPXj0WELH
 

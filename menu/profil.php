@@ -150,6 +150,19 @@ $members = $pdo->query("SELECT * FROM members ORDER BY id ASC")->fetchAll(PDO::F
             text-align: center;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
+        /* Footer background */
+.site-footer,
+body > footer,
+footer.site-footer {
+    background: #FE7927 !important;
+}
+
+/* Social icons in footer hover */
+.site-footer .social-links-footer a:hover {
+    background: #ffffff !important;
+    border-color: #ffffff !important;
+    color: #FE7927 !important;
+}
     </style>
 </head>
 <body id="top">
