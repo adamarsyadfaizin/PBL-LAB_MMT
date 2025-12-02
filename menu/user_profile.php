@@ -44,22 +44,57 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['change_password'])) {
         $error = "Password baru minimal 6 karakter!";
     } else {
         try {
-            // Verifikasi password lama
+            // Verifikasi password lama - PERBAIKAN UTAMA DISINI
             $stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
             $stmt->execute([$user_id]);
             $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            if ($user_data && password_verify($current_password, $user_data['password'])) {
-                // Update password baru
-                $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare("UPDATE users SET password = ?, updated_at = NOW() WHERE id = ?");
-                $stmt->execute([$hashed_password, $user_id]);
+            if ($user_data) {
+                $db_password = $user_data['password'];
+                $password_valid = false;
                 
-                $success = "Password berhasil diubah!";
-                // Clear form
-                $_POST['current_password'] = $_POST['new_password'] = $_POST['confirm_password'] = '';
+                // =============== PERBAIKAN: VERIFIKASI DENGAN BERBAGAI FORMAT ===============
+                
+                // 1. Coba dengan password_verify() untuk password hash bcrypt standard
+                if (password_verify($current_password, $db_password)) {
+                    $password_valid = true;
+                }
+                // 2. Cek jika password dimulai dengan $2/$10$ (format khusus dari tabel Anda)
+                else if (strpos($db_password, '$2/$10$') === 0) {
+                    // Untuk password seperti: $2/$10$abc12345678$0examplehashhashhash
+                    // Ini tampaknya hash custom, coba verifikasi dengan cara sederhana
+                    // Atau anggap sebagai plain text jika verifikasi hash gagal
+                    if ($current_password === $db_password) {
+                        $password_valid = true;
+                    }
+                    // Alternatif: coba verifikasi sebagai hash yang valid
+                    else if (@password_verify($current_password, $db_password)) {
+                        $password_valid = true;
+                    }
+                }
+                // 3. Cek sebagai plain text (fallback)
+                else if ($current_password === $db_password) {
+                    $password_valid = true;
+                }
+                // ============================================================================
+                
+                if ($password_valid) {
+                    // Update password baru dengan HASH yang konsisten (bcrypt)
+                    $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+                    $stmt = $pdo->prepare("UPDATE users SET password = ?, updated_at = NOW() WHERE id = ?");
+                    
+                    if ($stmt->execute([$hashed_password, $user_id])) {
+                        $success = "Password berhasil diubah!";
+                        // Clear form
+                        $_POST['current_password'] = $_POST['new_password'] = $_POST['confirm_password'] = '';
+                    } else {
+                        $error = "Gagal mengupdate password!";
+                    }
+                } else {
+                    $error = "Password lama salah!";
+                }
             } else {
-                $error = "Password lama salah!";
+                $error = "User tidak ditemukan!";
             }
         } catch (PDOException $e) {
             $error = "Error: " . $e->getMessage();
@@ -106,10 +141,10 @@ renderFloatingProfile();
         }
 
         .profile-header {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            background: linear-gradient(135deg, #f8920cff 0%);
             color: white;
             padding: 30px;
-            text-align: center;
+            text-align: center;#ffb700
         }
 
         .profile-header h1 {
@@ -146,7 +181,7 @@ renderFloatingProfile();
         }
 
         .section-title i {
-            color: #6a11cb;
+            color: #333;
         }
 
         /* Info Profile Styling */
@@ -239,7 +274,7 @@ renderFloatingProfile();
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            background: linear-gradient(135deg, #4854ffff 0%);
             color: white;
         }
 
@@ -312,8 +347,8 @@ renderFloatingProfile();
         <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center;">
             <!-- Logo -->
             <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="../assets/images/logo.png" alt="Logo" style="height: 40px;">
-                <span style="font-family: 'Poppins', sans-serif; font-weight: 700; color: #333;">LAB MMT</span>
+                <img src="../assets/images/logo-placeholder.png" alt="Logo" style="height: 40px;">
+               
             </div>
             
             <!-- Hanya tombol kembali ke beranda -->
@@ -350,12 +385,6 @@ renderFloatingProfile();
                 <?php endif; ?>
 
                 <?php if ($user): ?>
-                <div class="info-grid">
-                    <div class="info-group">
-                        <div class="info-label">ID User</div>
-                        <div class="info-value"><?= htmlspecialchars($user['id']) ?></div>
-                    </div>
-
                     <div class="info-group">
                         <div class="info-label">Nama Lengkap</div>
                         <div class="info-value"><?= htmlspecialchars($user['name']) ?></div>
@@ -367,7 +396,7 @@ renderFloatingProfile();
                     </div>
 
                     <div class="info-group">
-                        <div class="info-label">Role</div>
+                        <div class="info-label">Status</div>
                         <div class="info-value"><?= htmlspecialchars($user['role']) ?></div>
                     </div>
 
@@ -385,79 +414,5 @@ renderFloatingProfile();
                 </div>
                 <?php endif; ?>
             </div>
-
-            <!-- Section: Edit Password -->
-            <div class="profile-section">
-                <h2 class="section-title">
-                    <i class="fas fa-lock"></i> Edit Password
-                </h2>
-                
-                <?php if ($error && isset($_POST['change_password'])): ?>
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i> <?= htmlspecialchars($error) ?>
-                    </div>
-                <?php endif; ?>
-
-                <form method="POST" action="">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="current_password">
-                                <i class="fas fa-key"></i> Password Lama
-                            </label>
-                            <input type="password" id="current_password" name="current_password" required 
-                                   value="<?= isset($_POST['current_password']) ? htmlspecialchars($_POST['current_password']) : '' ?>"
-                                   placeholder="Masukkan password lama">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="new_password">
-                                <i class="fas fa-lock"></i> Password Baru
-                            </label>
-                            <input type="password" id="new_password" name="new_password" required 
-                                   value="<?= isset($_POST['new_password']) ? htmlspecialchars($_POST['new_password']) : '' ?>"
-                                   placeholder="Password baru (min. 6 karakter)">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="confirm_password">
-                                <i class="fas fa-lock"></i> Konfirmasi Password Baru
-                            </label>
-                            <input type="password" id="confirm_password" name="confirm_password" required 
-                                   value="<?= isset($_POST['confirm_password']) ? htmlspecialchars($_POST['confirm_password']) : '' ?>"
-                                   placeholder="Konfirmasi password baru">
-                        </div>
-
-                        <div class="form-group" style="display: flex; align-items: end;">
-                            <button type="submit" name="change_password" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Simpan Password Baru
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-     
-
-    <script>
-        // Validasi form password
-        document.querySelector('form')?.addEventListener('submit', function(e) {
-            const newPassword = document.getElementById('new_password').value;
-            const confirmPassword = document.getElementById('confirm_password').value;
-            
-            if (newPassword.length < 6) {
-                alert('minimal 6 karakter');
-                e.preventDefault();
-                return;
-            }
-            
-            if (newPassword !== confirmPassword) {
-                alert('Password baru dan konfirmasi password tidak cocok!');
-                e.preventDefault();
-                return;
-            }
-        });
-    </script>
-
 </body>
 </html>
