@@ -8,7 +8,7 @@
    ========================================= */
 .project-filter-bar {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr; /* Pembagian kolom */
+    grid-template-columns: 3fr 1fr 1fr 1fr 1fr; 
     gap: 15px;
     align-items: center;
     padding: 20px;
@@ -17,6 +17,19 @@
     border: 1px solid #eee;
     margin-bottom: 40px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.filter-group-reset {
+    /* Kolom Filter */
+    grid-column: 4 / 5; 
+}
+.filter-group-action {
+    /* Kolom Reset */
+    grid-column: 5 / 6; 
+}
+.filter-group-action .btn, 
+.filter-group-reset .btn {
+    margin-top: 19px; 
 }
 
 .filter-group {
@@ -69,6 +82,25 @@
     grid-template-columns: repeat(3, 1fr); /* 3 Kolom */
     gap: 30px;
     margin-bottom: 40px;
+}
+
+.project-grid.grid-empty {
+    display: block; 
+    
+    width: 60%; 
+    
+    margin-left: auto;
+    margin-right: auto;
+    
+    background: none !important; 
+    backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.project-grid.grid-empty .no-results {
+    width: 100%;
+    margin: 0; 
 }
 
 /* Kartu Proyek */
@@ -136,7 +168,6 @@
     margin-bottom: 15px;
     line-height: 1.6;
     flex: 1; /* Mendorong tags ke bawah */
-    /* Batasi deskripsi 3 baris */
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -198,25 +229,49 @@
     transform: scale(1.1);
 }
 
-/* Pesan Jika Tidak Ada Data */
+
 .no-results {
-    grid-column: 1 / -1;
+    grid-column: 1 / -1; 
+    background: none; 
+    border-radius: 0; 
+    padding: 30px; 
+    box-shadow: none; 
+    
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center; 
     text-align: center;
-    padding: 60px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    color: #666;
+    min-height: 250px; 
+    color: #333; 
+}
+
+.no-results h3 {
+    color: var(--color-text); 
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.no-results .btn {
+    background: var(--color-accent); 
+    color: #000;
 }
 
 /* =========================================
-   4. RESPONSIVE
+    RESPONSIVE DESIGN
    ========================================= */
 @media (max-width: 992px) {
     .project-filter-bar {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr; 
     }
     .filter-group-search {
-        grid-column: 1 / -1; /* Search bar full width */
+        grid-column: 1 / -1;
+    }
+    .filter-group-action {
+        grid-column: 2 / 3; 
+    }
+    .filter-group-reset {
+        grid-column: 3 / 4; 
     }
     .project-grid {
         grid-template-columns: repeat(2, 1fr);

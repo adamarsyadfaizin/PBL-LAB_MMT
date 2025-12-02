@@ -26,7 +26,6 @@ $year = $_GET['tahun'] ?? 'semua';
 $sort = $_GET['sort'] ?? 'terbaru';
 
 // --- QUERY BUILDER ---
-// Memastikan hanya status published/1 yang diambil
 $sql_base = "FROM projects p
              LEFT JOIN categories c ON p.category_id = c.id
              LEFT JOIN project_tags pt ON p.id = pt.project_id
@@ -36,7 +35,10 @@ $sql_base = "FROM projects p
 $params = [];
 
 if (!empty($search_term)) {
-    $sql_base .= " AND (p.title LIKE ? OR p.summary LIKE ?)";
+    $sql_base .= " AND (p.title LIKE ? OR p.slug LIKE ? OR p.summary LIKE ? OR p.description LIKE ?)";
+    
+    $params[] = "%$search_term%";
+    $params[] = "%$search_term%";
     $params[] = "%$search_term%";
     $params[] = "%$search_term%";
 }
@@ -47,7 +49,6 @@ if ($category_slug != 'semua') {
 }
 
 if ($tech_slug != 'semua') {
-    // Memastikan tag yang difilter adalah tag yang benar
     $sql_base .= " AND EXISTS (SELECT 1 FROM project_tags pt_inner JOIN tags t_inner ON pt_inner.tag_id = t_inner.id WHERE pt_inner.project_id = p.id AND t_inner.slug = ?)";
     $params[] = $tech_slug;
 }
@@ -59,10 +60,14 @@ if ($year != 'semua') {
 
 $sql_base .= " GROUP BY p.id"; // Penting untuk menghindari duplikasi saat join tags
 
-// --- HITUNG TOTAL DATA ---
+// --- HITUNG TOTAL DATA (MENGGUNAKAN $sql_base LENGKAP) ---
 try {
-    $sql_count = "SELECT COUNT(DISTINCT p.id) " . $sql_base;
-    $stmt_count = $pdo->prepare($sql_count);
+    $sql_count = "SELECT COUNT(DISTINCT p.id) " . $sql_base; 
+    
+    $sql_count_final = "SELECT COUNT(*) FROM (" 
+                     . "SELECT p.id " . $sql_base . ") AS count_alias";
+    
+    $stmt_count = $pdo->prepare($sql_count_final);
     $stmt_count->execute($params);
     $total_projects = $stmt_count->fetchColumn();
 } catch (PDOException $e) {
@@ -116,6 +121,8 @@ function build_pagination($current, $total, $adj = 2) {
     if ($total > 1) $pages[] = $total;
     return array_unique($pages);
 }
+
+$is_filter_active = !empty($search_term) || $category_slug != 'semua' || $year != 'semua';
 ?>
 
 <!DOCTYPE html>
@@ -238,17 +245,6 @@ function build_pagination($current, $total, $adj = 2) {
                         </select>
                     </div>
                     <div class="filter-group">
-                        <label for="filter-teknologi">Teknologi</label>
-                        <select id="filter-teknologi" name="teknologi">
-                            <option value="semua">Semua</option>
-                            <?php foreach ($tags as $tag): ?>
-                                <option value="<?= $tag['slug'] ?>" <?= ($tech_slug == $tag['slug']) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($tag['name']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="filter-group">
                         <label for="filter-tahun">Tahun</label>
                         <select id="filter-tahun" name="tahun">
                             <option value="semua">Semua</option>
@@ -262,20 +258,29 @@ function build_pagination($current, $total, $adj = 2) {
                     <?php if (isset($_GET['sort'])): ?>
                     <input type="hidden" name="sort" value="<?= htmlspecialchars($sort) ?>">
                     <?php endif; ?>
-                    <div class="filter-group">
+
+                    <?php if ($is_filter_active): ?>
+                    <div class="filter-group filter-group-reset">
                         <label>&nbsp;</label>
-                        <button type="submit" class="btn" style="width:100%; height:42px; padding:0;"><i class="fas fa-filter"></i> Filter</button>
+                        <a href="proyek.php" class="btn btn-reset" style="width:100%; height:42px; padding:0; background-color:#dc3545; color:white;"><i class="fas fa-times"></i> Reset Filter</a>
                     </div>
-                </form>
-
-                <div class="search-results-info">
-                    Menampilkan **<?= $total_projects ?>** proyek. 
-                    <?php if (!empty($search_term) || $category_slug != 'semua' || $tech_slug != 'semua' || $year != 'semua'): ?>
-                    <a href="proyek.php" style="color:var(--color-primary); font-weight:bold; margin-left:10px;">Reset Filter</a>
                     <?php endif; ?>
-                </div>
 
-                <div class="project-grid">
+                    <div class="filter-group filter-group-action">
+                        <label>&nbsp;</label>
+                        <button type="submit" class="btn btn-filter" style="width:100%; height:42px; padding:0;"><i class="fas fa-filter"></i> Filter</button>
+                    </div>
+                    
+                    </form>
+                </form>
+                    
+                <?php if ($total_projects > 0): ?>
+                <div class="search-results-info">
+                        Menampilkan <?= $total_projects ?> proyek. 
+                </div>
+                <?php endif; ?>
+
+                <div class="project-grid <?= ($total_projects == 0) ? 'grid-empty' : '' ?>">
                     <?php
                     if ($projects):
                         $sql_tags = "SELECT t.name FROM tags t JOIN project_tags pt ON t.id = pt.tag_id WHERE pt.project_id = ?";
@@ -325,7 +330,7 @@ function build_pagination($current, $total, $adj = 2) {
                 <div class="pagination-controls">
                     <?php 
                     $qs = $_GET; 
-                    unset($qs['page']); // Hapus parameter page sebelumnya agar tidak duplikat
+                    unset($qs['page']); 
                     $pages_show = build_pagination($page, $total_pages);
 
                     // Prev
