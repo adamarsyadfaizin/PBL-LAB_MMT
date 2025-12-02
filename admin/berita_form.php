@@ -1,4 +1,5 @@
 <?php 
+// admin/berita_form.php
 include 'components/header.php'; 
 
 // Cek apakah sedang mode Edit (ada ID di URL)
@@ -27,6 +28,17 @@ if ($id) {
         </div>
 
         <div class="form-group">
+            <label>Kategori</label>
+            <select name="category" class="form-control" required>
+                <option value="" disabled <?= empty($data['category']) ? 'selected' : '' ?>>-- Pilih Kategori --</option>
+                <option value="berita" <?= ($data['category'] ?? '') == 'berita' ? 'selected' : '' ?>>Berita</option>
+                <option value="kegiatan" <?= ($data['category'] ?? '') == 'kegiatan' ? 'selected' : '' ?>>Kegiatan</option>
+                <option value="workshop" <?= ($data['category'] ?? '') == 'workshop' ? 'selected' : '' ?>>Workshop</option>
+                <option value="lomba" <?= ($data['category'] ?? '') == 'lomba' ? 'selected' : '' ?>>Lomba / Prestasi</option>
+            </select>
+        </div>
+
+        <div class="form-group">
             <label>Ringkasan (Summary)</label>
             <textarea name="summary" class="form-control" rows="3" placeholder="Tulis ringkasan singkat untuk ditampilkan di kartu berita..."><?= htmlspecialchars($data['summary'] ?? '') ?></textarea>
         </div>
@@ -41,11 +53,11 @@ if ($id) {
             <?php if (!empty($data['cover_image'])): ?>
                 <div style="margin-bottom:10px;">
                     <p style="font-size: 12px; color: #666; margin-bottom: 5px;">Gambar Saat Ini:</p>
-                    <img src="../<?= htmlspecialchars($data['cover_image']) ?>" class="preview">
+                    <img src="../<?= htmlspecialchars($data['cover_image']) ?>" class="preview" style="max-width: 200px; border-radius: 8px;">
                 </div>
             <?php endif; ?>
-            <input type="file" name="cover_image" class="form-control" accept="image/png, image/jpeg, image/jpg">
-            <small style="color: #888; font-size: 12px;">Format: JPG, PNG. Biarkan kosong jika tidak ingin mengganti gambar.</small>
+            <input type="file" name="cover_image" class="form-control" accept="image/png, image/jpeg, image/jpg, image/webp">
+            <small style="color: #888; font-size: 12px;">Format: JPG, PNG, WEBP. Biarkan kosong jika tidak ingin mengganti gambar.</small>
         </div>
 
         <div class="form-group">

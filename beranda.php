@@ -22,7 +22,7 @@ $cache_buster = time();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beranda - <?= htmlspecialchars($site_config['site_name']) ?></title>
+    <title> Beranda - Laboratorium Mobile and Multimedia Tech POLINEMA ?></title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -1092,13 +1092,6 @@ footer.site-footer {
                             </div>
                         </form>
                     </div>
-
-                    <?php if (!empty($search_term) || $filter_kategori != 'semua' || $filter_tahun != 'semua'): ?>
-                    <div class="search-results-info">
-                        Ditemukan **<?= $total_news ?>** berita. 
-                        <a href="berita.php">Reset Filter</a>
-                    </div>
-                    <?php endif; ?>
                     
                     <div class="section-separator">
                         <span class="separator-line"></span>

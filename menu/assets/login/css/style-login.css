@@ -1,11 +1,15 @@
 /* ==== 1. Variabel Global & Reset ==== */
 :root {
-    --color-primary: #003b8e;
-    --color-primary-darker: #002f80;
-    --color-accent: #ffc700;
+    /* --- WARNA BARU SESUAI REQUEST --- */
+    --color-primary: #FE7927;       /* Oranye Utama */
+    --color-primary-darker: #d45c15;/* Oranye Gelap (untuk hover/gradient) */
+    
+    --color-accent: #ffc700;        /* Kuning (untuk Tombol) */
+    --color-accent-hover: #ffb700;
+    
     --color-white: #ffffff;
     --color-bg-light: #f5f5f5;
-    --color-text: #000000;
+    --color-text: #000000;          /* Teks Hitam */
     --color-text-secondary: #666666;
     --color-border-light: #cccccc;
     --color-text-darker: #444444;
@@ -33,7 +37,11 @@ body {
     font-size: 16px;
     color: var(--color-text);
     line-height: 1.6;
-    background-color: var(--color-bg-light); 
+    
+    /* BACKGROUND ORANYE GRADASI */
+    background-color: var(--color-primary); 
+    background-image: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-darker) 100%);
+    
     display: flex;
     align-items: center;
     justify-content: center;
@@ -43,32 +51,37 @@ body {
 
 /* ==== 2. Kartu Login ==== */
 .login-card {
-    max-width: 420px;
+    max-width: 400px;
     width: 100%;
     background: var(--color-white);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     overflow: hidden; 
-    border: 1px solid #e0e0e0;
+    border: none;
+    
+    /* Garis atas menggunakan warna Oranye Utama */
+    border-top: 6px solid var(--color-primary);
 }
 
 .login-header {
     text-align: center;
-    padding: 32px 32px 24px 32px;
+    padding: 40px 32px 20px 32px;
     border-bottom: 1px solid #f0f0f0;
 }
 
 .login-header img {
-    height: 60px;
+    height: 70px;
     width: auto;
     margin: 0 auto 16px auto;
+    display: block;
 }
 
 .login-header h2 {
     font-family: var(--font-heading);
     font-size: 24px;
-    color: var(--color-text);
+    color: var(--color-text-darker);
     font-weight: 700;
+    margin-top: 10px;
 }
 
 /* ==== 3. Form Login ==== */
@@ -85,7 +98,7 @@ body {
     font-weight: 600;
     margin-bottom: 8px;
     font-size: 14px;
-    color: var(--color-text-secondary);
+    color: var(--color-text-darker);
 }
 
 /* Style untuk input dan select */
@@ -96,122 +109,73 @@ body {
     width: 100%;
     padding: 12px 14px;
     border: 1px solid var(--color-border-light);
-    border-radius: 6px;
+    border-radius: 8px;
     font-family: var(--font-body);
-    font-size: 16px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    background-color: var(--color-white);
+    font-size: 15px;
+    transition: all 0.2s ease;
+    background-color: #fafafa;
 }
 
-/* Style khusus dropdown (select) */
-.form-group select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23666666%22%3E%3Cpath%20d%3D%22M5%208l5%205%205-5z%22%2F%3E%3C%2Fsvg%3E');
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 20px;
-    padding-right: 40px;
-}
-
-.form-group select:invalid {
-    color: var(--color-text-secondary);
-}
-
+/* Efek Focus Input - Jadi Oranye */
 .form-group input[type="text"]:focus,
 .form-group input[type="password"]:focus,
 .form-group input[type="email"]:focus,
 .form-group select:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(0, 59, 142, 0.15);
+    border-color: var(--color-primary); /* Border Oranye */
+    box-shadow: 0 0 0 4px rgba(254, 121, 39, 0.2); /* Glow Oranye halus */
+    background-color: var(--color-white);
     outline: none;
-}
-
-:focus-visible {
-     outline: 3px solid rgba(255, 199, 0, 0.45);
-     outline-offset: 2px;
 }
 
 /* CAPTCHA Styles */
 .captcha-wrapper {
     display: flex;
     gap: 12px;
-    align-items: stretch;
-}
-
-.captcha-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 .captcha-box {
-    flex-shrink: 0;
-    width: 120px;
-    height: 60px;
-    background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
-    border: 1px solid var(--color-border-light);
+    flex: 1;
+    background: #fff8f5; /* Background agak oranye sangat muda */
+    border: 1px dashed var(--color-primary);
     border-radius: 6px;
     font-family: 'Courier New', Courier, monospace;
     font-weight: bold;
-    font-size: 24px;
-    letter-spacing: 2px;
-    color: var(--color-text-darker);
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: var(--color-primary); /* Teks Captcha Oranye */
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 10px;
     user-select: none;
-    position: relative;
-    overflow: hidden;
-}
-
-/* Efek distorsi untuk CAPTCHA */
-.captcha-text {
-    transform: skew(-5deg, 2deg);
-    background: linear-gradient(90deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
-    background-size: 200% 100%;
-    animation: shimmer 3s infinite;
-    padding: 5px 10px;
-    border-radius: 3px;
-}
-
-@keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-}
-
-.captcha-controls {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    font-size: 12px;
 }
 
 .refresh-captcha {
-    background: none;
-    border: none;
-    color: var(--color-primary);
-    cursor: pointer;
-    font-size: 12px;
-    text-decoration: underline;
-    padding: 0;
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .refresh-captcha:hover {
-    color: var(--color-primary-darker);
+    color: var(--color-primary);
 }
 
-.captcha-input {
-    flex-grow: 1;
-}
-
-.error-message {
-    color: var(--color-error);
-    font-size: 12px;
-    margin-top: 4px;
-    display: none;
+.error-message-inline { 
+    background-color: #ffeef0;
+    color: var(--color-error); 
+    text-align: center; 
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 20px; 
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid #f5c6cb;
 }
 
 /* ==== 4. Opsi Form (Ingat & Lupa) ==== */
@@ -227,20 +191,20 @@ body {
     display: flex;
     align-items: center;
     color: var(--color-text-secondary);
+    cursor: pointer;
 }
 
 .remember-me input[type="checkbox"] {
     margin-right: 8px;
-}
-
-.remember-me label {
-    margin-bottom: 0;
-    font-weight: 400;
+    cursor: pointer;
+    accent-color: var(--color-primary); /* Checkbox Oranye */
 }
 
 .forgot-password {
     color: var(--color-primary);
     text-decoration: none;
+    font-weight: 600;
+    font-size: 13px;
 }
 .forgot-password:hover {
     text-decoration: underline;
@@ -252,57 +216,60 @@ body {
     display: block;
     width: 100%;
     padding: 14px;
-    background: var(--color-primary);
-    color: var(--color-white);
+    
+    /* Tombol KUNING (Accent) sesuai style.css utama */
+    background: var(--color-accent);
+    color: var(--color-text); /* Teks Hitam agar kontras & sama dengan main web */
+    
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     font-family: var(--font-heading);
-    font-weight: 600;
+    font-weight: 700;
     font-size: 16px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: transform 0.1s ease, background-color 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .btn-login:hover {
-    background: var(--color-primary-darker);
+    background: var(--color-accent-hover);
+    transform: translateY(-2px);
 }
 
-.btn-login:disabled {
-    background: var(--color-text-secondary);
-    cursor: not-allowed;
+.btn-login:active {
+    transform: translateY(0);
 }
 
 .login-footer {
     text-align: center;
     padding: 20px 32px;
     font-size: 14px;
-    background: var(--color-bg-light);
+    background: #f9f9f9;
+    border-top: 1px solid #eeeeee;
 }
 
 .login-footer a {
     color: var(--color-text-secondary);
     text-decoration: none;
+    font-weight: 600;
 }
 .login-footer a:hover {
     color: var(--color-primary);
-    text-decoration: underline;
 }
 
 /* ==== 6. Responsive ==== */
 @media (max-width: 480px) {
+    body {
+        padding: 16px;
+        /* Di HP tetap background gradient biar keren */
+    }
+    
+    .login-card {
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
     .captcha-wrapper {
         flex-direction: column;
+        align-items: stretch;
     }
-    .captcha-box {
-        width: 100%;
-        height: 50px;
-    }
-}
-
-/* Error state styles */
-.error {
-    border-color: var(--color-error) !important;
-    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15) !important;
 }

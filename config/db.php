@@ -3,7 +3,7 @@ $host = 'localhost';
 $port = '5432';
 $dbname = 'db_pbl';
 $user = 'postgres';
-$password = 'Esteh1234#'; // Pastikan password ini benar sesuai settingan pgAdmin kamu
+$password = 'raihan'; // Pastikan password ini benar sesuai settingan pgAdmin kamu
 
 try {
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
