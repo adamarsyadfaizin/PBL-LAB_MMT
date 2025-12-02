@@ -1,9 +1,9 @@
 <?php
 $host = 'localhost';
 $port = '5432';
-$dbname = 'db_pbl';
+$dbname = 'db_labmmt';
 $user = 'postgres';
-$password = 'Esteh1234#'; // Pastikan password ini benar sesuai settingan pgAdmin kamu
+$password = 'sandy1'; // Pastikan password ini benar sesuai settingan pgAdmin kamu
 
 try {
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
