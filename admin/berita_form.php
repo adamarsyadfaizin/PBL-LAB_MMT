@@ -6,10 +6,18 @@ include 'components/header.php';
 $id = $_GET['id'] ?? null;
 $data = null;
 
+// Default tanggal hari ini jika buat baru
+$tanggal_value = date('Y-m-d'); 
+
 if ($id) {
     $stmt = $pdo->prepare("SELECT * FROM news WHERE id = ?");
     $stmt->execute([$id]);
     $data = $stmt->fetch();
+    
+    // Jika edit, ambil tanggal dari database
+    if ($data && !empty($data['created_at'])) {
+        $tanggal_value = date('Y-m-d', strtotime($data['created_at']));
+    }
 }
 ?>
 
@@ -25,6 +33,12 @@ if ($id) {
         <div class="form-group">
             <label>Judul Berita</label>
             <input type="text" name="title" class="form-control" required placeholder="Masukkan judul berita..." value="<?= htmlspecialchars($data['title'] ?? '') ?>">
+        </div>
+
+        <div class="form-group">
+            <label>Tanggal Publikasi</label>
+            <input type="date" name="created_at" class="form-control" required value="<?= $tanggal_value ?>">
+            <small class="text-muted">Anda bisa mengubah tanggal jika terjadi kesalahan tampilan waktu.</small>
         </div>
 
         <div class="form-group">

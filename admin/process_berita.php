@@ -54,10 +54,16 @@ if (isset($_POST['save'])) {
     $id = $_POST['id'];
     $title = $_POST['title'];
     $slug = slugify($title);
-    $category = $_POST['category']; // <--- PERBAIKAN: Ambil data kategori
+    $category = $_POST['category'];
     $summary = $_POST['summary'];
     $content = $_POST['content'];
     $status = $_POST['status'];
+    
+    // PERBAIKAN: Tangkap tanggal dari form & gabungkan dengan jam sekarang
+    // Menggabungkan jam sekarang penting agar tidak terset ke jam 00:00 (rawan bug timezone)
+    $input_date = $_POST['created_at']; 
+    $current_time = date('H:i:s'); 
+    $final_created_at = $input_date . ' ' . $current_time;
 
     // --- PROSES UPLOAD GAMBAR ---
     $cover_image = null;
@@ -95,22 +101,23 @@ if (isset($_POST['save'])) {
                     unlink("../" . $old_img);
                 }
 
-                // Update query DENGAN gambar dan kategori
-                $sql = "UPDATE news SET title=?, slug=?, category=?, summary=?, content=?, status=?, cover_image=?, updated_at=NOW() WHERE id=?";
-                $pdo->prepare($sql)->execute([$title, $slug, $category, $summary, $content, $status, $cover_image, $id]);
+                // Update query DENGAN gambar, kategori, dan created_at
+                $sql = "UPDATE news SET title=?, slug=?, category=?, summary=?, content=?, status=?, cover_image=?, created_at=?, updated_at=NOW() WHERE id=?";
+                $pdo->prepare($sql)->execute([$title, $slug, $category, $summary, $content, $status, $cover_image, $final_created_at, $id]);
             } else {
-                // Update query TANPA ganti gambar (tapi kategori tetap update)
-                $sql = "UPDATE news SET title=?, slug=?, category=?, summary=?, content=?, status=?, updated_at=NOW() WHERE id=?";
-                $pdo->prepare($sql)->execute([$title, $slug, $category, $summary, $content, $status, $id]);
+                // Update query TANPA ganti gambar (tapi kategori & created_at update)
+                $sql = "UPDATE news SET title=?, slug=?, category=?, summary=?, content=?, status=?, created_at=?, updated_at=NOW() WHERE id=?";
+                $pdo->prepare($sql)->execute([$title, $slug, $category, $summary, $content, $status, $final_created_at, $id]);
             }
 
         } else {
             // === INSERT BARU ===
             $img_path = $cover_image ?? 'assets/images/logo-placeholder.png';
             
-            // Insert query DENGAN kategori
-            $sql = "INSERT INTO news (title, slug, category, summary, content, status, cover_image, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
-            $pdo->prepare($sql)->execute([$title, $slug, $category, $summary, $content, $status, $img_path]);
+            // Insert query DENGAN kategori & created_at manual
+            // Kita pakai $final_created_at menggantikan NOW() di kolom created_at
+            $sql = "INSERT INTO news (title, slug, category, summary, content, status, cover_image, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+            $pdo->prepare($sql)->execute([$title, $slug, $category, $summary, $content, $status, $img_path, $final_created_at]);
         }
         
         header("Location: berita.php");

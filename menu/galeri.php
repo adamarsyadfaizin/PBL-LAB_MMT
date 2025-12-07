@@ -209,56 +209,50 @@ function build_pagination($current, $total, $adj = 2) {
         <div class="main-content-area">
             <div class="container">
 
-                <form class="search-filter-container" action="" method="get">
-                    <div class="search-row">
-                        <div class="search-input-group">
-                            <label for="search">Cari Media</label>
-                            <input type="text" id="search" name="search" placeholder="Kata kunci..." value="<?= htmlspecialchars($search_term) ?>">
-                        </div>
-                        <button type="submit" class="btn-search">Cari</button>
+                <form class="search-filter-container horizontal-filter-form" action="" method="get">
+                    
+                    <div class="filter-item search-item">
+                        <label>Pencarian</label>
+                        <input type="text" name="search" placeholder="Cari media..." value="<?= htmlspecialchars($search_term) ?>">
                     </div>
 
-                    <div class="filter-row">
-                        <div class="filter-group">
-                            <label>Jenis</label>
-                            <select name="jenis">
-                                <option value="semua">Semua</option>
-                                <?php foreach ($available_types as $type): ?>
-                                    <option value="<?= $type ?>" <?= ($filter_jenis == $type) ? 'selected' : '' ?>><?= ucfirst($type) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label>Acara</label>
-                            <select name="acara">
-                                <option value="semua">Semua</option>
-                                <?php foreach ($available_events as $event): ?>
-                                    <option value="<?= $event ?>" <?= ($filter_acara == $event) ? 'selected' : '' ?>><?= $event ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label>Tahun</label>
-                            <select name="tahun">
-                                <option value="semua">Semua</option>
-                                <?php foreach ($available_years as $y): ?>
-                                    <option value="<?= $y ?>" <?= ($filter_tahun == $y) ? 'selected' : '' ?>><?= $y ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        
-                        <button type="submit" class="btn-filter">Filter</button>
+                    <div class="filter-item">
+                        <label>Kategori</label>
+                        <select name="jenis">
+                            <option value="semua">Semua</option>
+                            <option value="foto" <?= ($filter_jenis == 'foto') ? 'selected' : '' ?>>Foto</option>
+                            <option value="video" <?= ($filter_jenis == 'video') ? 'selected' : '' ?>>Video</option>
+                            <option value="animasi" <?= ($filter_jenis == 'animasi') ? 'selected' : '' ?>>Animasi</option>
+                        </select>
                     </div>
+
+                    <div class="filter-item">
+                        <label>Tahun</label>
+                        <select name="tahun">
+                            <option value="semua">Semua</option>
+                            <?php foreach ($available_years as $y): ?>
+                                <option value="<?= $y ?>" <?= ($filter_tahun == $y) ? 'selected' : '' ?>><?= $y ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="filter-item button-item">
+                        <label>&nbsp;</label>
+                        <div style="display: flex; gap: 10px;">
+                            <?php if (!empty($search_term) || $filter_jenis != 'semua' || $filter_tahun != 'semua'): ?>
+                                <a href="galeri.php" class="btn-filter" style="background-color: #dc3545; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;">
+                                    <i class="fas fa-times"></i> Reset
+                                </a>
+                            <?php endif; ?>
+
+                            <button type="submit" class="btn-filter">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                        </div>
+                    </div>
+                    
                 </form>
 
-                <?php if (!empty($search_term) || $filter_jenis != 'semua' || $filter_acara != 'semua' || $filter_tahun != 'semua'): ?>
-                <div class="search-results-info">
-                    Menampilkan **<?= $total_items ?>** media.
-                    <a href="galeri.php" style="color:var(--color-primary); font-weight:bold; margin-left:10px;">Reset Filter</a>
-                </div>
-                <?php endif; ?>
 
                 <?php if (count($media_items) > 0): ?>
                 <div class="gallery-grid-main">
@@ -272,7 +266,14 @@ function build_pagination($current, $total, $adj = 2) {
                     ?>
                     <a href="menu-detail-galeri/galeri-detail.php?id=<?= $item['id'] ?>" class="gallery-item">
                         <div class="image-container">
-                            <img src="<?= htmlspecialchars($img_src) ?>" alt="<?= htmlspecialchars($item['caption']) ?>">
+                            <?php if ($item['type'] == 'video'): ?>
+                                <video width="100%" height="100%" style="object-fit: cover;" preload="metadata" muted>
+                                    <source src="<?= htmlspecialchars($img_src) ?>#t=0.5" type="video/mp4">
+                                </video>
+                            <?php else: ?>
+                                <img src="<?= htmlspecialchars($img_src) ?>" alt="<?= htmlspecialchars($item['caption']) ?>">
+                            <?php endif; ?>
+
                             <div class="overlay"><i class="fas <?= $icon ?>"></i></div>
                             <span class="type-badge"><?= $media_type ?></span>
                         </div>
@@ -316,12 +317,14 @@ function build_pagination($current, $total, $adj = 2) {
                 </div>
                 <?php endif; ?>
 
-                <?php else: ?>
-                <div class="no-results">
-                    <h3>Tidak ada media ditemukan.</h3>
-                    <p>Coba reset filter pencarian atau cek kembali kata kunci Anda.</p>
-                    <a href="galeri.php" class="btn">Lihat Semua</a>
-                </div>
+                    <?php else: ?>
+                        <div class="empty-state-centered">
+                            <div class="no-results no-results-content">
+                                <h3>Tidak ada media ditemukan.</h3>
+                                <p>Coba reset filter pencarian atau cek kembali kata kunci Anda.</p>
+                                <a href="galeri.php" class="btn-yellow-action">Lihat Semua</a>
+                            </div>
+                        </div>
                 <?php endif; ?>
                 
             </div>

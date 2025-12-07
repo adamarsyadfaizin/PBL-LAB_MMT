@@ -1,193 +1,210 @@
 // ==========================================================
-// 1. FUNGSI KALENDER WIDGET (Jika Anda menggunakannya)
+// SCRIPT BERITA FIX (Timezone & Click Handler)
 // ==========================================================
 
-// Variabel global yang diisi dari PHP (asumsi data sudah ada di berita.php)
-const eventsByDate = typeof eventsByDate !== 'undefined' ? eventsByDate : {};
-const calendarModal = document.getElementById('calendarModal');
+// Ambil data dari variabel global yang dicetak di PHP
+const eventsData = typeof eventsByDate !== 'undefined' ? eventsByDate : {};
+
+// DOM Elements
 const modalBackdrop = document.getElementById('modalBackdrop');
 const modalEventsList = document.getElementById('modalEventsList');
 const modalDateTitle = document.getElementById('modalDateTitle');
 
-function showModal(date, events) {
-    if (!calendarModal || !modalBackdrop || !modalEventsList || !modalDateTitle) return;
+// 1. FUNGSI MENAMPILKAN MODAL
+// Fungsi ini dipanggil baik oleh PHP (onclick) maupun JS
+window.showModal = function(dateStr, events) {
+    if (!modalBackdrop || !modalEventsList || !modalDateTitle) return;
 
-    modalDateTitle.textContent = `Kegiatan pada Tanggal ${date}`;
+    // Format tampilan tanggal: "3 Desember 2025"
+    // Kita parsing manual string YYYY-MM-DD agar aman dari Timezone Browser
+    const parts = dateStr.split('-');
+    const year = parseInt(parts[0]);
+    const month = parseInt(parts[1]) - 1; // JS Month 0-11
+    const day = parseInt(parts[2]);
+    
+    const dateObj = new Date(year, month, day);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    
+    modalDateTitle.textContent = `Agenda: ${dateObj.toLocaleDateString('id-ID', options)}`;
     modalEventsList.innerHTML = ''; 
 
-    if (events.length > 0) {
-        events.forEach(event => {
+    // Jika events dipanggil dari onclick PHP, kadang masih undefined kalau user iseng inspect element
+    // Jadi kita pastikan ambil dari global data jika parameter events kosong
+    const finalEvents = events || eventsData[dateStr];
+
+    if (finalEvents && finalEvents.length > 0) {
+        finalEvents.forEach(event => {
             const item = document.createElement('div');
             item.className = 'event-item';
             item.innerHTML = `
-                <h4><a href="${event.link}" onclick="closeModal(event);">${event.title}</a></h4>
-                <p>Lihat detail berita/kegiatan.</p>
+                <h4><a href="${event.link}">${event.title}</a></h4>
+                <p>${event.summary ? event.summary.substring(0, 100) + '...' : 'Klik judul untuk melihat detail.'}</p>
             `;
             modalEventsList.appendChild(item);
         });
     } else {
-        modalEventsList.innerHTML = '<p class="text-center">Tidak ada kegiatan terjadwal pada tanggal ini.</p>';
+        modalEventsList.innerHTML = '<p style="text-align:center; color:#666;">Tidak ada kegiatan terjadwal.</p>';
     }
 
     modalBackdrop.style.display = 'flex';
-}
+};
 
+// 2. FUNGSI MENUTUP MODAL
 function closeModal(event) {
-    event.preventDefault();
+    if(event) event.preventDefault();
     if (modalBackdrop) {
         modalBackdrop.style.display = 'none';
     }
 }
 
-function generateCalendar(year, month, events) {
+// 3. FUNGSI GENERATE KALENDER (Saat tombol Next/Prev ditekan)
+function generateCalendar(year, month) {
     const calendarTable = document.getElementById('calendarTable');
     if (!calendarTable) return;
 
-    calendarTable.innerHTML = '';
+    // Bersihkan isi tabel (kecuali header jika ada di thead, tapi di sini kita rebuild body)
+    // Struktur HTML di PHP: table > thead, tbody. Kita akses tbody.
+    let tbody = calendarTable.querySelector('tbody');
+    if(!tbody) {
+        tbody = document.createElement('tbody');
+        calendarTable.appendChild(tbody);
+    }
+    tbody.innerHTML = '';
     
-    const date = new Date(year, month - 1);
-    const firstDay = new Date(year, month - 1, 1).getDay(); // 0 = Sunday, 1 = Monday
+    // Konfigurasi Waktu
+    // JS Month index: 0-11. Parameter month dari PHP logic masuk sebagai 1-12.
+    const jsMonth = month - 1; 
+    
+    // Cari hari pertama: 0 (Minggu) - 6 (Sabtu)
+    const firstDayIndex = new Date(year, jsMonth, 1).getDay(); 
     const daysInMonth = new Date(year, month, 0).getDate();
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth() + 1;
-    const currentDay = today.getDate();
+    
+    // Cek Hari Ini (Real-time)
+    const now = new Date();
+    const isCurrentMonth = (now.getFullYear() === year && now.getMonth() === jsMonth);
+    const todayDate = now.getDate();
 
-    // Header Hari
-    const headerRow = calendarTable.insertRow();
-    ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].forEach(day => {
-        const th = document.createElement('th');
-        th.textContent = day;
-        headerRow.appendChild(th);
-    });
+    // -- Generate Baris --
+    let row = tbody.insertRow();
+    
+    // Sel Kosong Awal
+    for (let i = 0; i < firstDayIndex; i++) {
+        row.insertCell().innerHTML = '';
+    }
 
-    let dateCounter = 1;
-    for (let i = 0; i < 6; i++) { // Maksimum 6 baris (minggu)
-        const row = calendarTable.insertRow();
-        let weekCompleted = true;
-
-        for (let j = 0; j < 7; j++) {
-            const cell = row.insertCell();
-            cell.dataset.day = j;
-
-            if (i === 0 && j < firstDay) {
-                // Sel kosong sebelum hari pertama bulan
-                cell.innerHTML = '';
-            } else if (dateCounter > daysInMonth) {
-                // Sel kosong setelah hari terakhir bulan
-                cell.innerHTML = '';
-                weekCompleted = false; // Baris ini belum diisi penuh, tapi sudah lewat
-            } else {
-                const dayNumber = dateCounter;
-                const fullDate = `${year}-${String(month).padStart(2, '0')}-${String(dayNumber).padStart(2, '0')}`;
-                
-                cell.textContent = dayNumber;
-
-                // Tanda Hari Ini (Today)
-                if (year === currentYear && month === currentMonth && dayNumber === currentDay) {
-                    cell.classList.add('today-day');
-                }
-
-                // Tanda Hari Event
-                if (events[fullDate]) {
-                    cell.classList.add('event-day');
-                    cell.onclick = () => showModal(fullDate, events[fullDate]);
-                } else {
-                    cell.onclick = () => {}; // Biarkan klik kosong jika tidak ada event
-                }
-                
-                dateCounter++;
-            }
+    // Loop Hari
+    for (let day = 1; day <= daysInMonth; day++) {
+        // Ganti baris jika hari minggu (kecuali baris pertama yang sudah dibuat)
+        const currentWeekDay = (firstDayIndex + day - 1) % 7;
+        if (currentWeekDay === 0 && day > 1) {
+            row = tbody.insertRow();
         }
-        // Hentikan looping jika sudah melewati hari terakhir dan tidak ada lagi hari di baris ini
-        if (dateCounter > daysInMonth && row.lastChild.textContent === '') break;
+
+        const cell = row.insertCell();
+        cell.textContent = day;
+        
+        // Buat Key Tanggal YYYY-MM-DD (Penting: Padding Zero!)
+        // Contoh: 2025-01-02 (Bukan 2025-1-2)
+        const sMonth = String(month).padStart(2, '0');
+        const sDay = String(day).padStart(2, '0');
+        const fullDateKey = `${year}-${sMonth}-${sDay}`;
+
+        // Style Hari Ini
+        if (isCurrentMonth && day === todayDate) {
+            cell.classList.add('today-day');
+        }
+
+        // Cek Event
+        if (eventsData[fullDateKey]) {
+            cell.classList.add('event-day');
+            cell.title = "Klik untuk lihat kegiatan";
+            // Pasang OnClick Handler
+            cell.onclick = function() {
+                showModal(fullDateKey, eventsData[fullDateKey]);
+            };
+        }
+    }
+    
+    // Sel Kosong Akhir (Opsional, biar rapi)
+    const totalCells = firstDayIndex + daysInMonth;
+    const remainingCells = 7 - (totalCells % 7);
+    if (remainingCells < 7) {
+        for(let k=0; k < remainingCells; k++) {
+            row.insertCell().innerHTML = '';
+        }
     }
 }
 
-// Inisialisasi Kalender
-let currentCalDate = new Date();
-
-function updateCalendar() {
-    const year = currentCalDate.getFullYear();
-    const month = currentCalDate.getMonth() + 1;
-
-    // Perbarui judul
-    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-    const monthTitle = document.getElementById('calCurrentMonth');
-    if (monthTitle) {
-        monthTitle.textContent = `${monthNames[month - 1]} ${year}`;
-    }
-
-    // Generate kalender
-    generateCalendar(year, month, eventsByDate);
-}
+// 4. INISIALISASI & EVENT LISTENER
+// Default start date
+let currentCalDate = new Date(); // Browser time
 
 document.addEventListener('DOMContentLoaded', () => {
-    updateCalendar();
+    // Note: Kalender awal SUDAH dirender oleh PHP (SSR).
+    // Kita hanya perlu handle tombol navigasi Next/Prev.
 
-    // Handler tombol navigasi kalender
+    // Tombol Prev (<)
     const prevBtn = document.getElementById('calNavPrev');
-    const nextBtn = document.getElementById('calNavNext');
-    const closeBtn = document.getElementById('modalCloseBtn');
-    
     if (prevBtn) {
         prevBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            // Mundur 1 bulan
             currentCalDate.setMonth(currentCalDate.getMonth() - 1);
-            updateCalendar();
+            updateUI();
         });
     }
 
+    // Tombol Next (>)
+    const nextBtn = document.getElementById('calNavNext');
     if (nextBtn) {
         nextBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            // Maju 1 bulan
             currentCalDate.setMonth(currentCalDate.getMonth() + 1);
-            updateCalendar();
+            updateUI();
         });
     }
 
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeModal);
+    function updateUI() {
+        const y = currentCalDate.getFullYear();
+        const m = currentCalDate.getMonth() + 1; // 1-12
+        
+        // Update Teks Judul
+        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const monthTitle = document.getElementById('calCurrentMonth');
+        if (monthTitle) {
+            monthTitle.textContent = `${monthNames[m - 1]} ${y}`;
+        }
+
+        // Render Ulang Tabel via JS
+        generateCalendar(y, m);
     }
+
+    // Tombol Close Modal
+    const closeBtn = document.getElementById('modalCloseBtn');
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    
+    // Klik Backdrop Close
     if (modalBackdrop) {
         modalBackdrop.addEventListener('click', (e) => {
-            if (e.target === modalBackdrop) {
-                closeModal(e);
-            }
+            if (e.target === modalBackdrop) closeModal(e);
         });
     }
-});
-
-
-// ==========================================================
-// 2. FUNGSI ANIMASI SCROLL (Scroll Reveal)
-// ==========================================================
-
-function handleScrollAnimation() {
-    // Memilih semua elemen yang memiliki kelas animasi scroll
-    const animatedElements = document.querySelectorAll(
-        '.event-highlight, .search-filter-container, .section-separator, .facility-item, .pagination-controls, .widget, .no-results'
-    );
-
-    animatedElements.forEach((element) => {
-        const rect = element.getBoundingClientRect();
-        // Titik pemicu: ketika elemen berada di 90% dari tinggi viewport
-        const triggerPoint = window.innerHeight * 0.9; 
-
-        if (rect.top <= triggerPoint && rect.bottom >= 0) {
-            // Menambahkan kelas 'animate-in' untuk memicu transisi CSS
-            element.classList.add('animate-in');
-        } 
-        // Opsional: Jika Anda ingin elemen menghilang saat discroll ke atas (kurang umum)
-        /* else if (rect.bottom < 0) {
-            element.classList.remove('animate-in');
-        } */
+    
+    // Tombol ESC Close
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal(e);
     });
-}
 
-// Menghubungkan fungsi ke event scroll dan load
-window.addEventListener('scroll', handleScrollAnimation);
-window.addEventListener('load', handleScrollAnimation);
+    // Scroll Animation
+    const animatedElements = document.querySelectorAll('.animate-on-scroll');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+            }
+        });
+    }, { threshold: 0.1 });
 
-// Jalankan sekali saat load untuk elemen yang sudah terlihat di awal
-document.addEventListener('DOMContentLoaded', handleScrollAnimation);
+    animatedElements.forEach(el => observer.observe(el));
+});

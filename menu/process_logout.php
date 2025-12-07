@@ -1,22 +1,26 @@
 <?php
-if (!isset($_SESSION)) session_start();
+// menu/process_logout.php
+session_start();
 
-// Hancurkan semua data session
-$_SESSION = array();
-
-// Hapus cookie session jika ada
-if (ini_get("session.use_cookies")) {
-    $params = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 42000,
-        $params["path"], $params["domain"],
-        $params["secure"], $params["httponly"]
-    );
-}
-
-// Hancurkan session
+// 1. Hapus semua sesi PHP
+session_unset();
 session_destroy();
-
-// Redirect ke beranda.php
-header("Location: ../beranda.php");
-exit();
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logging out...</title>
+</head>
+<body>
+    <script>
+        // 2. KIRIM SINYAL KE TAB LAIN
+        // Kita set item di LocalStorage. Tab lain akan mendeteksi perubahan ini.
+        // Kita pakai timestamp (Date.now()) agar nilainya selalu berubah unik.
+        localStorage.setItem('login_status', 'logout_' + Date.now());
+
+        // 3. Redirect user ke halaman login
+        window.location.href = 'login.php';
+    </script>
+</body>
+</html>

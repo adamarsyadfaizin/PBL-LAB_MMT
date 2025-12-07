@@ -1,21 +1,28 @@
 <?php
 if (!isset($_SESSION)) session_start();
-require_once __DIR__ . '/../../config/db.php'; // Path ke config/db.php
 
-// Cek apakah user login DAN role-nya bukan sekadar 'user' biasa (sesuaikan dengan tabel users)
+// Perhatikan path include DB ini. 
+// Jika file auth_check.php ada di dalam folder 'admin/components', maka:
+// __DIR__ = admin/components
+// /../..  = root project (PBL-LAB_MMT)
+require_once __DIR__ . '/../../config/db.php'; 
+
+// Cek apakah user login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../../menu/login.php");
+    // PERBAIKAN: Cukup naik 1 tingkat dari folder 'admin' untuk ke folder 'menu'
+    // Asumsi browser sedang membuka file di folder /admin/ (seperti index.php)
+    header("Location: ../menu/login.php");
     exit();
 }
 
-// Opsi: Ambil data user lagi untuk memastikan role (karena di session bisa saja dimanipulasi)
+// Cek Role
 $stmt = $pdo->prepare("SELECT role FROM users WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $currentUser = $stmt->fetch();
 
 if (!$currentUser || ($currentUser['role'] !== 'admin' && $currentUser['role'] !== 'editor')) {
-    // Jika bukan admin/editor, tendang keluar
-    header("Location: ../../menu/login.php");
+    // PERBAIKAN: Sama, naik 1 tingkat saja
+    header("Location: ../menu/login.php");
     exit();
 }
 ?>

@@ -19,13 +19,33 @@ if(isset($_GET['refresh'])) {
 // Handle mark as read
 if(isset($_GET['mark_read'])) {
     $pdo->prepare("UPDATE feedback SET is_read = true WHERE id = ?")->execute([$_GET['mark_read']]);
+    
+    // Refresh MV juga disini
+    try {
+        if($pdo->query("SELECT to_regclass('mv_feedback_summary')")->fetchColumn()) {
+            $pdo->exec("REFRESH MATERIALIZED VIEW mv_feedback_summary");
+        }
+    } catch (Exception $e) {}
+
     header('Location: pesan.php');
     exit;
 }
 
 // Handle delete
 if(isset($_GET['delete'])) {
+    // 1. Hapus data dari tabel utama (Wajah Asli)
     $pdo->prepare("DELETE FROM feedback WHERE id = ?")->execute([$_GET['delete']]);
+    
+    // 2. [WAJIB UNTUK MV] Refresh View agar data sinkron (Cetak Ulang Foto)
+    try {
+        // Cek dulu apakah MV ada biar gak error
+        if($pdo->query("SELECT to_regclass('mv_feedback_summary')")->fetchColumn()) {
+            $pdo->exec("REFRESH MATERIALIZED VIEW mv_feedback_summary");
+        }
+    } catch (Exception $e) {
+        // Abaikan error jika refresh gagal, yang penting data sudah terhapus
+    }
+
     header('Location: pesan.php');
     exit;
 }

@@ -4,66 +4,102 @@
 --- */
 
 /* Filter Bar */
+/* --- REVISI TAMPILAN FILTER (HORIZONTAL) --- */
+
 .search-filter-container {
-    background: #f8f9fa;
-    padding: 20px;
+    background: #f8f9fa; /* Sesuaikan warna background */
+    padding: 20px 25px;
     border-radius: 8px;
     margin-bottom: 40px;
     border: 1px solid #eee;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-.search-row {
+/* Mengatur form menjadi baris horizontal */
+.horizontal-filter-form {
     display: flex;
-    gap: 15px;
-    align-items: flex-end;
-    margin-bottom: 15px;
-}
-
-.filter-row {
-    display: flex;
-    gap: 15px;
-    align-items: flex-end;
-}
-
-.search-input-group, .filter-group {
-    flex: 1;
-}
-
-.search-input-group label, .filter-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 700;
-    font-size: 12px;
-    color: #555;
-    text-transform: uppercase;
-}
-
-.search-input-group input, .filter-group select {
+    align-items: center;
+    gap: 20px; /* Jarak antar elemen */
     width: 100%;
-    padding: 10px;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Item pencarian dibuat lebih lebar (flex-grow) */
+.search-item {
+    flex-grow: 2; 
+}
+
+/* Item dropdown dibuat proporsional */
+.filter-item:not(.search-item):not(.button-item) {
+    flex-grow: 1;
+    min-width: 150px;
+}
+
+.filter-item label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    display: block;
+}
+
+.filter-item input, 
+.filter-item select {
+    width: 100%;
+    padding: 10px 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 14px;
+    height: 45px; /* Tinggi disamakan */
     background: #fff;
-    height: 42px;
+    outline: none;
+    transition: border-color 0.3s;
 }
 
-.btn-search, .btn-filter {
-    background: var(--color-primary);
-    color: #fff;
+.filter-item input:focus, 
+.filter-item select:focus {
+    border-color: var(--color-primary);
+}
+
+.btn-filter {
+    height: 45px; /* Tinggi sama dengan input */
+    padding: 0 30px;
+    background-color: var(--color-primary); /* Warna Orange */
+    color: white;
     border: none;
-    padding: 0 25px;
     border-radius: 5px;
     font-weight: 600;
     cursor: pointer;
-    height: 42px;
-    transition: background 0.2s;
+    transition: background 0.3s;
+    margin-top: auto; /* Memastikan tombol turun ke bawah sejajar input */
+    white-space: nowrap;
 }
 
-.btn-search:hover, .btn-filter:hover {
-    background: var(--color-accent);
-    color: #000;
+.btn-filter:hover {
+    background-color: var(--color-accent); /* Warna Kuning saat hover */
+    color: #333;
+}
+
+/* Responsive: Jika layar HP, ubah jadi tumpuk lagi */
+@media (max-width: 768px) {
+    .horizontal-filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-item {
+        width: 100%;
+    }
+    
+    .btn-filter {
+        width: 100%;
+        margin-top: 10px;
+    }
 }
 
 /* Grid Galeri */
@@ -209,4 +245,66 @@
     .search-row, .filter-row { flex-direction: column; gap: 10px; }
     .gallery-grid-main { grid-template-columns: 1fr; }
     .btn-search, .btn-filter { width: 100%; }
+}
+
+/* --- EMPTY STATE STYLE (Meniru Halaman Proyek) --- */
+
+/* Wrapper agar posisi ke tengah dan lebar terbatas */
+.empty-state-centered {
+    display: block;
+    width: 60%; /* Lebar 60% seperti di proyek */
+    margin: 40px auto; /* Posisi otomatis di tengah */
+    text-align: center;
+}
+
+/* Memperbaiki layout konten di dalam kotak */
+.no-results-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    min-height: 250px;
+}
+
+/* Typography Judul */
+.no-results-content h3 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+/* Typography Deskripsi */
+.no-results-content p {
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+/* Tombol Kuning (Persis Proyek) */
+.btn-yellow-action {
+    background-color: #ffc107; /* Warna kuning */
+    color: #000;
+    font-weight: 600;
+    padding: 10px 30px;
+    border-radius: 5px;
+    text-decoration: none;
+    border: none;
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.btn-yellow-action:hover {
+    transform: translateY(-2px);
+    background-color: #e0a800;
+    color: #000;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Responsive: Full width di HP */
+@media (max-width: 768px) {
+    .empty-state-centered {
+        width: 100%;
+    }
 }

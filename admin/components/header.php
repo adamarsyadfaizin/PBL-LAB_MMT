@@ -7,6 +7,26 @@
     <title>Admin Dashboard - PBL MMT</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/admin.css">
+
+    <script>
+    // FUNGSI: Cek jika ada tab lain yang melakukan logout
+    window.addEventListener('storage', function(event) {
+        // Jika kuncinya 'login_status' dan nilainya mengandung kata 'logout'
+        if (event.key === 'login_status' && event.newValue.includes('logout')) {
+            alert('Sesi Anda telah berakhir. Silakan login kembali.');
+            // Arahkan paksa ke halaman login
+            window.location.href = '../menu/login.php'; 
+        }
+    });
+
+    // FUNGSI TAMBAHAN: Cek sesi saat tab admin difokuskan kembali (misal dari minimize)
+    document.addEventListener("visibilitychange", function() {
+        if (!document.hidden) {
+            // Cek status terakhir di local storage (opsional)
+            // Atau bisa lakukan request AJAX ringan ke server untuk cek session_id (lebih aman)
+        }
+    });
+</script>
 </head>
 <body>
 

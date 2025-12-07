@@ -274,11 +274,6 @@ $is_filter_active = !empty($search_term) || $category_slug != 'semua' || $year !
                     </form>
                 </form>
                     
-                <?php if ($total_projects > 0): ?>
-                <div class="search-results-info">
-                        Menampilkan <?= $total_projects ?> proyek. 
-                </div>
-                <?php endif; ?>
 
                 <div class="project-grid <?= ($total_projects == 0) ? 'grid-empty' : '' ?>">
                     <?php
