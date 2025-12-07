@@ -36,6 +36,9 @@
         <a href="index.php" class="<?= basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : '' ?>">
             <i class="fas fa-chart-line"></i> Dashboard
         </a>
+        <a href="profil_lab.php" class="nav-link">
+            <i class="fas fa-id-card"></i> <span>Profil & Tim</span>
+        </a>
         <a href="berita.php" class="<?= strpos($_SERVER['PHP_SELF'], 'berita') !== false ? 'active' : '' ?>">
             <i class="fas fa-newspaper"></i> Berita & Artikel
         </a>
@@ -48,7 +51,9 @@
         <a href="pesan.php" class="<?= strpos($_SERVER['PHP_SELF'], 'pesan') !== false ? 'active' : '' ?>">
             <i class="fas fa-envelope"></i> Pesan Masuk
         </a>
-
+        <a href="riwayat.php" class="nav-link">
+            <i class="fas fa-history"></i> <span>Riwayat Aktivitas</span>
+        </a>
         <a href="pengaturan.php" class="<?= strpos($_SERVER['PHP_SELF'], 'pengaturan') !== false ? 'active' : '' ?>">
             <i class="fas fa-cogs"></i> Pengaturan
         </a>

@@ -59,7 +59,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if (!empty($_POST['remember'])) {
                     setcookie('remember_me', base64_encode($user['id']), time() + (30*24*60*60), "/");
                 }
-
+                // --- [MULAI KODE LOG] ---
+                // Catat aktivitas login berhasil
+                // Pastikan db.php sudah di-include di baris paling atas file ini
+                if (function_exists('writeLog')) {
+                    writeLog($pdo, $user['name'], "Login Berhasil");
+                }
+                // --- [SELESAI KODE LOG] ---
                 // --- PERBAIKAN: LOGIKA REDIRECT BERDASARKAN ROLE ---
                 if ($user['role'] === 'admin') {
                     // Jika admin, arahkan ke folder admin

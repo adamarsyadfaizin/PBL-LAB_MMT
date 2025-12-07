@@ -24,10 +24,17 @@ $data = $stmt->fetch();
                 <?php endif; ?>
                 <input type="file" name="logo" class="form-control">
             </div>
+            
             <div class="form-group">
                 <label>Alamat Lab</label>
                 <textarea name="alamat_lab" class="form-control" rows="3"><?= htmlspecialchars($data['alamat_lab'] ?? '') ?></textarea>
             </div>
+
+            <div class="form-group" style="grid-column: span 2;">
+                <label>Deskripsi Footer (Tentang Lab)</label>
+                <textarea name="footer_desc" class="form-control" rows="2" placeholder="Teks singkat di pojok kiri bawah footer..."><?= htmlspecialchars($data['footer_desc'] ?? '') ?></textarea>
+            </div>
+
             <div class="form-group">
                 <label>Email</label>
                 <input type="text" name="email_lab" class="form-control" value="<?= htmlspecialchars($data['email_lab'] ?? '') ?>">
@@ -35,6 +42,11 @@ $data = $stmt->fetch();
             <div class="form-group">
                 <label>Telepon</label>
                 <input type="text" name="telepon_lab" class="form-control" value="<?= htmlspecialchars($data['telepon_lab'] ?? '') ?>">
+            </div>
+
+            <div class="form-group" style="grid-column: span 2;">
+                <label>Teks Copyright</label>
+                <input type="text" name="copyright_text" class="form-control" placeholder="Contoh: © 2025 Laboratorium Mobile. All Rights Reserved." value="<?= htmlspecialchars($data['copyright_text'] ?? '') ?>">
             </div>
         </div>
 
@@ -52,7 +64,6 @@ $data = $stmt->fetch();
         <h3 style="border-bottom: 2px solid var(--primary); padding-bottom:10px; margin-bottom:20px;">2. Hero Image & Judul Halaman</h3>
         
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px;">
-            
             <div class="form-group" style="background:#f0f8ff; padding:15px; border-radius:8px; border:1px solid #ceeaff;">
                 <label style="font-weight:bold; color:var(--primary);">1. Halaman BERANDA</label>
                 <div style="margin-top:10px;">
@@ -150,9 +161,11 @@ $data = $stmt->fetch();
         </div>
     </div>
 
-    <button type="submit" name="save" class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 16px; position:sticky; bottom:20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1);">
-        <i class="fas fa-save"></i> SIMPAN SEMUA PERUBAHAN
-    </button>
+    <div style="text-align: center; margin-top: 40px; margin-bottom: 50px;">
+        <button type="submit" name="save" class="btn btn-primary" style="padding: 12px 50px; font-size: 16px; font-weight: bold; border-radius: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <i class="fas fa-save"></i> SIMPAN SEMUA PERUBAHAN
+        </button>
+    </div>
 </form>
 
 <div style="margin-bottom: 80px;"></div>
