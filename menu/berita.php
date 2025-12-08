@@ -965,19 +965,7 @@ function build_pagination($current, $total, $adj = 2) {
             opacity: 0.8;
             transition: opacity 0.2s;
         }
-        /* Footer background */
-.site-footer,
-body > footer,
-footer.site-footer {
-    background: #FE7927 !important;
-}
 
-/* Social icons in footer hover */
-.site-footer .social-links-footer a:hover {
-    background: #ffffff !important;
-    border-color: #ffffff !important;
-    color: #FE7927 !important;
-}
         .modal .close-btn:hover {
             opacity: 1;
         }

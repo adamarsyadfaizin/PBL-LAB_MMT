@@ -433,19 +433,6 @@ $members = $pdo->query("
             background: #1565C0;
         }
         
-        .site-footer,
-        body > footer,
-        footer.site-footer {
-            background: #FE7927 !important;
-        }
-        
-        /* Social icons in footer hover */
-        .site-footer .social-links-footer a:hover {
-            background: #ffffff !important;
-            border-color: #ffffff !important;
-            color: #FE7927 !important;
-        }
-        
         .footer-col p, .policy-links a, .footer-col li a {
             color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
