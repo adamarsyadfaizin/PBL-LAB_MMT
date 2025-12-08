@@ -28,16 +28,20 @@ $sql_conditions = "WHERE 1=1";
 $params = [];
 
 if (!empty($search_term)) {
-    $sql_conditions .= " AND (caption LIKE ? OR event_name LIKE ?)";
-    $params[] = "%$search_term%";
-    $params[] = "%$search_term%";
+    $sql_conditions .= " AND (LOWER(caption) LIKE ? OR LOWER(deskripsi) LIKE ? OR LOWER(event_name) LIKE ?)";
+    
+    $lower_search_term = strtolower($search_term);
+    
+    $params[] = "%$lower_search_term%";
+    $params[] = "%$lower_search_term%";
+    $params[] = "%$lower_search_term%";
 }
 
 if ($filter_jenis != 'semua') {
     $sql_conditions .= " AND type = ?";
     $params[] = $filter_jenis;
 }
-
+ 
 if ($filter_acara != 'semua') {
     $sql_conditions .= " AND event_name = ?";
     $params[] = $filter_acara;
@@ -325,7 +329,7 @@ function build_pagination($current, $total, $adj = 2) {
                                 <a href="galeri.php" class="btn-yellow-action">Lihat Semua</a>
                             </div>
                         </div>
-                <?php endif; ?>
+                    <?php endif; ?>
                 
             </div>
         </div>

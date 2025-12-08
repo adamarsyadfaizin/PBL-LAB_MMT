@@ -570,7 +570,6 @@ renderFloatingProfile();
                             <?php if (!empty($event_name)): ?>
                                 <span><strong>Acara:</strong> <?= $event_name; ?></span>
                             <?php endif; ?>
-                            <span><strong>Dilihat:</strong> <?= rand(50, 500) ?> kali</span>
                         </div>
                         
                         <div class="social-share">
