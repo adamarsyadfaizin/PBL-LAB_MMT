@@ -47,19 +47,6 @@ $cache_buster = time();
            FIX FOOTER COLOR FOR HOMEPAGE
         ============================================ */
 
-        /* Footer background */
-        .site-footer,
-        body > footer,
-        footer.site-footer {
-            background: #FE7927 !important;
-        }
-
-        /* Social icons in footer hover */
-        .site-footer .social-links-footer a:hover {
-            background: #ffffff !important;
-            border-color: #ffffff !important;
-            color: #FE7927 !important;
-        }
         
         /* Hero section styling */
         .hero {
