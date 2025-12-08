@@ -616,7 +616,16 @@ $members = $pdo->query("
             <div class="container">
                 <h2 class="section-title">Struktur Organisasi</h2>
                 <div class="struktur-placeholder">
-                    <img src="<?= $path_prefix ?>assets/images/struktur-org-placeholder.png" alt="Bagan Struktur Organisasi">
+                    <?php 
+                    // LOGIKA PERBAIKAN: 
+                    // Cek apakah ada file gambar di database ($profile['struktur_org_path'])
+                    // Jika ada, pakai itu. Jika tidak, pakai placeholder bawaan.
+                    $struktur_img = !empty($profile['struktur_org_path']) 
+                        ? $path_prefix . $profile['struktur_org_path'] 
+                        : $path_prefix . 'assets/images/struktur-org-placeholder.png';
+                    ?>
+                    <img src="<?= htmlspecialchars($struktur_img) ?>" alt="Bagan Struktur Organisasi" 
+                         style="max-width: 100%; height: auto; border-radius: 8px;">
                 </div>
             </div>
         </section>
@@ -628,11 +637,18 @@ $members = $pdo->query("
                     <?php 
                     if (!empty($members)):
                         foreach ($members as $member): 
-                            $avatar_path_raw = $member['avatar_url'] ?? 'assets/images/placeholder-team.jpg';
-                            $avatar_path = str_replace('../', '', $avatar_path_raw);
-                            $final_avatar_path = $path_prefix . $avatar_path;
+                            // LOGIKA PERBAIKAN PATH GAMBAR:
+                            // 1. Ambil path dari database
+                            $db_path = $member['avatar_url'];
                             
-                            if(empty($member['avatar_url'])) {
+                            // 2. Cek apakah path valid
+                            if (!empty($db_path)) {
+                                // Bersihkan tanda "../" kalau sudah tersimpan di database biar tidak dobel
+                                $clean_path = str_replace('../', '', $db_path);
+                                // Tambahkan prefix path yang benar (../assets/...)
+                                $final_avatar_path = $path_prefix . $clean_path;
+                            } else {
+                                // Default jika kosong
                                 $final_avatar_path = $path_prefix . "assets/images/placeholder-team.jpg";
                             }
                             
