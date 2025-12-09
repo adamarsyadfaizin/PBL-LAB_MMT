@@ -285,7 +285,8 @@ function build_pagination($current, $total, $adj = 2) {
         
         /* No results transparan */
         .no-results {
-            background: rgba(255, 255, 255, 0.7);
+            background: none;
+            /* background: rgba(255, 255, 255, 0.7); */
             backdrop-filter: blur(8px);
             border-radius: 10px;
             padding: 30px;
@@ -314,7 +315,7 @@ function build_pagination($current, $total, $adj = 2) {
 .hero h1 {
     font-size: 2rem !important; /* UKURAN YANG SAMA DENGAN PROFIL */
     margin-top: 0 !important;
-}n styling - COPY DARI PROFIL.PHP */
+}/*n styling - COPY DARI PROFIL.PHP */
 
         .main-content-area .container {
             display: grid;
@@ -367,14 +368,14 @@ function build_pagination($current, $total, $adj = 2) {
         .event-highlight-content {
             flex: 1;
             padding: 35px;
-            background-color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            background-color: #FE7927 !important; 
             color: white;
         }
 
         .event-tag {
             display: inline-block;
             background-color: var(--color-accent);
-            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            color: #FE7927 !important; 
             font-size: 0.8rem;
             font-weight: 700;
             padding: 4px 12px;
@@ -408,7 +409,7 @@ function build_pagination($current, $total, $adj = 2) {
 
         .event-highlight-content .btn {
             background-color: white;
-            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            color: #FE7927 !important;
             border: 2px solid white;
             font-weight: 700;
             padding: 10px 25px;
@@ -419,7 +420,7 @@ function build_pagination($current, $total, $adj = 2) {
 
         .event-highlight-content .btn:hover {
             background-color: var(--color-accent);
-            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            color: #FE7927 !important; 
             border-color: var(--color-accent);
         }
 
@@ -445,7 +446,10 @@ function build_pagination($current, $total, $adj = 2) {
             padding: 25px;
             border: none;
             border-radius: var(--border-radius);
-            background-color: var(--color-light-bg);
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(8px); 
+            -webkit-backdrop-filter: blur(8px); 
+            border: 1px solid rgba(255, 255, 255, 0.4); 
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
 
@@ -516,8 +520,8 @@ function build_pagination($current, $total, $adj = 2) {
         .btn-filter {
             flex-shrink: 0; 
             padding: 12px 25px;
-            background-color: var(--color-accent); /* Kuning */
-            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            background-color: var(--color-accent);
+            color: #FE7927 !important; 
             border: none;
             font-weight: 700;
             border-radius: 5px;
@@ -539,7 +543,7 @@ function build_pagination($current, $total, $adj = 2) {
         }
 
         .search-results-info a {
-            color: var(--color-contrast) !important; /* Biru sebagai link reset */
+            color: var(--color-contrast) !important; 
             font-weight: 700;
             margin-left: 10px;
         }
@@ -724,14 +728,14 @@ function build_pagination($current, $total, $adj = 2) {
     border: 1px solid #DDD;
     border-radius: 50%;
     font-size: 1rem;
-    color: var(--color-primary); /* Kembali ke variable, tanpa !important */
+    color: var(--color-primary); 
     text-decoration: none;
     transition: all 0.3s ease;
 }
 
 .btn-page:hover {
     background-color: var(--color-accent);
-    color: var(--color-primary); /* Kembali ke variable, tanpa !important */
+    color: var(--color-primary); 
     border-color: var(--color-accent);
 }
 
@@ -898,9 +902,14 @@ function build_pagination($current, $total, $adj = 2) {
 }
 
         .no-results {
-            background-color: var(--color-light-bg);
-            border: 1px dashed #CCC;
-            border-radius: var(--border-radius);
+            /* background-color: var(--color-light-bg); */
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(4px); /* Blur lebih halus */
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+
+            /* border: 1px dashed #CCC;
+            border-radius: var(--border-radius); */
             text-align: center;
             padding: 50px 0;
             margin-bottom: 30px;
