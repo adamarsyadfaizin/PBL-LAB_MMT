@@ -3,7 +3,7 @@ $host = 'localhost';
 $port = '5432';
 $dbname = 'db_pbl';
 $user = 'postgres';
-$password = 'raihan'; 
+$password = '1234567890'; 
 
 try {
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
@@ -29,6 +29,108 @@ if (!function_exists('writeLog')) {
             $stmt->execute([$username, $action, $ip, $device]);
         } catch (PDOException $e) {
             // Biarkan kosong agar error log tidak mengganggu user
+        }
+    }
+    
+}
+
+// --- FUNGSI REFRESH MATERIALIZED VIEWS ---
+if (!function_exists('refreshMaterializedViews')) {
+    
+    function refreshMaterializedViews($pdo, $specific_views = []) {
+        $views = [
+            'mv_lab_dashboard_stats',
+            'mv_news_with_stats', 
+            'mv_project_details',
+            'mv_feedback_summary',
+            'mv_monthly_activity'
+        ];
+        
+        // Jika specific views disediakan, gunakan itu saja
+        if (!empty($specific_views)) {
+            $views = array_intersect($views, $specific_views);
+        }
+        
+        $refreshed = [];
+        $errors = [];
+        
+        foreach ($views as $view) {
+            try {
+                // Check if view exists
+                $check = $pdo->query("SELECT to_regclass('$view')")->fetchColumn();
+                if ($check) {
+                    $pdo->exec("REFRESH MATERIALIZED VIEW CONCURRENTLY $view");
+                    $refreshed[] = $view;
+                }
+            } catch (Exception $e) {
+                $errors[$view] = $e->getMessage();
+            }
+        }
+        
+        return [
+            'success' => $refreshed,
+            'errors' => $errors
+        ];
+    }
+    
+}
+
+// --- FUNGSI REFRESH OTOMATIS SETELAH CRUD ---
+if (!function_exists('autoRefreshAfterCRUD')) {
+    
+    function autoRefreshAfterCRUD($pdo, $operation_type) {
+        // Mapping operation ke views yang perlu di-refresh
+        $refresh_map = [
+            'news' => ['mv_lab_dashboard_stats', 'mv_news_with_stats'],
+            'project' => ['mv_lab_dashboard_stats', 'mv_project_details'],
+            'feedback' => ['mv_lab_dashboard_stats', 'mv_feedback_summary'],
+            'comment' => ['mv_lab_dashboard_stats', 'mv_news_with_stats', 'mv_project_details', 'mv_monthly_activity'],
+            'member' => ['mv_lab_dashboard_stats', 'mv_project_details'],
+            'media' => ['mv_lab_dashboard_stats'],
+            'all' => [] // Refresh all if 'all'
+        ];
+        
+        $views_to_refresh = $refresh_map[$operation_type] ?? [];
+        
+        if ($operation_type === 'all') {
+            return refreshMaterializedViews($pdo);
+        }
+        
+        return refreshMaterializedViews($pdo, $views_to_refresh);
+    }
+    
+}
+
+// --- FUNGSI CALL STORED PROCEDURE ---
+if (!function_exists('callStoredProcedure')) {
+    
+    function callStoredProcedure($pdo, $procedure_name, $params = []) {
+        try {
+            // Build parameter placeholders
+            $placeholders = empty($params) ? '' : str_repeat('?,', count($params) - 1) . '?';
+            
+            $sql = "CALL $procedure_name($placeholders)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            
+            // Auto refresh relevant views after procedure call
+            $procedure_view_map = [
+                'add_comment' => ['comment'],
+                'update_entity_rating' => ['comment'],
+                'generate_monthly_report' => ['mv_monthly_activity', 'mv_lab_dashboard_stats'],
+                'cleanup_old_data' => ['all'],
+                'backup_lab_data' => []
+            ];
+            
+            $views_to_refresh = $procedure_view_map[$procedure_name] ?? [];
+            if (!empty($views_to_refresh)) {
+                autoRefreshAfterCRUD($pdo, $views_to_refresh[0] ?? 'all');
+            }
+            
+            return ['success' => true];
+            
+        } catch (Exception $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
         }
     }
     

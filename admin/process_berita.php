@@ -43,6 +43,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete') {
     $stmt = $pdo->prepare("DELETE FROM news WHERE id = ?");
     $stmt->execute([$id]);
     
+    // Auto refresh materialized views setelah delete
+    autoRefreshAfterCRUD($pdo, 'news');
+    
     header("Location: berita.php");
     exit();
 }
@@ -119,6 +122,9 @@ if (isset($_POST['save'])) {
             $sql = "INSERT INTO news (title, slug, category, summary, content, status, cover_image, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
             $pdo->prepare($sql)->execute([$title, $slug, $category, $summary, $content, $status, $img_path, $final_created_at]);
         }
+        
+        // Auto refresh materialized views setelah insert/update
+        autoRefreshAfterCRUD($pdo, 'news');
         
         header("Location: berita.php");
     } catch (PDOException $e) {
