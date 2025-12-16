@@ -198,35 +198,75 @@
 /* =========================================
    3. PAGINATION (Style Bulat Kuning & Tengah)
    ========================================= */
+/* =========================================
+   3. PAGINATION (Gaya Bulat Oranye Fix)
+   ========================================= */
+/* =========================================
+   3. PAGINATION (FIXED SIZE & HOVER COLOR)
+   ========================================= */
+/* =========================================
+   3. PAGINATION (PERSIS SESUAI GAMBAR)
+   ========================================= */
 .pagination-controls {
     text-align: center;
-    margin-top: 50px;
+    margin-top: 30px;
     display: flex;
-    justify-content: center; /* Posisi Tengah */
-    gap: 5px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
 .btn-page {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
+    width: 40px;  /* Ukuran kecil proporsional */
     height: 40px;
-    border: 1px solid #ddd;
-    background: #fff;
-    color: #333;
+    border: 1px solid rgba(255, 255, 255, 0.4); /* Garis lingkaran tipis */
+    background: transparent;
+    color: #FE7927; /* Oranye */
     text-decoration: none;
-    border-radius: 50%; /* Bulat */
-    font-weight: 600;
-    transition: all 0.2s;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 400; /* Normal, tidak tebal */
+    transition: none; /* Menghilangkan semua efek transisi */
 }
 
-/* State Aktif & Hover */
-.btn-page.active, .btn-page:hover {
-    background: var(--color-accent); /* Warna Kuning */
-    color: #000; /* Teks Hitam */
-    border-color: var(--color-accent);
-    transform: scale(1.1);
+/* State Aktif: Oranye Padat, Teks Putih */
+.btn-page.active {
+    background: #FE7927; 
+    color: #ffffff;
+    border-color: #FE7927;
+}
+
+/* State Hover: Kuning Padat, Teks Oranye (Sesuai Gambar) */
+.btn-page:hover:not(.active) {
+    background: #FFC107; /* Kuning */
+    border-color: #FFC107;
+    color: #FE7927;      /* Angka tetap oranye di atas kuning */
+}
+
+/* Menghilangkan efek scaling/pembesaran */
+.btn-page:hover {
+    transform: none !important;
+}
+
+/* Panah khusus */
+.btn-page .fa-chevron-right, 
+.btn-page .fa-chevron-left {
+    font-size: 14px;
+}
+
+/* Responsif untuk Mobile */
+@media (max-width: 480px) {
+    .btn-page {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+    .pagination-controls {
+        gap: 8px;
+    }
 }
 
 
