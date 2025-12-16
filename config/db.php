@@ -3,11 +3,7 @@ $host = 'localhost';
 $port = '5432';
 $dbname = 'db_pbl';
 $user = 'postgres';
-<<<<<<< HEAD
-$password = '1234567890'; 
-=======
-$password = '12345678'; 
->>>>>>> c562a0fff9231aa130afce51b703e0c5bded7908
+$password = 'raihan'; 
 
 try {
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
