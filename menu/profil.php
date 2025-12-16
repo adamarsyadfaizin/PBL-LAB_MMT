@@ -743,9 +743,6 @@ $members = $pdo->query("
     renderFooter($path_prefix, $site_config); 
     ?>
 
-    <a href="#top" id="scrollTopBtn" class="scroll-top-btn" aria-label="Kembali ke atas">
-        <i class="fas fa-arrow-up"></i>
-    </a>
 
     <script src="<?= $path_prefix ?>assets/js/navbar.js?v=<?= $cache_buster ?>"></script>
     <script src="<?= $path_prefix ?>assets/js/scrolltop.js?v=<?= $cache_buster ?>"></script>
