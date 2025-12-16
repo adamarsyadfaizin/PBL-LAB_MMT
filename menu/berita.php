@@ -306,10 +306,15 @@ function build_pagination($current, $total, $adj = 2) {
     padding: 60px 0 30px 0 !important; /* ATAS 60px, BAWAH 30px */
 }
 
-.hero-breadcrumb {
-    font-size: 14px !important;
-    margin-bottom: 5px !important;
-    opacity: 0.9;
+/* --- HANYA MENGUBAH WARNA TULISAN 'BERANDA' --- */
+.hero-breadcrumb a:first-child {
+    color: #d74709 !important; /* Warna oranye spesifik Anda */
+    text-decoration: none !important;
+}
+
+/* Pastikan saat di-hover warnanya tetap oranye atau sedikit lebih terang */
+.hero-breadcrumb a:first-child:hover {
+    color: #ff6600 !important;
 }
 
 .hero h1 {
