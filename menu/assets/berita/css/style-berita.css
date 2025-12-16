@@ -107,7 +107,63 @@
 }
 .btn-search { background-color: var(--color-primary); }
 .btn-filter { background-color: var(--color-accent); color: var(--color-primary); }
+.pagination-controls {
+    text-align: center;
+    margin-top: 30px;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 12px;
+}
 
+.btn-page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;  /* Ukuran proporsional agar tidak terlalu besar */
+    height: 42px;
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Garis luar putih halus */
+    background: transparent;
+    color: #FE7927; /* Oranye default */
+    text-decoration: none;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 18px;
+    transition: all 0.2s ease-in-out;
+}
+
+/* 1. Halaman Aktif: Tetap Oranye */
+.btn-page.active {
+    background: #FE7927; /* --color-primary */
+    color: #ffffff;
+    border-color: #FE7927;
+}
+
+/* 2. HOVER: Berubah jadi Kuning Padat */
+.btn-page:hover:not(.active) {
+    background: #FFC107; /* Warna Kuning Akses --color-accent */
+    border-color: #FFC107;
+    color: #333333;      /* Teks lebih gelap agar terbaca di warna kuning */
+    transform: scale(1.1); /* Sedikit membesar saat di-hover */
+}
+
+/* Panah khusus */
+.btn-page .fa-chevron-right, 
+.btn-page .fa-chevron-left {
+    font-size: 14px;
+}
+
+/* Responsif untuk Mobile */
+@media (max-width: 480px) {
+    .btn-page {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+    .pagination-controls {
+        gap: 8px;
+    }
+}
 /* --- List Berita (Card) --- */
 .facility-item {
     display: flex;
