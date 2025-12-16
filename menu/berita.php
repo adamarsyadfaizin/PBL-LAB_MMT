@@ -987,7 +987,20 @@ function build_pagination($current, $total, $adj = 2) {
             border-bottom: none;
             padding-bottom: 0;
         }
+/* PAKSA UBAH WARNA BACKGROUND FOOTER */
+footer, 
+.site-footer, 
+[style*="background-color"] {
+    background-color: #d74709ff !important; /* Warna Oranye Gelap / Cokelat Oranye */
+    background: #d74709ff !important;
+}
 
+/* Jika footer menggunakan tag section atau div khusus di dalam fungsi renderFooter */
+main + footer, 
+footer div, 
+footer section {
+    background-color: #d74709ff !important;
+}
         .event-item h4 {
             margin-top: 0;
             margin-bottom: 5px;
