@@ -7,337 +7,411 @@
 /* --- REVISI TAMPILAN FILTER (HORIZONTAL) --- */
 
 .search-filter-container {
-    background: #f8f9fa; /* Sesuaikan warna background */
-    padding: 20px 25px;
-    border-radius: 8px;
-    margin-bottom: 40px;
-    border: 1px solid #eee;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  background: #f8f9fa; /* Sesuaikan warna background */
+  padding: 20px 25px;
+  border-radius: 8px;
+  margin-bottom: 40px;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 /* Mengatur form menjadi baris horizontal */
 .horizontal-filter-form {
-    display: flex;
-    align-items: center;
-    gap: 20px; /* Jarak antar elemen */
-    width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Jarak antar elemen */
+  width: 100%;
 }
 
 .filter-item {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Item pencarian dibuat lebih lebar (flex-grow) */
 .search-item {
-    flex-grow: 2; 
+  flex-grow: 2;
 }
 
 /* Item dropdown dibuat proporsional */
 .filter-item:not(.search-item):not(.button-item) {
-    flex-grow: 1;
-    min-width: 150px;
+  flex-grow: 1;
+  min-width: 150px;
 }
 
 .filter-item label {
-    font-size: 12px;
-    font-weight: 700;
-    color: #555;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #555;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  display: block;
 }
 
-.filter-item input, 
+.filter-item input,
 .filter-item select {
-    width: 100%;
-    padding: 10px 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 14px;
-    height: 45px; /* Tinggi disamakan */
-    background: #fff;
-    outline: none;
-    transition: border-color 0.3s;
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  height: 45px; /* Tinggi disamakan */
+  background: #fff;
+  outline: none;
+  transition: border-color 0.3s;
 }
 
-.filter-item input:focus, 
+.filter-item input:focus,
 .filter-item select:focus {
-    border-color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .btn-filter {
-    height: 45px; /* Tinggi sama dengan input */
-    padding: 0 30px;
-    background-color: var(--color-primary); /* Warna Orange */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
-    margin-top: auto; /* Memastikan tombol turun ke bawah sejajar input */
-    white-space: nowrap;
+  height: 45px; /* Tinggi sama dengan input */
+  padding: 0 30px;
+  background-color: var(--color-primary); /* Warna Orange */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: auto; /* Memastikan tombol turun ke bawah sejajar input */
+  white-space: nowrap;
 }
 
 .btn-filter:hover {
-    background-color: var(--color-accent); /* Warna Kuning saat hover */
-    color: #333;
+  background-color: var(--color-accent); /* Warna Kuning saat hover */
+  color: #333;
 }
 
 /* Responsive: Jika layar HP, ubah jadi tumpuk lagi */
 @media (max-width: 768px) {
-    .horizontal-filter-form {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .filter-item {
-        width: 100%;
-    }
-    
-    .btn-filter {
-        width: 100%;
-        margin-top: 10px;
-    }
+  .horizontal-filter-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-item {
+    width: 100%;
+  }
+
+  .btn-filter {
+    width: 100%;
+    margin-top: 10px;
+  }
 }
 
 /* Grid Galeri */
 .gallery-grid-main {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    margin-bottom: 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
 }
 
 .gallery-item {
-    display: block;
-    text-decoration: none;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
-    background: #fff;
-    position: relative;
-    border: 1px solid #eee;
+  display: block;
+  text-decoration: none;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  background: #fff;
+  position: relative;
+  border: 1px solid #eee;
 }
 
 .gallery-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .image-container {
-    position: relative;
-    height: 220px;
-    overflow: hidden;
-    background: #eee;
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+  background: #eee;
 }
 
 .image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
 }
 
 .gallery-item:hover img {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .overlay {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 59, 142, 0.6);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    opacity: 0;
-    transition: opacity 0.3s;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 59, 142, 0.6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
 .gallery-item:hover .overlay {
-    opacity: 1;
+  opacity: 1;
 }
 
 .type-badge {
-    position: absolute;
-    top: 10px; right: 10px;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
-    font-size: 11px;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-weight: 600;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
 }
 
 .item-info {
-    padding: 15px;
-    border-top: 1px solid #eee;
+  padding: 15px;
+  border-top: 1px solid #eee;
 }
 
 .item-info h4 {
-    font-size: 16px;
-    color: #333;
-    margin-bottom: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: 700;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 700;
 }
 
 .event-tag {
-    font-size: 12px;
-    color: #888;
-    display: block;
+  font-size: 12px;
+  color: #888;
+  display: block;
 }
 
 /* Info Hasil */
 .search-results-info {
-    background: #e3f2fd;
-    color: #0d47a1;
-    padding: 10px 15px;
-    border-radius: 5px;
-    margin-bottom: 25px;
-    font-size: 14px;
-    border-left: 4px solid var(--color-primary);
+  background: #e3f2fd;
+  color: #0d47a1;
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-bottom: 25px;
+  font-size: 14px;
+  border-left: 4px solid var(--color-primary);
 }
 
 /* =========================================
    3. PAGINATION (PERSIS SESUAI GAMBAR)
    ========================================= */
 .pagination-controls {
-    text-align: center;
-    margin-top: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
+  text-align: center;
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
 .btn-page {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;  /* Ukuran kecil proporsional */
-    height: 40px;
-    border: 1px solid rgba(255, 255, 255, 0.4); /* Garis lingkaran tipis */
-    background: transparent;
-    color: #FE7927; /* Oranye */
-    text-decoration: none;
-    border-radius: 50%;
-    font-size: 16px;
-    font-weight: 400; /* Normal, tidak tebal */
-    transition: none; /* Menghilangkan semua efek transisi */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; /* Ukuran kecil proporsional */
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.4); /* Garis lingkaran tipis */
+  background: transparent;
+  color: #fe7927; /* Oranye */
+  text-decoration: none;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 400; /* Normal, tidak tebal */
+  transition: none; /* Menghilangkan semua efek transisi */
 }
 
 /* State Aktif: Oranye Padat, Teks Putih */
 .btn-page.active {
-    background: #FE7927; 
-    color: #ffffff;
-    border-color: #FE7927;
+  background: #fe7927;
+  color: #ffffff;
+  border-color: #fe7927;
 }
 
 /* State Hover: Kuning Padat, Teks Oranye (Sesuai Gambar) */
 .btn-page:hover:not(.active) {
-    background: #FFC107; /* Kuning */
-    border-color: #FFC107;
-    color: #FE7927;      /* Angka tetap oranye di atas kuning */
+  background: #ffc107; /* Kuning */
+  border-color: #ffc107;
+  color: #fe7927; /* Angka tetap oranye di atas kuning */
 }
 
 /* Menghilangkan efek scaling/pembesaran */
 .btn-page:hover {
-    transform: none !important;
+  transform: none !important;
 }
 
 /* Panah khusus */
-.btn-page .fa-chevron-right, 
+.btn-page .fa-chevron-right,
 .btn-page .fa-chevron-left {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 /* Responsif untuk Mobile */
 @media (max-width: 480px) {
-    .btn-page {
-        width: 45px;
-        height: 45px;
-        font-size: 18px;
-    }
-    .pagination-controls {
-        gap: 8px;
-    }
+  .btn-page {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
+  .pagination-controls {
+    gap: 8px;
+  }
 }
 /* Responsive */
 @media (max-width: 992px) {
-    .gallery-grid-main { grid-template-columns: repeat(2, 1fr); }
+  .gallery-grid-main {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
-    .search-row, .filter-row { flex-direction: column; gap: 10px; }
-    .gallery-grid-main { grid-template-columns: 1fr; }
-    .btn-search, .btn-filter { width: 100%; }
+  .search-row,
+  .filter-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .gallery-grid-main {
+    grid-template-columns: 1fr;
+  }
+  .btn-search,
+  .btn-filter {
+    width: 100%;
+  }
 }
 
 /* --- EMPTY STATE STYLE (Meniru Halaman Proyek) --- */
 
 /* Wrapper agar posisi ke tengah dan lebar terbatas */
 .empty-state-centered {
-    display: block;
-    width: 60%; /* Lebar 60% seperti di proyek */
-    margin: 40px auto; /* Posisi otomatis di tengah */
-    text-align: center;
+  display: block;
+  width: 60%; /* Lebar 60% seperti di proyek */
+  margin: 40px auto; /* Posisi otomatis di tengah */
+  text-align: center;
 }
 
 /* Memperbaiki layout konten di dalam kotak */
 .no-results-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-    min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  min-height: 250px;
 }
 
 /* Typography Judul */
 .no-results-content h3 {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 10px;
-    font-weight: 700;
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+  font-weight: 700;
 }
 
 /* Typography Deskripsi */
 .no-results-content p {
-    color: #666;
-    margin-bottom: 25px;
-    font-size: 14px;
+  color: #666;
+  margin-bottom: 25px;
+  font-size: 14px;
 }
 
 /* Tombol Kuning (Persis Proyek) */
 .btn-yellow-action {
-    background-color: #ffc107; /* Warna kuning */
-    color: #000;
-    font-weight: 600;
-    padding: 10px 30px;
-    border-radius: 5px;
-    text-decoration: none;
-    border: none;
-    transition: all 0.2s ease;
-    display: inline-block;
+  background-color: #ffc107; /* Warna kuning */
+  color: #000;
+  font-weight: 600;
+  padding: 10px 30px;
+  border-radius: 5px;
+  text-decoration: none;
+  border: none;
+  transition: all 0.2s ease;
+  display: inline-block;
 }
 
 .btn-yellow-action:hover {
-    transform: translateY(-2px);
-    background-color: #e0a800;
-    color: #000;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+  background-color: #e0a800;
+  color: #000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 /* Responsive: Full width di HP */
 @media (max-width: 768px) {
-    .empty-state-centered {
-        width: 100%;
-    }
+  .empty-state-centered {
+    width: 100%;
+  }
+}
+
+/* =========================================
+   3. PAGINATION (FIX: KEMBALIKAN KOTAK PUTIH TRANSPARAN)
+   ========================================= */
+.pagination-controls {
+    /* Style Kotak (Glass Effect) */
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 10px !important;
+    padding: 15px !important;
+    
+    /* Posisi */
+    width: 100%;
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 12px;
+}
+
+/* Tombol Style */
+.btn-page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: transparent;
+    color: #FE7927;
+    text-decoration: none;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 18px;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-page.active {
+    background: #FE7927; 
+    color: #ffffff;
+    border-color: #FE7927;
+}
+
+.btn-page:hover:not(.active) {
+    background: #FFC107;
+    border-color: #FFC107;
+    color: #333;
+    transform: scale(1.1);
+}
+
+.page-ellipsis {
+    border: none;
+    color: #666;
+    font-weight: bold;
 }
