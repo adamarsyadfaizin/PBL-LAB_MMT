@@ -6,12 +6,72 @@
 /* =========================================
    VARIABLES & RESET
    ========================================= */
-:root {
-    --transition-speed: 0.3s;
-    --border-radius-sm: 5px;
-    --border-radius-md: 10px;
-    --shadow-light: 0 5px 15px rgba(0, 0, 0, 0.05);
-    --shadow-heavy: 0 15px 30px rgba(0, 0, 0, 0.1);
+.project-filter-bar {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr 1fr;
+  gap: 15px;
+  align-items: center;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  margin-bottom: 40px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.filter-group-reset {
+  /* Kolom Filter */
+  grid-column: 4 / 5;
+}
+.filter-group-action {
+  /* Kolom Reset */
+  grid-column: 5 / 6;
+}
+.filter-group-action .btn,
+.filter-group-reset .btn {
+  margin-top: 19px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.filter-group label {
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #666;
+}
+
+.project-filter-bar input[type="search"],
+.project-filter-bar select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  background: #fff;
+  height: 42px; /* Tinggi seragam */
+}
+
+.project-filter-bar input:focus,
+.project-filter-bar select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+/* Tombol Filter di dalam bar */
+.project-filter-bar .btn {
+  height: 42px;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  margin-top: auto;
 }
 
 /* =========================================
@@ -153,7 +213,7 @@
 }
 
 .project-card:hover .project-card-thumbnail img {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .project-card-content {
@@ -188,23 +248,23 @@
 }
 
 .project-card-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    border-top: 1px solid #eee;
-    padding-top: 15px;
-    margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+  margin-top: auto;
 }
 
 .tag-badge {
-    background: #f0f4f8;
-    border: 1px solid #e1e4e8;
-    color: #555;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
+  background: #f0f4f8;
+  border: 1px solid #e1e4e8;
+  color: #555;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 /* =========================================
@@ -236,21 +296,26 @@
 }
 
 .btn-page.active {
-    background: #FE7927;
-    color: #ffffff;
-    border-color: #FE7927;
+  background: #fe7927;
+  color: #ffffff;
+  border-color: #fe7927;
 }
 
 .btn-page:hover:not(.active) {
-    background: #FFC107;
-    border-color: #FFC107;
-    color: #FE7927;
-    transform: none !important;
+  background: #ffc107; /* Kuning */
+  border-color: #ffc107;
+  color: #fe7927; /* Angka tetap oranye di atas kuning */
 }
 
+/* Menghilangkan efek scaling/pembesaran */
+.btn-page:hover {
+  transform: none !important;
+}
+
+/* Panah khusus */
 .btn-page .fa-chevron-right,
 .btn-page .fa-chevron-left {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 /* No Results Section */
@@ -311,13 +376,134 @@
 
 /* Mobile S (Max 480px) */
 @media (max-width: 480px) {
-    .btn-page {
-        width: 45px;
-        height: 45px;
-        font-size: 18px;
-    }
+  .btn-page {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
+  .pagination-controls {
+    gap: 8px;
+  }
+}
 
-    .pagination-controls {
-        gap: 8px;
-    }
+.no-results {
+  grid-column: 1 / -1;
+  background: none;
+  border-radius: 0;
+  padding: 30px;
+  box-shadow: none;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 250px;
+  color: #333;
+}
+
+.no-results h3 {
+  color: var(--color-text);
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.no-results .btn {
+  background: var(--color-accent);
+  color: #000;
+}
+
+/* =========================================
+    RESPONSIVE DESIGN
+   ========================================= */
+@media (max-width: 992px) {
+  .project-filter-bar {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .filter-group-search {
+    grid-column: 1 / -1;
+  }
+  .filter-group-action {
+    grid-column: 2 / 3;
+  }
+  .filter-group-reset {
+    grid-column: 3 / 4;
+  }
+  .project-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .project-filter-bar {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================
+   3. PAGINATION (FIX: KEMBALIKAN KOTAK PUTIH TRANSPARAN)
+   ========================================= */
+.pagination-controls {
+    /* Style Kotak (Glass Effect) seperti Berita */
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 10px !important;
+    padding: 15px !important;
+    
+    /* Posisi & Layout */
+    width: 100%;
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 12px;
+}
+
+/* Tombol - Style Oranye */
+.btn-page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: transparent;
+    color: #FE7927;
+    text-decoration: none;
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 18px;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-page.active {
+    background: #FE7927; 
+    color: #ffffff;
+    border-color: #FE7927;
+}
+
+.btn-page:hover:not(.active) {
+    background: #FFC107;
+    border-color: #FFC107;
+    color: #333;
+    transform: scale(1.1);
+}
+
+.btn-page .fa-chevron-right, 
+.btn-page .fa-chevron-left {
+    font-size: 14px;
+}
+
+.page-ellipsis {
+    border: none;
+    color: #666; /* Warna abu gelap karena backgroundnya putih */
+    font-weight: bold;
 }

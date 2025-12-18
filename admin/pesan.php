@@ -156,7 +156,7 @@ if(isset($_GET['delete_all'])) {
                             <?= htmlspecialchars($truncatedMsg) ?>
                         </a>
                     </td>
-                    <td><?= date('d M Y', $row['created_epoch']) ?></td>
+                    <td><?= date('d M Y',(int) $row['created_epoch']) ?></td>
                     <td style="white-space: nowrap;">
                         <?php if($isUnread): ?>
                             <a href="?mark_read=<?= $row['id'] ?>" class="btn btn-sm btn-primary" title="Tandai sudah dibaca">Baca</a>
