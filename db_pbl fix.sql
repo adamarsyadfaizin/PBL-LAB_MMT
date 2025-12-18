@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict 2cDGLkgwc7x9kpfXb3dH0QEqzXi5EFH4zuybUopg2v0a6HxPg7rMorZjG5CecPh
+\restrict bTLbJrqgLyXFwLsECK94P2k3wHuNfLN3niUTklkpRBwArWV8yKws7IOTTtSTbAr
 
 -- Dumped from database version 15.14
 -- Dumped by pg_dump version 15.14
 
--- Started on 2025-12-08 19:07:53
+-- Started on 2025-12-18 13:36:45
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -21,7 +21,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 260 (class 1255 OID 99645)
+-- TOC entry 261 (class 1255 OID 26616)
 -- Name: add_comment(character varying, integer, character varying, character varying, integer, text, integer); Type: PROCEDURE; Schema: public; Owner: postgres
 --
 
@@ -81,7 +81,7 @@ $$;
 ALTER PROCEDURE public.add_comment(IN p_entity_type character varying, IN p_entity_id integer, IN p_author_name character varying, IN p_author_email character varying, IN p_rating integer, IN p_content text, IN p_user_id integer) OWNER TO postgres;
 
 --
--- TOC entry 262 (class 1255 OID 99648)
+-- TOC entry 262 (class 1255 OID 26617)
 -- Name: backup_lab_data(character varying); Type: PROCEDURE; Schema: public; Owner: postgres
 --
 
@@ -130,7 +130,7 @@ $$;
 ALTER PROCEDURE public.backup_lab_data(IN p_backup_type character varying) OWNER TO postgres;
 
 --
--- TOC entry 263 (class 1255 OID 99649)
+-- TOC entry 263 (class 1255 OID 26618)
 -- Name: cleanup_old_data(integer); Type: PROCEDURE; Schema: public; Owner: postgres
 --
 
@@ -172,7 +172,7 @@ $$;
 ALTER PROCEDURE public.cleanup_old_data(IN p_days_old integer) OWNER TO postgres;
 
 --
--- TOC entry 261 (class 1255 OID 99646)
+-- TOC entry 245 (class 1255 OID 26619)
 -- Name: generate_monthly_report(date); Type: PROCEDURE; Schema: public; Owner: postgres
 --
 
@@ -246,7 +246,7 @@ $$;
 ALTER PROCEDURE public.generate_monthly_report(IN p_month date) OWNER TO postgres;
 
 --
--- TOC entry 248 (class 1255 OID 99653)
+-- TOC entry 246 (class 1255 OID 26620)
 -- Name: get_lab_stats(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -269,7 +269,7 @@ $$;
 ALTER FUNCTION public.get_lab_stats() OWNER TO postgres;
 
 --
--- TOC entry 246 (class 1255 OID 99619)
+-- TOC entry 247 (class 1255 OID 26621)
 -- Name: refresh_lab_dashboard_stats(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -285,7 +285,7 @@ $$;
 ALTER FUNCTION public.refresh_lab_dashboard_stats() OWNER TO postgres;
 
 --
--- TOC entry 247 (class 1255 OID 99644)
+-- TOC entry 248 (class 1255 OID 26622)
 -- Name: update_entity_rating(character varying, integer); Type: PROCEDURE; Schema: public; Owner: postgres
 --
 
@@ -324,7 +324,7 @@ $$;
 ALTER PROCEDURE public.update_entity_rating(IN p_entity_type character varying, IN p_entity_id integer) OWNER TO postgres;
 
 --
--- TOC entry 264 (class 1255 OID 99382)
+-- TOC entry 249 (class 1255 OID 26623)
 -- Name: update_updated_at_column(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -345,7 +345,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 214 (class 1259 OID 99383)
+-- TOC entry 214 (class 1259 OID 26624)
 -- Name: activity_logs; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -362,7 +362,7 @@ CREATE TABLE public.activity_logs (
 ALTER TABLE public.activity_logs OWNER TO postgres;
 
 --
--- TOC entry 215 (class 1259 OID 99389)
+-- TOC entry 215 (class 1259 OID 26630)
 -- Name: activity_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -378,7 +378,7 @@ CREATE SEQUENCE public.activity_logs_id_seq
 ALTER TABLE public.activity_logs_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3562 (class 0 OID 0)
+-- TOC entry 3553 (class 0 OID 0)
 -- Dependencies: 215
 -- Name: activity_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -387,7 +387,7 @@ ALTER SEQUENCE public.activity_logs_id_seq OWNED BY public.activity_logs.id;
 
 
 --
--- TOC entry 216 (class 1259 OID 99390)
+-- TOC entry 216 (class 1259 OID 26631)
 -- Name: categories; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -401,7 +401,7 @@ CREATE TABLE public.categories (
 ALTER TABLE public.categories OWNER TO postgres;
 
 --
--- TOC entry 217 (class 1259 OID 99393)
+-- TOC entry 217 (class 1259 OID 26634)
 -- Name: categories_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -416,7 +416,7 @@ CREATE SEQUENCE public.categories_id_seq
 ALTER TABLE public.categories_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3563 (class 0 OID 0)
+-- TOC entry 3554 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -425,7 +425,7 @@ ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
 
 
 --
--- TOC entry 218 (class 1259 OID 99394)
+-- TOC entry 218 (class 1259 OID 26635)
 -- Name: comments; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -448,7 +448,7 @@ CREATE TABLE public.comments (
 ALTER TABLE public.comments OWNER TO postgres;
 
 --
--- TOC entry 219 (class 1259 OID 99403)
+-- TOC entry 219 (class 1259 OID 26644)
 -- Name: comments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -464,7 +464,7 @@ CREATE SEQUENCE public.comments_id_seq
 ALTER TABLE public.comments_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3564 (class 0 OID 0)
+-- TOC entry 3555 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -473,7 +473,7 @@ ALTER SEQUENCE public.comments_id_seq OWNED BY public.comments.id;
 
 
 --
--- TOC entry 220 (class 1259 OID 99404)
+-- TOC entry 220 (class 1259 OID 26645)
 -- Name: feedback; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -491,7 +491,7 @@ CREATE TABLE public.feedback (
 ALTER TABLE public.feedback OWNER TO postgres;
 
 --
--- TOC entry 221 (class 1259 OID 99411)
+-- TOC entry 221 (class 1259 OID 26652)
 -- Name: feedback_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -507,7 +507,7 @@ CREATE SEQUENCE public.feedback_id_seq
 ALTER TABLE public.feedback_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3565 (class 0 OID 0)
+-- TOC entry 3556 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: feedback_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -516,7 +516,7 @@ ALTER SEQUENCE public.feedback_id_seq OWNED BY public.feedback.id;
 
 
 --
--- TOC entry 222 (class 1259 OID 99412)
+-- TOC entry 222 (class 1259 OID 26653)
 -- Name: lab_profile; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -558,7 +558,7 @@ CREATE TABLE public.lab_profile (
 ALTER TABLE public.lab_profile OWNER TO postgres;
 
 --
--- TOC entry 223 (class 1259 OID 99429)
+-- TOC entry 223 (class 1259 OID 26670)
 -- Name: lab_profile_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -573,7 +573,7 @@ CREATE SEQUENCE public.lab_profile_id_seq
 ALTER TABLE public.lab_profile_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3566 (class 0 OID 0)
+-- TOC entry 3557 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: lab_profile_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -582,7 +582,7 @@ ALTER SEQUENCE public.lab_profile_id_seq OWNED BY public.lab_profile.id;
 
 
 --
--- TOC entry 224 (class 1259 OID 99430)
+-- TOC entry 224 (class 1259 OID 26671)
 -- Name: media_assets; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -602,7 +602,7 @@ CREATE TABLE public.media_assets (
 ALTER TABLE public.media_assets OWNER TO postgres;
 
 --
--- TOC entry 225 (class 1259 OID 99437)
+-- TOC entry 225 (class 1259 OID 26678)
 -- Name: media_assets_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -617,7 +617,7 @@ CREATE SEQUENCE public.media_assets_id_seq
 ALTER TABLE public.media_assets_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3567 (class 0 OID 0)
+-- TOC entry 3558 (class 0 OID 0)
 -- Dependencies: 225
 -- Name: media_assets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -626,7 +626,7 @@ ALTER SEQUENCE public.media_assets_id_seq OWNED BY public.media_assets.id;
 
 
 --
--- TOC entry 226 (class 1259 OID 99438)
+-- TOC entry 226 (class 1259 OID 26679)
 -- Name: members; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -647,7 +647,7 @@ CREATE TABLE public.members (
 ALTER TABLE public.members OWNER TO postgres;
 
 --
--- TOC entry 227 (class 1259 OID 99443)
+-- TOC entry 227 (class 1259 OID 26684)
 -- Name: members_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -662,7 +662,7 @@ CREATE SEQUENCE public.members_id_seq
 ALTER TABLE public.members_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3568 (class 0 OID 0)
+-- TOC entry 3559 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: members_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -671,28 +671,7 @@ ALTER SEQUENCE public.members_id_seq OWNED BY public.members.id;
 
 
 --
--- TOC entry 228 (class 1259 OID 99444)
--- Name: mv_feedback_summary; Type: MATERIALIZED VIEW; Schema: public; Owner: postgres
---
-
-CREATE MATERIALIZED VIEW public.mv_feedback_summary AS
- SELECT feedback.id,
-    feedback.nama_lengkap,
-    feedback.email,
-    feedback.subjek,
-    "left"(feedback.pesan, 50) AS pesan_preview,
-    feedback.created_at,
-    feedback.is_read,
-    EXTRACT(epoch FROM feedback.created_at) AS created_epoch
-   FROM public.feedback
-  ORDER BY feedback.created_at DESC
-  WITH NO DATA;
-
-
-ALTER TABLE public.mv_feedback_summary OWNER TO postgres;
-
---
--- TOC entry 229 (class 1259 OID 99450)
+-- TOC entry 228 (class 1259 OID 26691)
 -- Name: news; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -715,7 +694,7 @@ CREATE TABLE public.news (
 ALTER TABLE public.news OWNER TO postgres;
 
 --
--- TOC entry 236 (class 1259 OID 99472)
+-- TOC entry 229 (class 1259 OID 26700)
 -- Name: projects; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -742,7 +721,7 @@ CREATE TABLE public.projects (
 ALTER TABLE public.projects OWNER TO postgres;
 
 --
--- TOC entry 240 (class 1259 OID 99486)
+-- TOC entry 230 (class 1259 OID 26709)
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -760,7 +739,7 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO postgres;
 
 --
--- TOC entry 242 (class 1259 OID 99613)
+-- TOC entry 231 (class 1259 OID 26717)
 -- Name: mv_lab_dashboard_stats; Type: MATERIALIZED VIEW; Schema: public; Owner: postgres
 --
 
@@ -773,7 +752,7 @@ CREATE MATERIALIZED VIEW public.mv_lab_dashboard_stats AS
           WHERE (((news.type)::text = 'kegiatan'::text) AND ((news.status)::text = 'published'::text))) AS total_kegiatan,
     ( SELECT count(*) AS count
            FROM public.projects
-          WHERE ((projects.status)::text = ANY ((ARRAY['published'::character varying, '1'::character varying])::text[]))) AS total_projects,
+          WHERE ((projects.status)::text = ANY (ARRAY[('published'::character varying)::text, ('1'::character varying)::text]))) AS total_projects,
     ( SELECT count(DISTINCT projects.year) AS count
            FROM public.projects
           WHERE (projects.year IS NOT NULL)) AS total_years_active,
@@ -802,7 +781,7 @@ CREATE MATERIALIZED VIEW public.mv_lab_dashboard_stats AS
 ALTER TABLE public.mv_lab_dashboard_stats OWNER TO postgres;
 
 --
--- TOC entry 243 (class 1259 OID 99620)
+-- TOC entry 232 (class 1259 OID 26722)
 -- Name: mv_monthly_activity; Type: MATERIALIZED VIEW; Schema: public; Owner: postgres
 --
 
@@ -822,7 +801,7 @@ CREATE MATERIALIZED VIEW public.mv_monthly_activity AS
 ALTER TABLE public.mv_monthly_activity OWNER TO postgres;
 
 --
--- TOC entry 231 (class 1259 OID 99460)
+-- TOC entry 233 (class 1259 OID 26726)
 -- Name: news_tags; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -837,7 +816,7 @@ CREATE TABLE public.news_tags (
 ALTER TABLE public.news_tags OWNER TO postgres;
 
 --
--- TOC entry 245 (class 1259 OID 99635)
+-- TOC entry 234 (class 1259 OID 26730)
 -- Name: mv_news_with_stats; Type: MATERIALIZED VIEW; Schema: public; Owner: postgres
 --
 
@@ -868,7 +847,7 @@ CREATE MATERIALIZED VIEW public.mv_news_with_stats AS
 ALTER TABLE public.mv_news_with_stats OWNER TO postgres;
 
 --
--- TOC entry 233 (class 1259 OID 99465)
+-- TOC entry 235 (class 1259 OID 26737)
 -- Name: project_members; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -882,7 +861,7 @@ CREATE TABLE public.project_members (
 ALTER TABLE public.project_members OWNER TO postgres;
 
 --
--- TOC entry 244 (class 1259 OID 99625)
+-- TOC entry 236 (class 1259 OID 26740)
 -- Name: mv_project_details; Type: MATERIALIZED VIEW; Schema: public; Owner: postgres
 --
 
@@ -914,7 +893,7 @@ CREATE MATERIALIZED VIEW public.mv_project_details AS
 ALTER TABLE public.mv_project_details OWNER TO postgres;
 
 --
--- TOC entry 230 (class 1259 OID 99459)
+-- TOC entry 237 (class 1259 OID 26747)
 -- Name: news_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -929,8 +908,8 @@ CREATE SEQUENCE public.news_id_seq
 ALTER TABLE public.news_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3569 (class 0 OID 0)
--- Dependencies: 230
+-- TOC entry 3560 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: news_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -938,7 +917,7 @@ ALTER SEQUENCE public.news_id_seq OWNED BY public.news.id;
 
 
 --
--- TOC entry 232 (class 1259 OID 99464)
+-- TOC entry 238 (class 1259 OID 26748)
 -- Name: news_tags_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -954,8 +933,8 @@ CREATE SEQUENCE public.news_tags_id_seq
 ALTER TABLE public.news_tags_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3570 (class 0 OID 0)
--- Dependencies: 232
+-- TOC entry 3561 (class 0 OID 0)
+-- Dependencies: 238
 -- Name: news_tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -963,7 +942,7 @@ ALTER SEQUENCE public.news_tags_id_seq OWNED BY public.news_tags.id;
 
 
 --
--- TOC entry 234 (class 1259 OID 99468)
+-- TOC entry 239 (class 1259 OID 26749)
 -- Name: project_members_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -979,8 +958,8 @@ CREATE SEQUENCE public.project_members_id_seq
 ALTER TABLE public.project_members_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3571 (class 0 OID 0)
--- Dependencies: 234
+-- TOC entry 3562 (class 0 OID 0)
+-- Dependencies: 239
 -- Name: project_members_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -988,7 +967,7 @@ ALTER SEQUENCE public.project_members_id_seq OWNED BY public.project_members.id;
 
 
 --
--- TOC entry 235 (class 1259 OID 99469)
+-- TOC entry 240 (class 1259 OID 26750)
 -- Name: project_tags; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1001,7 +980,7 @@ CREATE TABLE public.project_tags (
 ALTER TABLE public.project_tags OWNER TO postgres;
 
 --
--- TOC entry 237 (class 1259 OID 99481)
+-- TOC entry 241 (class 1259 OID 26753)
 -- Name: projects_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1016,8 +995,8 @@ CREATE SEQUENCE public.projects_id_seq
 ALTER TABLE public.projects_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3572 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 3563 (class 0 OID 0)
+-- Dependencies: 241
 -- Name: projects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -1025,7 +1004,7 @@ ALTER SEQUENCE public.projects_id_seq OWNED BY public.projects.id;
 
 
 --
--- TOC entry 238 (class 1259 OID 99482)
+-- TOC entry 242 (class 1259 OID 26754)
 -- Name: tags; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1039,7 +1018,7 @@ CREATE TABLE public.tags (
 ALTER TABLE public.tags OWNER TO postgres;
 
 --
--- TOC entry 239 (class 1259 OID 99485)
+-- TOC entry 243 (class 1259 OID 26757)
 -- Name: tags_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1054,8 +1033,8 @@ CREATE SEQUENCE public.tags_id_seq
 ALTER TABLE public.tags_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3573 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 3564 (class 0 OID 0)
+-- Dependencies: 243
 -- Name: tags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -1063,7 +1042,7 @@ ALTER SEQUENCE public.tags_id_seq OWNED BY public.tags.id;
 
 
 --
--- TOC entry 241 (class 1259 OID 99494)
+-- TOC entry 244 (class 1259 OID 26758)
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1078,8 +1057,8 @@ CREATE SEQUENCE public.users_id_seq
 ALTER TABLE public.users_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3574 (class 0 OID 0)
--- Dependencies: 241
+-- TOC entry 3565 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -1087,7 +1066,7 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- TOC entry 3265 (class 2604 OID 99495)
+-- TOC entry 3261 (class 2604 OID 26759)
 -- Name: activity_logs id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1095,7 +1074,7 @@ ALTER TABLE ONLY public.activity_logs ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 3267 (class 2604 OID 99496)
+-- TOC entry 3263 (class 2604 OID 26760)
 -- Name: categories id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1103,7 +1082,7 @@ ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.c
 
 
 --
--- TOC entry 3268 (class 2604 OID 99497)
+-- TOC entry 3264 (class 2604 OID 26761)
 -- Name: comments id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1111,7 +1090,7 @@ ALTER TABLE ONLY public.comments ALTER COLUMN id SET DEFAULT nextval('public.com
 
 
 --
--- TOC entry 3272 (class 2604 OID 99498)
+-- TOC entry 3268 (class 2604 OID 26762)
 -- Name: feedback id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1119,7 +1098,7 @@ ALTER TABLE ONLY public.feedback ALTER COLUMN id SET DEFAULT nextval('public.fee
 
 
 --
--- TOC entry 3275 (class 2604 OID 99499)
+-- TOC entry 3271 (class 2604 OID 26763)
 -- Name: lab_profile id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1127,7 +1106,7 @@ ALTER TABLE ONLY public.lab_profile ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
--- TOC entry 3288 (class 2604 OID 99500)
+-- TOC entry 3284 (class 2604 OID 26764)
 -- Name: media_assets id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1135,7 +1114,7 @@ ALTER TABLE ONLY public.media_assets ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3290 (class 2604 OID 99501)
+-- TOC entry 3286 (class 2604 OID 26765)
 -- Name: members id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1143,7 +1122,7 @@ ALTER TABLE ONLY public.members ALTER COLUMN id SET DEFAULT nextval('public.memb
 
 
 --
--- TOC entry 3291 (class 2604 OID 99502)
+-- TOC entry 3287 (class 2604 OID 26766)
 -- Name: news id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1151,7 +1130,7 @@ ALTER TABLE ONLY public.news ALTER COLUMN id SET DEFAULT nextval('public.news_id
 
 
 --
--- TOC entry 3296 (class 2604 OID 99503)
+-- TOC entry 3300 (class 2604 OID 26767)
 -- Name: news_tags id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1159,7 +1138,7 @@ ALTER TABLE ONLY public.news_tags ALTER COLUMN id SET DEFAULT nextval('public.ne
 
 
 --
--- TOC entry 3298 (class 2604 OID 99504)
+-- TOC entry 3302 (class 2604 OID 26768)
 -- Name: project_members id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1167,7 +1146,7 @@ ALTER TABLE ONLY public.project_members ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
--- TOC entry 3299 (class 2604 OID 99505)
+-- TOC entry 3292 (class 2604 OID 26769)
 -- Name: projects id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1175,7 +1154,7 @@ ALTER TABLE ONLY public.projects ALTER COLUMN id SET DEFAULT nextval('public.pro
 
 
 --
--- TOC entry 3303 (class 2604 OID 99506)
+-- TOC entry 3303 (class 2604 OID 26770)
 -- Name: tags id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1183,7 +1162,7 @@ ALTER TABLE ONLY public.tags ALTER COLUMN id SET DEFAULT nextval('public.tags_id
 
 
 --
--- TOC entry 3304 (class 2604 OID 99507)
+-- TOC entry 3296 (class 2604 OID 26771)
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1191,7 +1170,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 
 --
--- TOC entry 3525 (class 0 OID 99383)
+-- TOC entry 3517 (class 0 OID 26624)
 -- Dependencies: 214
 -- Data for Name: activity_logs; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1199,11 +1178,18 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 COPY public.activity_logs (id, username, action, ip_address, device_info, created_at) FROM stdin;
 1	Admin	Update Profil Lab	::1	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36	2025-12-07 22:57:05.635303
 2	admin2	Login Berhasil	::1	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36	2025-12-08 07:39:26.92786
+3	admin2	Login Berhasil	::1	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36	2025-12-18 00:47:01.117375
+4	Admin	Edit Anggota: Rizky Ananda	::1	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36	2025-12-18 01:10:51.099107
+5	Admin	Edit Anggota: Nadia Putri	::1	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36	2025-12-18 01:11:48.739097
+6	Admin	Edit Anggota: Fajar Pratama	::1	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36	2025-12-18 01:15:18.850646
+7	Admin	Edit Anggota: Dewi Lestari	::1	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36	2025-12-18 01:15:40.26669
+8	Admin	Edit Anggota: Fajar Pratama	::1	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36	2025-12-18 01:17:19.019985
+9	admin2	Login Berhasil	::1	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36	2025-12-18 13:32:29.9271
 \.
 
 
 --
--- TOC entry 3527 (class 0 OID 99390)
+-- TOC entry 3519 (class 0 OID 26631)
 -- Dependencies: 216
 -- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1225,7 +1211,7 @@ COPY public.categories (id, name, slug) FROM stdin;
 
 
 --
--- TOC entry 3529 (class 0 OID 99394)
+-- TOC entry 3521 (class 0 OID 26635)
 -- Dependencies: 218
 -- Data for Name: comments; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1241,18 +1227,18 @@ COPY public.comments (id, entity_type, entity_id, author_name, author_email, rat
 
 
 --
--- TOC entry 3531 (class 0 OID 99404)
+-- TOC entry 3523 (class 0 OID 26645)
 -- Dependencies: 220
 -- Data for Name: feedback; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.feedback (id, nama_lengkap, email, subjek, pesan, created_at, is_read) FROM stdin;
-78	Raihan	bujexixi@gmal.com	testing	Haiii aku raihan	2025-12-08 07:48:47.582192	f
+78	Raihan	bujexixi@gmal.com	testing	Haiii aku raihan	2025-12-08 07:48:47.582192	t
 \.
 
 
 --
--- TOC entry 3533 (class 0 OID 99412)
+-- TOC entry 3525 (class 0 OID 26653)
 -- Dependencies: 222
 -- Data for Name: lab_profile; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1264,7 +1250,7 @@ COPY public.lab_profile (id, visi, misi, sejarah, updated_at, alamat_lab, email_
 
 
 --
--- TOC entry 3535 (class 0 OID 99430)
+-- TOC entry 3527 (class 0 OID 26671)
 -- Dependencies: 224
 -- Data for Name: media_assets; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1281,22 +1267,22 @@ COPY public.media_assets (id, type, url, caption, created_at, deskripsi, rating,
 
 
 --
--- TOC entry 3537 (class 0 OID 99438)
+-- TOC entry 3529 (class 0 OID 26679)
 -- Dependencies: 226
 -- Data for Name: members; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.members (id, name, role, avatar_url, linkedin_url, tags, scholar_url, youtube, facebook, instagram) FROM stdin;
-4	Dewi Lestari	Sekretaris	../assets/images/team/dewi.jpg	https://linkedin.com/in/dewilestari	Sekretaris	https://scholar.google.com/citations?user=delta999	https://youtube.com/@deltastream	https://facebook.com/delta.user	https://instagram.com/delta.snap
-3	Fajar Pratama	Anggota	../assets/images/team/fajar.jpg	https://linkedin.com/in/fajarpratama	Anggota	https://scholar.google.com/citations?user=gamma789	https://youtube.com/@gammaworld	https://facebook.com/gamma.page	https://instagram.com/gamma.life
-2	Nadia Putri	Wakil Ketua	../assets/images/team/nadia.jpg	https://linkedin.com/in/nadiaputri	Wakil	https://scholar.google.com/citations?user=beta456	https://youtube.com/@betachannel	https://facebook.com/beta.profile	https://instagram.com/beta.ig
-1	Rizky Ananda	Ketua Laboratorium	../assets/images/team/rizky.jpg	https://linkedin.com/in/rizkyananda	Ketua	https://scholar.google.com/citations?user=alpha123	https://youtube.com/@useralpha	https://facebook.com/user.alpha	https://instagram.com/user.alpha
+1	Rizky Ananda	Ketua Laboratorium	assets/uploads/team_17659950516942f22b15745.png	https://linkedin.com/in/rizkyananda	Ketua	https://scholar.google.com/citations?user=alpha123	https://youtube.com/@useralpha	https://facebook.com/user.alpha	https://instagram.com/user.alpha
+2	Nadia Putri	Wakil Ketua	assets/uploads/team_17659951086942f264b2673.png	https://linkedin.com/in/nadiaputri	Wakil	https://scholar.google.com/citations?user=beta456	https://youtube.com/@betachannel	https://facebook.com/beta.profile	https://instagram.com/beta.ig
+4	Dewi Lestari	Sekretaris	assets/uploads/team_17659953406942f34c3e6c3.png	https://linkedin.com/in/dewilestari	Sekretaris	https://scholar.google.com/citations?user=delta999	https://youtube.com/@deltastream	https://facebook.com/delta.user	https://instagram.com/delta.snap
+3	Fajar Pratama	Anggota	assets/uploads/team_17659954396942f3af032c7.png	https://linkedin.com/in/fajarpratama	Anggota	https://scholar.google.com/citations?user=gamma789	https://youtube.com/@gammaworld	https://facebook.com/gamma.page	https://instagram.com/gamma.life
 \.
 
 
 --
--- TOC entry 3540 (class 0 OID 99450)
--- Dependencies: 229
+-- TOC entry 3531 (class 0 OID 26691)
+-- Dependencies: 228
 -- Data for Name: news; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1310,8 +1296,8 @@ COPY public.news (id, title, slug, summary, content, cover_image, status, create
 
 
 --
--- TOC entry 3542 (class 0 OID 99460)
--- Dependencies: 231
+-- TOC entry 3536 (class 0 OID 26726)
+-- Dependencies: 233
 -- Data for Name: news_tags; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1320,8 +1306,8 @@ COPY public.news_tags (id, news_id, tag_id, created_at) FROM stdin;
 
 
 --
--- TOC entry 3544 (class 0 OID 99465)
--- Dependencies: 233
+-- TOC entry 3538 (class 0 OID 26737)
+-- Dependencies: 235
 -- Data for Name: project_members; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1330,8 +1316,8 @@ COPY public.project_members (id, project_id, member_id) FROM stdin;
 
 
 --
--- TOC entry 3546 (class 0 OID 99469)
--- Dependencies: 235
+-- TOC entry 3543 (class 0 OID 26750)
+-- Dependencies: 240
 -- Data for Name: project_tags; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1340,8 +1326,8 @@ COPY public.project_tags (project_id, tag_id) FROM stdin;
 
 
 --
--- TOC entry 3547 (class 0 OID 99472)
--- Dependencies: 236
+-- TOC entry 3532 (class 0 OID 26700)
+-- Dependencies: 229
 -- Data for Name: projects; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1357,8 +1343,8 @@ COPY public.projects (id, title, slug, summary, description, year, cover_image, 
 
 
 --
--- TOC entry 3549 (class 0 OID 99482)
--- Dependencies: 238
+-- TOC entry 3545 (class 0 OID 26754)
+-- Dependencies: 242
 -- Data for Name: tags; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1377,8 +1363,8 @@ COPY public.tags (id, name, slug) FROM stdin;
 
 
 --
--- TOC entry 3551 (class 0 OID 99486)
--- Dependencies: 240
+-- TOC entry 3533 (class 0 OID 26709)
+-- Dependencies: 230
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -1394,16 +1380,16 @@ COPY public.users (id, name, email, password, role, created_at, updated_at) FROM
 
 
 --
--- TOC entry 3575 (class 0 OID 0)
+-- TOC entry 3566 (class 0 OID 0)
 -- Dependencies: 215
 -- Name: activity_logs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.activity_logs_id_seq', 2, true);
+SELECT pg_catalog.setval('public.activity_logs_id_seq', 9, true);
 
 
 --
--- TOC entry 3576 (class 0 OID 0)
+-- TOC entry 3567 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -1412,7 +1398,7 @@ SELECT pg_catalog.setval('public.categories_id_seq', 12, true);
 
 
 --
--- TOC entry 3577 (class 0 OID 0)
+-- TOC entry 3568 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -1421,16 +1407,16 @@ SELECT pg_catalog.setval('public.comments_id_seq', 9, true);
 
 
 --
--- TOC entry 3578 (class 0 OID 0)
+-- TOC entry 3569 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: feedback_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.feedback_id_seq', 78, true);
+SELECT pg_catalog.setval('public.feedback_id_seq', 79, true);
 
 
 --
--- TOC entry 3579 (class 0 OID 0)
+-- TOC entry 3570 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: lab_profile_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -1439,7 +1425,7 @@ SELECT pg_catalog.setval('public.lab_profile_id_seq', 2, true);
 
 
 --
--- TOC entry 3580 (class 0 OID 0)
+-- TOC entry 3571 (class 0 OID 0)
 -- Dependencies: 225
 -- Name: media_assets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -1448,7 +1434,7 @@ SELECT pg_catalog.setval('public.media_assets_id_seq', 16, true);
 
 
 --
--- TOC entry 3581 (class 0 OID 0)
+-- TOC entry 3572 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: members_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -1457,8 +1443,8 @@ SELECT pg_catalog.setval('public.members_id_seq', 4, true);
 
 
 --
--- TOC entry 3582 (class 0 OID 0)
--- Dependencies: 230
+-- TOC entry 3573 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: news_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -1466,8 +1452,8 @@ SELECT pg_catalog.setval('public.news_id_seq', 12, true);
 
 
 --
--- TOC entry 3583 (class 0 OID 0)
--- Dependencies: 232
+-- TOC entry 3574 (class 0 OID 0)
+-- Dependencies: 238
 -- Name: news_tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -1475,8 +1461,8 @@ SELECT pg_catalog.setval('public.news_tags_id_seq', 1, false);
 
 
 --
--- TOC entry 3584 (class 0 OID 0)
--- Dependencies: 234
+-- TOC entry 3575 (class 0 OID 0)
+-- Dependencies: 239
 -- Name: project_members_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -1484,8 +1470,8 @@ SELECT pg_catalog.setval('public.project_members_id_seq', 2, true);
 
 
 --
--- TOC entry 3585 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 3576 (class 0 OID 0)
+-- Dependencies: 241
 -- Name: projects_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -1493,8 +1479,8 @@ SELECT pg_catalog.setval('public.projects_id_seq', 15, true);
 
 
 --
--- TOC entry 3586 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 3577 (class 0 OID 0)
+-- Dependencies: 243
 -- Name: tags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -1502,8 +1488,8 @@ SELECT pg_catalog.setval('public.tags_id_seq', 10, true);
 
 
 --
--- TOC entry 3587 (class 0 OID 0)
--- Dependencies: 241
+-- TOC entry 3578 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -1511,7 +1497,7 @@ SELECT pg_catalog.setval('public.users_id_seq', 7, true);
 
 
 --
--- TOC entry 3312 (class 2606 OID 99509)
+-- TOC entry 3308 (class 2606 OID 26773)
 -- Name: activity_logs activity_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1520,7 +1506,7 @@ ALTER TABLE ONLY public.activity_logs
 
 
 --
--- TOC entry 3314 (class 2606 OID 99511)
+-- TOC entry 3310 (class 2606 OID 26775)
 -- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1529,7 +1515,7 @@ ALTER TABLE ONLY public.categories
 
 
 --
--- TOC entry 3316 (class 2606 OID 99513)
+-- TOC entry 3312 (class 2606 OID 26777)
 -- Name: categories categories_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1538,7 +1524,7 @@ ALTER TABLE ONLY public.categories
 
 
 --
--- TOC entry 3318 (class 2606 OID 99515)
+-- TOC entry 3314 (class 2606 OID 26779)
 -- Name: comments comments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1547,7 +1533,7 @@ ALTER TABLE ONLY public.comments
 
 
 --
--- TOC entry 3320 (class 2606 OID 99517)
+-- TOC entry 3316 (class 2606 OID 26781)
 -- Name: feedback feedback_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1556,7 +1542,7 @@ ALTER TABLE ONLY public.feedback
 
 
 --
--- TOC entry 3322 (class 2606 OID 99519)
+-- TOC entry 3318 (class 2606 OID 26783)
 -- Name: lab_profile lab_profile_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1565,7 +1551,7 @@ ALTER TABLE ONLY public.lab_profile
 
 
 --
--- TOC entry 3324 (class 2606 OID 99521)
+-- TOC entry 3320 (class 2606 OID 26785)
 -- Name: media_assets media_assets_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1574,7 +1560,7 @@ ALTER TABLE ONLY public.media_assets
 
 
 --
--- TOC entry 3326 (class 2606 OID 99523)
+-- TOC entry 3322 (class 2606 OID 26787)
 -- Name: members members_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1583,7 +1569,7 @@ ALTER TABLE ONLY public.members
 
 
 --
--- TOC entry 3332 (class 2606 OID 99525)
+-- TOC entry 3325 (class 2606 OID 26789)
 -- Name: news news_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1592,7 +1578,7 @@ ALTER TABLE ONLY public.news
 
 
 --
--- TOC entry 3334 (class 2606 OID 99527)
+-- TOC entry 3327 (class 2606 OID 26791)
 -- Name: news news_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1601,7 +1587,7 @@ ALTER TABLE ONLY public.news
 
 
 --
--- TOC entry 3337 (class 2606 OID 99529)
+-- TOC entry 3341 (class 2606 OID 26793)
 -- Name: news_tags news_tags_news_id_tag_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1610,7 +1596,7 @@ ALTER TABLE ONLY public.news_tags
 
 
 --
--- TOC entry 3339 (class 2606 OID 99531)
+-- TOC entry 3343 (class 2606 OID 26795)
 -- Name: news_tags news_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1619,7 +1605,7 @@ ALTER TABLE ONLY public.news_tags
 
 
 --
--- TOC entry 3341 (class 2606 OID 99533)
+-- TOC entry 3347 (class 2606 OID 26797)
 -- Name: project_members project_members_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1628,7 +1614,7 @@ ALTER TABLE ONLY public.project_members
 
 
 --
--- TOC entry 3343 (class 2606 OID 99535)
+-- TOC entry 3352 (class 2606 OID 26799)
 -- Name: project_tags project_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1637,7 +1623,7 @@ ALTER TABLE ONLY public.project_tags
 
 
 --
--- TOC entry 3346 (class 2606 OID 99537)
+-- TOC entry 3330 (class 2606 OID 26801)
 -- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1646,7 +1632,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- TOC entry 3348 (class 2606 OID 99539)
+-- TOC entry 3332 (class 2606 OID 26803)
 -- Name: projects projects_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1655,7 +1641,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- TOC entry 3350 (class 2606 OID 99541)
+-- TOC entry 3354 (class 2606 OID 26805)
 -- Name: tags tags_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1664,7 +1650,7 @@ ALTER TABLE ONLY public.tags
 
 
 --
--- TOC entry 3352 (class 2606 OID 99543)
+-- TOC entry 3356 (class 2606 OID 26807)
 -- Name: tags tags_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1673,7 +1659,7 @@ ALTER TABLE ONLY public.tags
 
 
 --
--- TOC entry 3354 (class 2606 OID 99545)
+-- TOC entry 3334 (class 2606 OID 26809)
 -- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1682,7 +1668,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3356 (class 2606 OID 99547)
+-- TOC entry 3336 (class 2606 OID 26811)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1691,7 +1677,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3357 (class 1259 OID 99618)
+-- TOC entry 3337 (class 1259 OID 26812)
 -- Name: idx_mv_dashboard_refresh; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1699,7 +1685,7 @@ CREATE INDEX idx_mv_dashboard_refresh ON public.mv_lab_dashboard_stats USING btr
 
 
 --
--- TOC entry 3358 (class 1259 OID 99624)
+-- TOC entry 3338 (class 1259 OID 26813)
 -- Name: idx_mv_monthly_activity_month; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1707,7 +1693,7 @@ CREATE INDEX idx_mv_monthly_activity_month ON public.mv_monthly_activity USING b
 
 
 --
--- TOC entry 3362 (class 1259 OID 99643)
+-- TOC entry 3344 (class 1259 OID 26814)
 -- Name: idx_mv_news_stats_category; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1715,7 +1701,7 @@ CREATE INDEX idx_mv_news_stats_category ON public.mv_news_with_stats USING btree
 
 
 --
--- TOC entry 3363 (class 1259 OID 99642)
+-- TOC entry 3345 (class 1259 OID 26815)
 -- Name: idx_mv_news_stats_created; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1723,7 +1709,7 @@ CREATE INDEX idx_mv_news_stats_created ON public.mv_news_with_stats USING btree 
 
 
 --
--- TOC entry 3359 (class 1259 OID 99632)
+-- TOC entry 3348 (class 1259 OID 26816)
 -- Name: idx_mv_project_details_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1731,7 +1717,7 @@ CREATE INDEX idx_mv_project_details_id ON public.mv_project_details USING btree 
 
 
 --
--- TOC entry 3360 (class 1259 OID 99634)
+-- TOC entry 3349 (class 1259 OID 26817)
 -- Name: idx_mv_project_details_rating; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1739,7 +1725,7 @@ CREATE INDEX idx_mv_project_details_rating ON public.mv_project_details USING bt
 
 
 --
--- TOC entry 3361 (class 1259 OID 99633)
+-- TOC entry 3350 (class 1259 OID 26818)
 -- Name: idx_mv_project_details_year; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1747,7 +1733,7 @@ CREATE INDEX idx_mv_project_details_year ON public.mv_project_details USING btre
 
 
 --
--- TOC entry 3330 (class 1259 OID 99548)
+-- TOC entry 3323 (class 1259 OID 26819)
 -- Name: idx_news_created_at; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1755,7 +1741,7 @@ CREATE INDEX idx_news_created_at ON public.news USING btree (created_at);
 
 
 --
--- TOC entry 3335 (class 1259 OID 99549)
+-- TOC entry 3339 (class 1259 OID 26820)
 -- Name: idx_news_tags_tag; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1763,7 +1749,7 @@ CREATE INDEX idx_news_tags_tag ON public.news_tags USING btree (tag_id);
 
 
 --
--- TOC entry 3344 (class 1259 OID 99550)
+-- TOC entry 3328 (class 1259 OID 26821)
 -- Name: idx_projects_created_at; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -1771,31 +1757,7 @@ CREATE INDEX idx_projects_created_at ON public.projects USING btree (created_at)
 
 
 --
--- TOC entry 3327 (class 1259 OID 99551)
--- Name: mv_feedback_created; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX mv_feedback_created ON public.mv_feedback_summary USING btree (created_epoch);
-
-
---
--- TOC entry 3328 (class 1259 OID 99552)
--- Name: mv_feedback_id; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE UNIQUE INDEX mv_feedback_id ON public.mv_feedback_summary USING btree (id);
-
-
---
--- TOC entry 3329 (class 1259 OID 99553)
--- Name: mv_feedback_read; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX mv_feedback_read ON public.mv_feedback_summary USING btree (is_read);
-
-
---
--- TOC entry 3374 (class 2620 OID 99554)
+-- TOC entry 3367 (class 2620 OID 26825)
 -- Name: comments update_comments_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1803,7 +1765,7 @@ CREATE TRIGGER update_comments_updated_at BEFORE UPDATE ON public.comments FOR E
 
 
 --
--- TOC entry 3375 (class 2620 OID 99651)
+-- TOC entry 3368 (class 2620 OID 26826)
 -- Name: news update_news_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1811,7 +1773,7 @@ CREATE TRIGGER update_news_updated_at BEFORE UPDATE ON public.news FOR EACH ROW 
 
 
 --
--- TOC entry 3376 (class 2620 OID 99650)
+-- TOC entry 3369 (class 2620 OID 26827)
 -- Name: projects update_projects_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1819,7 +1781,7 @@ CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON public.projects FOR E
 
 
 --
--- TOC entry 3377 (class 2620 OID 99652)
+-- TOC entry 3370 (class 2620 OID 26828)
 -- Name: users update_users_updated_at; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -1827,7 +1789,7 @@ CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON public.users FOR EACH RO
 
 
 --
--- TOC entry 3364 (class 2606 OID 99555)
+-- TOC entry 3357 (class 2606 OID 26829)
 -- Name: comments fk_comments_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1836,7 +1798,7 @@ ALTER TABLE ONLY public.comments
 
 
 --
--- TOC entry 3366 (class 2606 OID 99560)
+-- TOC entry 3361 (class 2606 OID 26834)
 -- Name: news_tags fk_news_tags_news; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1845,7 +1807,7 @@ ALTER TABLE ONLY public.news_tags
 
 
 --
--- TOC entry 3367 (class 2606 OID 99565)
+-- TOC entry 3362 (class 2606 OID 26839)
 -- Name: news_tags fk_news_tags_tag; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1854,7 +1816,7 @@ ALTER TABLE ONLY public.news_tags
 
 
 --
--- TOC entry 3365 (class 2606 OID 99570)
+-- TOC entry 3358 (class 2606 OID 26844)
 -- Name: news fk_news_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1863,7 +1825,7 @@ ALTER TABLE ONLY public.news
 
 
 --
--- TOC entry 3372 (class 2606 OID 99575)
+-- TOC entry 3359 (class 2606 OID 26849)
 -- Name: projects fk_projects_category; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1872,7 +1834,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- TOC entry 3370 (class 2606 OID 99580)
+-- TOC entry 3365 (class 2606 OID 26854)
 -- Name: project_tags fk_projects_tags_project; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1881,7 +1843,7 @@ ALTER TABLE ONLY public.project_tags
 
 
 --
--- TOC entry 3371 (class 2606 OID 99585)
+-- TOC entry 3366 (class 2606 OID 26859)
 -- Name: project_tags fk_projects_tags_tag; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1890,7 +1852,7 @@ ALTER TABLE ONLY public.project_tags
 
 
 --
--- TOC entry 3373 (class 2606 OID 99590)
+-- TOC entry 3360 (class 2606 OID 26864)
 -- Name: projects fk_projects_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1899,7 +1861,7 @@ ALTER TABLE ONLY public.projects
 
 
 --
--- TOC entry 3368 (class 2606 OID 99595)
+-- TOC entry 3363 (class 2606 OID 26869)
 -- Name: project_members project_members_member_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1908,7 +1870,7 @@ ALTER TABLE ONLY public.project_members
 
 
 --
--- TOC entry 3369 (class 2606 OID 99600)
+-- TOC entry 3364 (class 2606 OID 26874)
 -- Name: project_members project_members_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1917,17 +1879,8 @@ ALTER TABLE ONLY public.project_members
 
 
 --
--- TOC entry 3539 (class 0 OID 99444)
--- Dependencies: 228 3558
--- Name: mv_feedback_summary; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: postgres
---
-
-REFRESH MATERIALIZED VIEW public.mv_feedback_summary;
-
-
---
--- TOC entry 3553 (class 0 OID 99613)
--- Dependencies: 242 3558
+-- TOC entry 3534 (class 0 OID 26717)
+-- Dependencies: 231 3549
 -- Name: mv_lab_dashboard_stats; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: postgres
 --
 
@@ -1935,8 +1888,8 @@ REFRESH MATERIALIZED VIEW public.mv_lab_dashboard_stats;
 
 
 --
--- TOC entry 3554 (class 0 OID 99620)
--- Dependencies: 243 3558
+-- TOC entry 3535 (class 0 OID 26722)
+-- Dependencies: 232 3549
 -- Name: mv_monthly_activity; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: postgres
 --
 
@@ -1944,8 +1897,8 @@ REFRESH MATERIALIZED VIEW public.mv_monthly_activity;
 
 
 --
--- TOC entry 3556 (class 0 OID 99635)
--- Dependencies: 245 3558
+-- TOC entry 3537 (class 0 OID 26730)
+-- Dependencies: 234 3549
 -- Name: mv_news_with_stats; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: postgres
 --
 
@@ -1953,19 +1906,19 @@ REFRESH MATERIALIZED VIEW public.mv_news_with_stats;
 
 
 --
--- TOC entry 3555 (class 0 OID 99625)
--- Dependencies: 244 3558
+-- TOC entry 3539 (class 0 OID 26740)
+-- Dependencies: 236 3549
 -- Name: mv_project_details; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: postgres
 --
 
 REFRESH MATERIALIZED VIEW public.mv_project_details;
 
 
--- Completed on 2025-12-08 19:07:54
+-- Completed on 2025-12-18 13:36:47
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 2cDGLkgwc7x9kpfXb3dH0QEqzXi5EFH4zuybUopg2v0a6HxPg7rMorZjG5CecPh
+\unrestrict bTLbJrqgLyXFwLsECK94P2k3wHuNfLN3niUTklkpRBwArWV8yKws7IOTTtSTbAr
 

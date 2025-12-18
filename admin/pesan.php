@@ -1,57 +1,35 @@
 <?php 
-// pesan.php - UPDATED: Fitur Hapus Semua
+// pesan.php - CLEAN VERSION (Tanpa MV)
 include 'components/header.php';
 include '../config/db.php';
 
 // --- LOGIC PHP ---
 
-// 1. Refresh MV manual
+// 1. Refresh (Hanya reload halaman karena tidak ada MV)
 if(isset($_GET['refresh'])) {
-    try {
-        if($pdo->query("SELECT to_regclass('mv_feedback_summary')")->fetchColumn()) {
-            $pdo->exec("REFRESH MATERIALIZED VIEW mv_feedback_summary");
-        }
-    } catch (Exception $e) { /* Silent fail */ }
     header('Location: pesan.php');
     exit;
 }
 
 // 2. Tandai sudah dibaca
 if(isset($_GET['mark_read'])) {
-    $pdo->prepare("UPDATE feedback SET is_read = true WHERE id = ?")->execute([$_GET['mark_read']]);
-    try {
-        if($pdo->query("SELECT to_regclass('mv_feedback_summary')")->fetchColumn()) {
-            $pdo->exec("REFRESH MATERIALIZED VIEW mv_feedback_summary");
-        }
-    } catch (Exception $e) {}
+    $stmt = $pdo->prepare("UPDATE feedback SET is_read = true WHERE id = ?");
+    $stmt->execute([$_GET['mark_read']]);
     header('Location: pesan.php');
     exit;
 }
 
 // 3. Hapus Satu Pesan
 if(isset($_GET['delete'])) {
-    $pdo->prepare("DELETE FROM feedback WHERE id = ?")->execute([$_GET['delete']]);
-    try {
-        if($pdo->query("SELECT to_regclass('mv_feedback_summary')")->fetchColumn()) {
-            $pdo->exec("REFRESH MATERIALIZED VIEW mv_feedback_summary");
-        }
-    } catch (Exception $e) {}
+    $stmt = $pdo->prepare("DELETE FROM feedback WHERE id = ?");
+    $stmt->execute([$_GET['delete']]);
     header('Location: pesan.php');
     exit;
 }
 
-// 4. FITUR BARU: Hapus SEMUA Pesan
+// 4. Hapus SEMUA Pesan
 if(isset($_GET['delete_all'])) {
-    // Hapus semua data di tabel feedback
     $pdo->exec("DELETE FROM feedback");
-    
-    // Refresh MV agar tampilan kosong
-    try {
-        if($pdo->query("SELECT to_regclass('mv_feedback_summary')")->fetchColumn()) {
-            $pdo->exec("REFRESH MATERIALIZED VIEW mv_feedback_summary");
-        }
-    } catch (Exception $e) {}
-
     header('Location: pesan.php');
     exit;
 }
@@ -62,7 +40,7 @@ if(isset($_GET['delete_all'])) {
 <head>
     <meta charset="UTF-8">
     <style>
-        /* CSS SAMA SEPERTI SEBELUMNYA */
+        /* CSS TETAP SAMA */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
         .modal-content { background-color: white; margin: 2% auto; padding: 0; border-radius: 8px; width: 90%; max-width: 850px; max-height: 90vh; overflow: hidden; }
         .modal-header { padding: 15px 20px; background: #007bff; color: white; display: flex; justify-content: space-between; align-items: center; }
@@ -133,19 +111,21 @@ if(isset($_GET['delete_all'])) {
             </thead>
             <tbody>
                 <?php
-                // Logic untuk menampilkan data (Support MV)
-                $mvExists = $pdo->query("SELECT to_regclass('mv_feedback_summary')")->fetchColumn();
+                // Query langsung ke tabel feedback
+                // Kita generate 'created_epoch' dan 'pesan_preview' menggunakan fungsi SQL biasa
+                $query = "SELECT *, 
+                                 EXTRACT(EPOCH FROM created_at) as created_epoch, 
+                                 LEFT(pesan, 50) as pesan_preview 
+                          FROM feedback 
+                          ORDER BY created_at DESC";
                 
-                if($mvExists) {
-                    $stmt = $pdo->query("SELECT * FROM mv_feedback_summary ORDER BY created_epoch DESC");
-                } else {
-                    $stmt = $pdo->query("SELECT *, EXTRACT(EPOCH FROM created_at) as created_epoch, 
-                                        LEFT(pesan, 100) as pesan_preview FROM feedback ORDER BY created_at DESC");
-                }
+                $stmt = $pdo->query($query);
                 
                 while ($row = $stmt->fetch()):
                     $isUnread = !$row['is_read'];
-                    $truncatedMsg = $row['pesan_preview'] ?? (strlen($row['pesan']) > 100 ? substr($row['pesan'], 0, 100) . '...' : $row['pesan']);
+                    // Gunakan pesan_preview dari SQL, atau potong manual jika null
+                    $truncatedMsg = $row['pesan_preview'] ?? substr($row['pesan'], 0, 50);
+                    if (strlen($row['pesan']) > 50) $truncatedMsg .= '...';
                 ?>
                 <tr class="<?= $isUnread ? 'unread' : '' ?>">
                     <td><?= htmlspecialchars($row['nama_lengkap']) ?></td>
@@ -192,6 +172,7 @@ if(isset($_GET['delete_all'])) {
             modalBody.innerHTML = '<div style="padding: 20px; text-align: center;">Memuat...</div>';
             modal.style.display = 'block';
             
+            // Nama file PHP AJAX tetap sama agar tidak perlu ubah banyak file
             fetch(`get_feedback_detail_mv.php?id=${id}`)
                 .then(response => response.text())
                 .then(data => { modalBody.innerHTML = data; })
@@ -205,7 +186,7 @@ if(isset($_GET['delete_all'])) {
     
     // Refresh
     function refreshData() {
-        if(confirm('Refresh data?')) { window.location.href = '?refresh=true'; }
+        window.location.href = '?refresh=true';
     }
     
     // ESC key
