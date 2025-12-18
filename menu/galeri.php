@@ -79,7 +79,7 @@ try {
     $stmt->execute($params_fetch);
     $media_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    $media_items = [];
+    $media_items = []; 
 }
 
 // Data Dropdown
@@ -131,7 +131,7 @@ function build_pagination($current, $total, $adj = 2) {
             background: url('<?= $path_prefix ?>assets/images/wallpaper.jpg') center center/cover fixed no-repeat;
             background-attachment: fixed;
             min-height: 100vh;
-        }
+        } 
         
         /* Efek transparansi halus untuk area konten utama - LEBIH TRANSPARAN */
         .main-content-area {

@@ -1,98 +1,114 @@
 /* ---
-   File: style-proyek.css
-   Deskripsi: Style KHUSUS halaman proyek (Filter, Grid, Pagination)
+    File: style-proyek.css
+    Deskripsi: Style KHUSUS halaman proyek (Filter, Grid, Pagination)
 --- */
 
 /* =========================================
-   1. FILTER BAR
+   VARIABLES & RESET
    ========================================= */
-.project-filter-bar {
-    display: grid;
-    grid-template-columns: 3fr 1fr 1fr 1fr 1fr; 
-    gap: 15px;
-    align-items: center;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #eee;
-    margin-bottom: 40px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-}
-
-.filter-group-reset {
-    /* Kolom Filter */
-    grid-column: 4 / 5; 
-}
-.filter-group-action {
-    /* Kolom Reset */
-    grid-column: 5 / 6; 
-}
-.filter-group-action .btn, 
-.filter-group-reset .btn {
-    margin-top: 19px; 
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.filter-group label {
-    font-weight: 700;
-    font-size: 12px;
-    text-transform: uppercase;
-    color: #666;
-}
-
-.project-filter-bar input[type="search"],
-.project-filter-bar select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    font-size: 14px;
-    background: #fff;
-    height: 42px; /* Tinggi seragam */
-}
-
-.project-filter-bar input:focus, 
-.project-filter-bar select:focus {
-    border-color: var(--color-primary);
-    outline: none;
-}
-
-/* Tombol Filter di dalam bar */
-.project-filter-bar .btn {
-    height: 42px;
-    padding: 0;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    margin-top: auto;
+:root {
+    --transition-speed: 0.3s;
+    --border-radius-sm: 5px;
+    --border-radius-md: 10px;
+    --shadow-light: 0 5px 15px rgba(0, 0, 0, 0.05);
+    --shadow-heavy: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
 /* =========================================
-   2. GRID PROYEK
+   FILTER BAR
+   ========================================= */
+.search-filter-container {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
+    padding: 20px 25px;
+    border-radius: var(--border-radius-md);
+    margin-bottom: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.horizontal-filter-form {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-item {
+    flex-grow: 2;
+}
+
+.filter-item:not(.search-item):not(.button-item) {
+    flex-grow: 1;
+    min-width: 150px;
+}
+
+.filter-item label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    display: block;
+}
+
+.filter-item input,
+.filter-item select {
+    width: 100%;
+    height: 45px;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius-sm);
+    font-size: 14px;
+    background: #fff;
+    outline: none;
+    transition: border-color var(--transition-speed);
+}
+
+.filter-item input:focus,
+.filter-item select:focus {
+    border-color: var(--color-primary);
+}
+
+.btn-filter {
+    height: 45px;
+    padding: 0 30px;
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition-speed), color var(--transition-speed);
+    margin-top: auto;
+    white-space: nowrap;
+}
+
+.btn-filter:hover {
+    background-color: var(--color-accent);
+    color: #333;
+}
+
+/* =========================================
+   GRID PROYEK
    ========================================= */
 .project-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 Kolom */
+    grid-template-columns: repeat(3, 1fr);
     gap: 30px;
     margin-bottom: 40px;
 }
 
+/* State Jika Data Kosong */
 .project-grid.grid-empty {
-    display: block; 
-    
-    width: 60%; 
-    
-    margin-left: auto;
-    margin-right: auto;
-    
-    background: none !important; 
+    display: block;
+    width: 60%;
+    margin: 0 auto;
+    background: none !important;
     backdrop-filter: none !important;
     border: none !important;
     box-shadow: none !important;
@@ -100,31 +116,30 @@
 
 .project-grid.grid-empty .no-results {
     width: 100%;
-    margin: 0; 
+    margin: 0;
 }
 
-/* Kartu Proyek */
+/* Card Style */
 .project-card {
     display: flex;
     flex-direction: column;
     text-decoration: none;
-    border-radius: 10px;
+    border-radius: var(--border-radius-md);
     overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: var(--shadow-light);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
     background: #fff;
     border: 1px solid #f0f0f0;
-    height: 100%; /* Agar tinggi kartu sama rata */
+    height: 100%;
 }
 
 .project-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-heavy);
 }
 
-/* Thumbnail Gambar */
 .project-card-thumbnail {
-    height: 200px; /* Tinggi gambar fix */
+    height: 200px;
     overflow: hidden;
     position: relative;
     background: #eee;
@@ -133,18 +148,17 @@
 .project-card-thumbnail img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Agar gambar tidak gepeng */
-    transition: transform 0.5s;
+    object-fit: cover;
+    transition: transform 0.5s ease;
 }
 
 .project-card:hover .project-card-thumbnail img {
     transform: scale(1.05);
 }
 
-/* Konten Kartu */
 .project-card-content {
     padding: 20px;
-    flex: 1; /* Mengisi sisa ruang vertikal */
+    flex: 1;
     display: flex;
     flex-direction: column;
 }
@@ -155,7 +169,6 @@
     margin-bottom: 10px;
     font-weight: 700;
     line-height: 1.4;
-    /* Batasi judul 2 baris */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -167,14 +180,13 @@
     color: #666;
     margin-bottom: 15px;
     line-height: 1.6;
-    flex: 1; /* Mendorong tags ke bawah */
+    flex: 1;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-/* Tags (Teknologi) */
 .project-card-tags {
     display: flex;
     flex-wrap: wrap;
@@ -196,134 +208,116 @@
 }
 
 /* =========================================
-   3. PAGINATION (Style Bulat Kuning & Tengah)
-   ========================================= */
-/* =========================================
-   3. PAGINATION (Gaya Bulat Oranye Fix)
-   ========================================= */
-/* =========================================
-   3. PAGINATION (FIXED SIZE & HOVER COLOR)
-   ========================================= */
-/* =========================================
-   3. PAGINATION (PERSIS SESUAI GAMBAR)
+   PAGINATION 
    ========================================= */
 .pagination-controls {
-    text-align: center;
-    margin-top: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
+    margin-top: 30px;
+    text-align: center;
 }
 
 .btn-page {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;  /* Ukuran kecil proporsional */
+    width: 40px;
     height: 40px;
-    border: 1px solid rgba(255, 255, 255, 0.4); /* Garis lingkaran tipis */
+    border: 1px solid rgba(0, 0, 0, 0.1);
     background: transparent;
-    color: #FE7927; /* Oranye */
+    color: #FE7927;
     text-decoration: none;
     border-radius: 50%;
     font-size: 16px;
-    font-weight: 400; /* Normal, tidak tebal */
-    transition: none; /* Menghilangkan semua efek transisi */
+    font-weight: 400;
+    transition: background 0.2s ease, color 0.2s ease;
 }
 
-/* State Aktif: Oranye Padat, Teks Putih */
 .btn-page.active {
-    background: #FE7927; 
+    background: #FE7927;
     color: #ffffff;
     border-color: #FE7927;
 }
 
-/* State Hover: Kuning Padat, Teks Oranye (Sesuai Gambar) */
 .btn-page:hover:not(.active) {
-    background: #FFC107; /* Kuning */
+    background: #FFC107;
     border-color: #FFC107;
-    color: #FE7927;      /* Angka tetap oranye di atas kuning */
-}
-
-/* Menghilangkan efek scaling/pembesaran */
-.btn-page:hover {
+    color: #FE7927;
     transform: none !important;
 }
 
-/* Panah khusus */
-.btn-page .fa-chevron-right, 
+.btn-page .fa-chevron-right,
 .btn-page .fa-chevron-left {
     font-size: 14px;
 }
 
-/* Responsif untuk Mobile */
+/* No Results Section */
+.no-results {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 250px;
+    padding: 30px;
+    color: #333;
+}
+
+.no-results h3 {
+    color: var(--color-text);
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.no-results .btn {
+    background: var(--color-accent);
+    color: #000;
+}
+
+/* =========================================
+   RESPONSIVE DESIGN
+   ========================================= */
+
+/* Desktop & Tablet L (Max 992px) */
+@media (max-width: 992px) {
+    .project-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Tablet & Mobile L (Max 768px) */
+@media (max-width: 768px) {
+    .horizontal-filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-item {
+        width: 100%;
+    }
+
+    .btn-filter {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .project-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Mobile S (Max 480px) */
 @media (max-width: 480px) {
     .btn-page {
         width: 45px;
         height: 45px;
         font-size: 18px;
     }
+
     .pagination-controls {
         gap: 8px;
-    }
-}
-
-
-.no-results {
-    grid-column: 1 / -1; 
-    background: none; 
-    border-radius: 0; 
-    padding: 30px; 
-    box-shadow: none; 
-    
-    display: flex; 
-    flex-direction: column;
-    align-items: center; 
-    justify-content: center; 
-    text-align: center;
-    min-height: 250px; 
-    color: #333; 
-}
-
-.no-results h3 {
-    color: var(--color-text); 
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-.no-results .btn {
-    background: var(--color-accent); 
-    color: #000;
-}
-
-/* =========================================
-    RESPONSIVE DESIGN
-   ========================================= */
-@media (max-width: 992px) {
-    .project-filter-bar {
-        grid-template-columns: 1fr 1fr 1fr; 
-    }
-    .filter-group-search {
-        grid-column: 1 / -1;
-    }
-    .filter-group-action {
-        grid-column: 2 / 3; 
-    }
-    .filter-group-reset {
-        grid-column: 3 / 4; 
-    }
-    .project-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .project-filter-bar {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    .project-grid {
-        grid-template-columns: 1fr;
     }
 }

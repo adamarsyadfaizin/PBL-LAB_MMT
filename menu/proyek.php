@@ -202,7 +202,7 @@ $is_filter_active = !empty($search_term) || $category_slug != 'semua' || $year !
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 20px;
-        }
+        } 
         
         /* Tag badges styling */
         .project-card-tags .tag-badge {
@@ -228,51 +228,52 @@ $is_filter_active = !empty($search_term) || $category_slug != 'semua' || $year !
         <div class="main-content-area">
             <div class="container">
                 
-                <form class="project-filter-bar" action="" method="get">
-                    <div class="filter-group filter-group-search">
-                        <label for="filter-search">Pencarian</label>
-                        <input type="search" id="filter-search" name="s" placeholder="Cari proyek..." value="<?= htmlspecialchars($search_term) ?>">
-                    </div>
-                    <div class="filter-group">
-                        <label for="filter-kategori">Kategori</label>
-                        <select id="filter-kategori" name="kategori">
-                            <option value="semua">Semua</option>
-                            <?php foreach ($categories as $cat): ?>
-                                <option value="<?= $cat['slug'] ?>" <?= ($category_slug == $cat['slug']) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($cat['name']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filter-tahun">Tahun</label>
-                        <select id="filter-tahun" name="tahun">
-                            <option value="semua">Semua</option>
-                            <?php foreach ($years as $y): ?>
-                                <option value="<?= $y['year'] ?>" <?= ($year == $y['year']) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($y['year']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <?php if (isset($_GET['sort'])): ?>
-                    <input type="hidden" name="sort" value="<?= htmlspecialchars($sort) ?>">
-                    <?php endif; ?>
+                <form class="search-filter-container horizontal-filter-form" action="" method="get">
+    
+    <div class="filter-item search-item">
+        <label for="filter-search">Pencarian</label>
+        <input type="search" id="filter-search" name="s" placeholder="Cari proyek..." value="<?= htmlspecialchars($search_term) ?>">
+    </div>
 
-                    <?php if ($is_filter_active): ?>
-                    <div class="filter-group filter-group-reset">
-                        <label>&nbsp;</label>
-                        <a href="proyek.php" class="btn btn-reset" style="width:100%; height:42px; padding:0; background-color:#dc3545; color:white;"><i class="fas fa-times"></i> Reset Filter</a>
-                    </div>
-                    <?php endif; ?>
+    <div class="filter-item">
+        <label for="filter-kategori">Kategori</label>
+        <select id="filter-kategori" name="kategori">
+            <option value="semua">Semua</option>
+            <?php foreach ($categories as $cat): ?>
+                <option value="<?= $cat['slug'] ?>" <?= ($category_slug == $cat['slug']) ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($cat['name']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
 
-                    <div class="filter-group filter-group-action">
-                        <label>&nbsp;</label>
-                        <button type="submit" class="btn btn-filter" style="width:100%; height:42px; padding:0;"><i class="fas fa-filter"></i> Filter</button>
-                    </div>
-                    
-                    </form>
-                </form>
+    <div class="filter-item">
+        <label for="filter-tahun">Tahun</label>
+        <select id="filter-tahun" name="tahun">
+            <option value="semua">Semua</option>
+            <?php foreach ($years as $y): ?>
+                <option value="<?= $y['year'] ?>" <?= ($year == $y['year']) ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($y['year']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <div class="filter-item button-item">
+        <label>&nbsp;</label>
+        <div style="display: flex; gap: 10px;">
+            <?php if ($is_filter_active): ?>
+                <a href="proyek.php" class="btn-filter" style="background-color: #dc3545; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;">
+                    <i class="fas fa-times"></i> Reset
+                </a>
+            <?php endif; ?>
+
+            <button type="submit" class="btn-filter">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+        </div>
+    </div>
+</form>
                     
 
                 <div class="project-grid <?= ($total_projects == 0) ? 'grid-empty' : '' ?>">

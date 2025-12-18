@@ -1,25 +1,25 @@
 /* ---
-   File: style-galeri.css
-   Lokasi: menu/galeri/css/style-galeri.css
+    File: style-galeri.css
+    Lokasi: menu/galeri/css/style-galeri.css
 --- */
 
-/* Filter Bar */
-/* --- REVISI TAMPILAN FILTER (HORIZONTAL) --- */
+/* =========================================
+   FILTER BAR (HORIZONTAL REVISION)
+   ========================================= */
 
 .search-filter-container {
-    background: #f8f9fa; /* Sesuaikan warna background */
+    background: #f8f9fa;
     padding: 20px 25px;
     border-radius: 8px;
     margin-bottom: 40px;
     border: 1px solid #eee;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-/* Mengatur form menjadi baris horizontal */
 .horizontal-filter-form {
     display: flex;
     align-items: center;
-    gap: 20px; /* Jarak antar elemen */
+    gap: 20px;
     width: 100%;
 }
 
@@ -28,12 +28,12 @@
     flex-direction: column;
 }
 
-/* Item pencarian dibuat lebih lebar (flex-grow) */
+/* Item pencarian lebih lebar */
 .search-item {
-    flex-grow: 2; 
+    flex-grow: 2;
 }
 
-/* Item dropdown dibuat proporsional */
+/* Item dropdown proporsional */
 .filter-item:not(.search-item):not(.button-item) {
     flex-grow: 1;
     min-width: 150px;
@@ -48,61 +48,47 @@
     display: block;
 }
 
-.filter-item input, 
+.filter-item input,
 .filter-item select {
     width: 100%;
     padding: 10px 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 14px;
-    height: 45px; /* Tinggi disamakan */
+    height: 45px;
     background: #fff;
     outline: none;
     transition: border-color 0.3s;
 }
 
-.filter-item input:focus, 
+.filter-item input:focus,
 .filter-item select:focus {
     border-color: var(--color-primary);
 }
 
 .btn-filter {
-    height: 45px; /* Tinggi sama dengan input */
+    height: 45px;
     padding: 0 30px;
-    background-color: var(--color-primary); /* Warna Orange */
+    background-color: var(--color-primary);
     color: white;
     border: none;
     border-radius: 5px;
     font-weight: 600;
     cursor: pointer;
     transition: background 0.3s;
-    margin-top: auto; /* Memastikan tombol turun ke bawah sejajar input */
+    margin-top: auto;
     white-space: nowrap;
 }
 
 .btn-filter:hover {
-    background-color: var(--color-accent); /* Warna Kuning saat hover */
+    background-color: var(--color-accent);
     color: #333;
 }
 
-/* Responsive: Jika layar HP, ubah jadi tumpuk lagi */
-@media (max-width: 768px) {
-    .horizontal-filter-form {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .filter-item {
-        width: 100%;
-    }
-    
-    .btn-filter {
-        width: 100%;
-        margin-top: 10px;
-    }
-}
+/* =========================================
+   GALLERY GRID & ITEMS
+   ========================================= */
 
-/* Grid Galeri */
 .gallery-grid-main {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -115,7 +101,7 @@
     text-decoration: none;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease;
     background: #fff;
     position: relative;
@@ -124,7 +110,7 @@
 
 .gallery-item:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .image-container {
@@ -147,7 +133,10 @@
 
 .overlay {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 59, 142, 0.6);
     color: white;
     display: flex;
@@ -164,8 +153,9 @@
 
 .type-badge {
     position: absolute;
-    top: 10px; right: 10px;
-    background: rgba(0,0,0,0.6);
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.6);
     color: #fff;
     font-size: 11px;
     padding: 3px 8px;
@@ -194,7 +184,7 @@
     display: block;
 }
 
-/* Info Hasil */
+/* Info Hasil Pencarian */
 .search-results-info {
     background: #e3f2fd;
     color: #0d47a1;
@@ -206,8 +196,9 @@
 }
 
 /* =========================================
-   3. PAGINATION (PERSIS SESUAI GAMBAR)
+   PAGINATION 
    ========================================= */
+
 .pagination-controls {
     text-align: center;
     margin-top: 30px;
@@ -221,76 +212,50 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;  /* Ukuran kecil proporsional */
+    width: 40px;
     height: 40px;
-    border: 1px solid rgba(255, 255, 255, 0.4); /* Garis lingkaran tipis */
+    border: 1px solid rgba(255, 255, 255, 0.4);
     background: transparent;
-    color: #FE7927; /* Oranye */
+    color: #FE7927;
     text-decoration: none;
     border-radius: 50%;
     font-size: 16px;
-    font-weight: 400; /* Normal, tidak tebal */
-    transition: none; /* Menghilangkan semua efek transisi */
+    font-weight: 400;
+    transition: none;
 }
 
-/* State Aktif: Oranye Padat, Teks Putih */
 .btn-page.active {
-    background: #FE7927; 
+    background: #FE7927;
     color: #ffffff;
     border-color: #FE7927;
 }
 
-/* State Hover: Kuning Padat, Teks Oranye (Sesuai Gambar) */
 .btn-page:hover:not(.active) {
-    background: #FFC107; /* Kuning */
+    background: #FFC107;
     border-color: #FFC107;
-    color: #FE7927;      /* Angka tetap oranye di atas kuning */
+    color: #FE7927;
 }
 
-/* Menghilangkan efek scaling/pembesaran */
 .btn-page:hover {
     transform: none !important;
 }
 
-/* Panah khusus */
-.btn-page .fa-chevron-right, 
+.btn-page .fa-chevron-right,
 .btn-page .fa-chevron-left {
     font-size: 14px;
 }
 
-/* Responsif untuk Mobile */
-@media (max-width: 480px) {
-    .btn-page {
-        width: 45px;
-        height: 45px;
-        font-size: 18px;
-    }
-    .pagination-controls {
-        gap: 8px;
-    }
-}
-/* Responsive */
-@media (max-width: 992px) {
-    .gallery-grid-main { grid-template-columns: repeat(2, 1fr); }
-}
+/* =========================================
+   EMPTY STATE STYLE 
+   ========================================= */
 
-@media (max-width: 768px) {
-    .search-row, .filter-row { flex-direction: column; gap: 10px; }
-    .gallery-grid-main { grid-template-columns: 1fr; }
-    .btn-search, .btn-filter { width: 100%; }
-}
-
-/* --- EMPTY STATE STYLE (Meniru Halaman Proyek) --- */
-
-/* Wrapper agar posisi ke tengah dan lebar terbatas */
 .empty-state-centered {
     display: block;
-    width: 60%; /* Lebar 60% seperti di proyek */
-    margin: 40px auto; /* Posisi otomatis di tengah */
+    width: 60%;
+    margin: 40px auto;
     text-align: center;
 }
 
-/* Memperbaiki layout konten di dalam kotak */
 .no-results-content {
     display: flex;
     flex-direction: column;
@@ -300,7 +265,6 @@
     min-height: 250px;
 }
 
-/* Typography Judul */
 .no-results-content h3 {
     font-size: 24px;
     color: #333;
@@ -308,16 +272,14 @@
     font-weight: 700;
 }
 
-/* Typography Deskripsi */
 .no-results-content p {
     color: #666;
     margin-bottom: 25px;
     font-size: 14px;
 }
 
-/* Tombol Kuning (Persis Proyek) */
 .btn-yellow-action {
-    background-color: #ffc107; /* Warna kuning */
+    background-color: #ffc107;
     color: #000;
     font-weight: 600;
     padding: 10px 30px;
@@ -332,12 +294,64 @@
     transform: translateY(-2px);
     background-color: #e0a800;
     color: #000;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* Responsive: Full width di HP */
+/* =========================================
+   RESPONSIVE MEDIA QUERIES
+   ========================================= */
+
+/* Desktop & Tablet (992px) */
+@media (max-width: 992px) {
+    .gallery-grid-main {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Mobile & Tablet (768px) */
 @media (max-width: 768px) {
+    .horizontal-filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-item {
+        width: 100%;
+    }
+
+    .btn-filter {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .search-row,
+    .filter-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .gallery-grid-main {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-search {
+        width: 100%;
+    }
+
     .empty-state-centered {
         width: 100%;
+    }
+}
+
+/* Small Mobile (480px) */
+@media (max-width: 480px) {
+    .btn-page {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+
+    .pagination-controls {
+        gap: 8px;
     }
 }
