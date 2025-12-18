@@ -124,9 +124,16 @@ try {
         $d = $r['event_date'];
         if (!isset($events_by_date[$d])) $events_by_date[$d] = [];
         // Pastikan link detail berita sudah benar
-        $events_by_date[$d][] = ['title' => $r['title'], 'slug' => $r['slug'], 'summary' => $r['summary'], 'link' => "menu-detail-berita/detail-berita.php?slug={$r['slug']}"]; 
+        $events_by_date[$d][] = [
+            'title' => $r['title'], 
+            'slug' => $r['slug'], 
+            'summary' => $r['summary'], 
+            'link' => "menu-detail-berita/detail-berita.php?slug={$r['slug']}"
+        ]; 
     }
-} catch (PDOException $e) { $events_by_date = []; }
+} catch (PDOException $e) { 
+    $events_by_date = []; 
+}
 
 // Encode untuk JavaScript. Menggunakan JSON_UNESCAPED_UNICODE untuk kompatibilitas.
 $events_json = json_encode($events_by_date, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE);
@@ -320,7 +327,7 @@ function build_pagination($current, $total, $adj = 2) {
 .hero h1 {
     font-size: 2rem !important; /* UKURAN YANG SAMA DENGAN PROFIL */
     margin-top: 0 !important;
-}/*n styling - COPY DARI PROFIL.PHP */
+}
 
         .main-content-area .container {
             display: grid;
@@ -722,34 +729,32 @@ function build_pagination($current, $total, $adj = 2) {
             margin-top: 30px;
         }
 
-/* ==== PAGINATION CONTROLS - Kembali ke warna asli yang bagus ===== */
+        .btn-page, .page-ellipsis {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #DDD;
+            border-radius: 50%;
+            font-size: 1rem;
+            color: var(--color-primary); 
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
 
-.btn-page, .page-ellipsis {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #DDD;
-    border-radius: 50%;
-    font-size: 1rem;
-    color: var(--color-primary); 
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
+        .btn-page:hover {
+            background-color: var(--color-accent);
+            color: var(--color-primary); 
+            border-color: var(--color-accent);
+        }
 
-.btn-page:hover {
-    background-color: var(--color-accent);
-    color: var(--color-primary); 
-    border-color: var(--color-accent);
-}
-
-.btn-page.active {
-    background-color: var(--color-primary); /* Kembali ke variable, tanpa !important */
-    color: white; /* Tetap putih untuk kontras */
-    border-color: var(--color-primary); /* Kembali ke variable, tanpa !important */
-    transform: scale(1.1);
-}
+        .btn-page.active {
+            background-color: var(--color-primary); /* Kembali ke variable, tanpa !important */
+            color: white; /* Tetap putih untuk kontras */
+            border-color: var(--color-primary); /* Kembali ke variable, tanpa !important */
+            transform: scale(1.1);
+        }
 
         .page-ellipsis {
             border: none;
@@ -850,61 +855,60 @@ function build_pagination($current, $total, $adj = 2) {
         }
 
         /* Widget Terkini (Kontras Kuat) */
-/* Widget Terkini (Kontras Kuat) */
-.widget-news {
-    background-color: #FFFFFF; /* Diubah dari var(--color-primary) ke putih */
-    box-shadow: 0 4px 15px var(--color-shadow); /* Kembali ke bayangan standar */
-    color: var(--color-text); /* Teks kembali ke warna gelap */
-}
+        .widget-news {
+            background-color: #FFFFFF; /* Diubah dari var(--color-primary) ke putih */
+            box-shadow: 0 4px 15px var(--color-shadow); /* Kembali ke bayangan standar */
+            color: var(--color-text); /* Teks kembali ke warna gelap */
+        }
 
-.widget-news ul {
-    list-style: none;
-    padding: 0;
-}
+        .widget-news ul {
+            list-style: none;
+            padding: 0;
+        }
 
-.widget-news li {
-    padding-bottom: 15px;
-    margin-bottom: 15px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Border lebih gelap */
-}
+        .widget-news li {
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Border lebih gelap */
+        }
 
-.widget-news li:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
+        .widget-news li:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
 
-.widget-news .widget-title {
-    color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
-    border-bottom: 3px solid var(--color-accent); /* Kuning/Emas tetap menjadi aksen */
-}
+        .widget-news .widget-title {
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+            border-bottom: 3px solid var(--color-accent); /* Kuning/Emas tetap menjadi aksen */
+        }
 
-.widget-news li a {
-    transition: padding-left 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-}
-.widget-news li a:hover {
-    padding-left: 5px;
-}
+        .widget-news li a {
+            transition: padding-left 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+        }
+        .widget-news li a:hover {
+            padding-left: 5px;
+        }
 
-.widget-news li h4 {
-    font-size: 1.05rem;
-    color: var(--color-text); /* Kembali ke warna teks gelap */
-    line-height: 1.3;
-    margin-bottom: 3px;
-    transition: color 0.3s;
-}
+        .widget-news li h4 {
+            font-size: 1.05rem;
+            color: var(--color-text); /* Kembali ke warna teks gelap */
+            line-height: 1.3;
+            margin-bottom: 3px;
+            transition: color 0.3s;
+        }
 
-.widget-news li a:hover h4 {
-    color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
-}
+        .widget-news li a:hover h4 {
+            color: #FE7927 !important; /* DIUBAH: var(--color-primary) menjadi #FE7927 langsung */
+        }
 
-.widget-news li .date {
-    font-size: 0.85rem;
-    color: #777; /* Warna abu-abu untuk tanggal */
-}
+        .widget-news li .date {
+            font-size: 0.85rem;
+            color: #777; /* Warna abu-abu untuk tanggal */
+        }
 
         .no-results {
             /* background-color: var(--color-light-bg); */
@@ -912,9 +916,6 @@ function build_pagination($current, $total, $adj = 2) {
             backdrop-filter: blur(4px); /* Blur lebih halus */
             -webkit-backdrop-filter: blur(4px);
             border: 1px solid rgba(255, 255, 255, 0.8);
-
-            /* border: 1px dashed #CCC;
-            border-radius: var(--border-radius); */
             text-align: center;
             padding: 50px 0;
             margin-bottom: 30px;
@@ -992,20 +993,7 @@ function build_pagination($current, $total, $adj = 2) {
             border-bottom: none;
             padding-bottom: 0;
         }
-/* PAKSA UBAH WARNA BACKGROUND FOOTER */
-footer, 
-.site-footer, 
-[style*="background-color"] {
-    background-color: #d74709ff !important; /* Warna Oranye Gelap / Cokelat Oranye */
-    background: #d74709ff !important;
-}
 
-/* Jika footer menggunakan tag section atau div khusus di dalam fungsi renderFooter */
-main + footer, 
-footer div, 
-footer section {
-    background-color: #d74709ff !important;
-}
         .event-item h4 {
             margin-top: 0;
             margin-bottom: 5px;
@@ -1025,6 +1013,21 @@ footer section {
             color: #666;
             margin-top: 5px;
             line-height: 1.5;
+        }
+
+        /* PAKSA UBAH WARNA BACKGROUND FOOTER */
+        footer, 
+        .site-footer, 
+        [style*="background-color"] {
+            background-color: #d74709ff !important; /* Warna Oranye Gelap / Cokelat Oranye */
+            background: #d74709ff !important;
+        }
+
+        /* Jika footer menggunakan tag section atau div khusus di dalam fungsi renderFooter */
+        main + footer, 
+        footer div, 
+        footer section {
+            background-color: #d74709ff !important;
         }
     </style>
 </head>
@@ -1259,45 +1262,52 @@ footer section {
         renderFooter($path_prefix, $site_config); 
     ?>
 
+    <!-- Modal untuk menampilkan kegiatan berdasarkan tanggal -->
     <div id="modalBackdrop" class="modal-backdrop">
         <div class="modal">
             <button class="close-btn" id="modalCloseBtn">&times;</button>
-            <h3 id="modalDateTitle">Agenda <span id="modalDate"></span></h3>
+            <h3 id="modalDateTitle">Kegiatan</h3>
             <div id="modalEventsList"></div> 
         </div>
     </div>
 
     <script>
         // ==========================================================
-        // JAVASCRIPT YANG DIGABUNGKAN DARI script-berita.js
+        // JAVASCRIPT UNTUK KALENDER KEGIATAN
         // ==========================================================
         
-        // DATA EVENT DIDEFINISIKAN DI SINI UNTUK DIAKSES OLEH SCRIPT
+        // DATA EVENT DARI PHP
         const eventsByDate = <?= $events_json ?>;
         
-        // Variabel global untuk modal
-        const calendarModal = document.getElementById('calendarModal');
-        const modalBackdrop = document.getElementById('modalBackdrop');
-        const modalEventsList = document.getElementById('modalEventsList');
-        const modalDateTitle = document.getElementById('modalDateTitle');
-        
-        // ==========================================================
-        // 1. FUNGSI KALENDER WIDGET
-        // ==========================================================
-        
+        // Fungsi untuk menampilkan modal dengan kegiatan pada tanggal tertentu
         function showModal(date, events) {
-            if (!calendarModal || !modalBackdrop || !modalEventsList || !modalDateTitle) return;
+            const modalBackdrop = document.getElementById('modalBackdrop');
+            const modalEventsList = document.getElementById('modalEventsList');
+            const modalDateTitle = document.getElementById('modalDateTitle');
+            
+            if (!modalBackdrop || !modalEventsList || !modalDateTitle) return;
 
-            modalDateTitle.textContent = `Kegiatan pada Tanggal ${date}`;
+            // Format tanggal untuk ditampilkan
+            const dateObj = new Date(date);
+            const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", 
+                               "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            
+            const dayName = dayNames[dateObj.getDay()];
+            const day = dateObj.getDate();
+            const month = monthNames[dateObj.getMonth()];
+            const year = dateObj.getFullYear();
+            
+            modalDateTitle.innerHTML = `Kegiatan pada <span id="modalDate">${dayName}, ${day} ${month} ${year}</span>`;
             modalEventsList.innerHTML = ''; 
 
-            if (events.length > 0) {
+            if (events && events.length > 0) {
                 events.forEach(event => {
                     const item = document.createElement('div');
                     item.className = 'event-item';
                     item.innerHTML = `
-                        <h4><a href="${event.link}" onclick="closeModal(event);">${event.title}</a></h4>
-                        <p>Lihat detail berita/kegiatan.</p>
+                        <h4><a href="${event.link}" onclick="event.stopPropagation();">${event.title}</a></h4>
+                        <p>${event.summary || 'Lihat detail berita/kegiatan.'}</p>
                     `;
                     modalEventsList.appendChild(item);
                 });
@@ -1308,152 +1318,103 @@ footer section {
             modalBackdrop.style.display = 'flex';
         }
 
-        function closeModal(event) {
-            event.preventDefault();
+        // Fungsi untuk menutup modal
+        function closeModal() {
+            const modalBackdrop = document.getElementById('modalBackdrop');
             if (modalBackdrop) {
                 modalBackdrop.style.display = 'none';
             }
         }
 
-        function generateCalendar(year, month, events) {
-            const calendarTable = document.getElementById('calendarTable');
-            if (!calendarTable) return;
-
-            calendarTable.innerHTML = '';
+        // Fungsi untuk setup event listener pada sel kalender
+        function setupCalendarCellClickEvents() {
+            const cells = document.querySelectorAll('.calendar-table td[data-date]');
             
-            const date = new Date(year, month - 1);
-            const firstDay = new Date(year, month - 1, 1).getDay(); // 0 = Sunday, 1 = Monday
-            const daysInMonth = new Date(year, month, 0).getDate();
-            const today = new Date();
-            const currentYear = today.getFullYear();
-            const currentMonth = today.getMonth() + 1;
-            const currentDay = today.getDate();
-
-            // Header Hari
-            const headerRow = calendarTable.insertRow();
-            ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].forEach(day => {
-                const th = document.createElement('th');
-                th.textContent = day;
-                headerRow.appendChild(th);
-            });
-
-            let dateCounter = 1;
-            for (let i = 0; i < 6; i++) { // Maksimum 6 baris (minggu)
-                const row = calendarTable.insertRow();
-                let weekCompleted = true;
-
-                for (let j = 0; j < 7; j++) {
-                    const cell = row.insertCell();
-                    cell.dataset.day = j;
-
-                    if (i === 0 && j < firstDay) {
-                        // Sel kosong sebelum hari pertama bulan
-                        cell.innerHTML = '';
-                    } else if (dateCounter > daysInMonth) {
-                        // Sel kosong setelah hari terakhir bulan
-                        cell.innerHTML = '';
-                        weekCompleted = false; // Baris ini belum diisi penuh, tapi sudah lewat
+            cells.forEach(cell => {
+                const date = cell.getAttribute('data-date');
+                
+                cell.addEventListener('click', function() {
+                    if (eventsByDate[date]) {
+                        showModal(date, eventsByDate[date]);
                     } else {
-                        const dayNumber = dateCounter;
-                        const fullDate = `${year}-${String(month).padStart(2, '0')}-${String(dayNumber).padStart(2, '0')}`;
-                        
-                        cell.textContent = dayNumber;
-
-                        // Tanda Hari Ini (Today)
-                        if (year === currentYear && month === currentMonth && dayNumber === currentDay) {
-                            cell.classList.add('today-day');
-                        }
-
-                        // Tanda Hari Event
-                        if (events[fullDate]) {
-                            cell.classList.add('event-day');
-                            cell.onclick = () => showModal(fullDate, events[fullDate]);
-                        } else {
-                            cell.onclick = () => {}; // Biarkan klik kosong jika tidak ada event
-                        }
-                        
-                        dateCounter++;
+                        // Jika tidak ada event, tetap tampilkan modal dengan pesan
+                        showModal(date, []);
                     }
-                }
-                // Hentikan looping jika sudah melewati hari terakhir dan tidak ada lagi hari di baris ini
-                if (dateCounter > daysInMonth && row.lastChild.textContent === '') break;
-            }
+                });
+                
+                // Tambahkan cursor pointer untuk semua sel yang memiliki tanggal
+                cell.style.cursor = 'pointer';
+            });
         }
 
-        // Inisialisasi Kalender
-        let currentCalDate = new Date();
-
-        function updateCalendar() {
-            const year = currentCalDate.getFullYear();
-            const month = currentCalDate.getMonth() + 1;
-
-            // Perbarui judul
-            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            const monthTitle = document.getElementById('calCurrentMonth');
-            if (monthTitle) {
-                monthTitle.textContent = `${monthNames[month - 1]} ${year}`;
-            }
-
-            // Generate kalender
-            generateCalendar(year, month, eventsByDate);
-        }
-
+        // Inisialisasi ketika DOM siap
         document.addEventListener('DOMContentLoaded', () => {
-            updateCalendar();
-
-            // Handler tombol navigasi kalender
-            const prevBtn = document.getElementById('calNavPrev');
-            const nextBtn = document.getElementById('calNavNext');
+            // Setup event listener untuk tombol close modal
             const closeBtn = document.getElementById('modalCloseBtn');
             
-            if (prevBtn) {
-                prevBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    currentCalDate.setMonth(currentCalDate.getMonth() - 1);
-                    updateCalendar();
-                });
-            }
-
-            if (nextBtn) {
-                nextBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    currentCalDate.setMonth(currentCalDate.getMonth() + 1);
-                    updateCalendar();
-                });
-            }
-
             if (closeBtn) {
                 closeBtn.addEventListener('click', closeModal);
             }
-            if (modalBackdrop) {
-                modalBackdrop.addEventListener('click', (e) => {
-                    if (e.target === modalBackdrop) {
-                        closeModal(e);
+            
+            // Setup backdrop click untuk close modal
+            const backdrop = document.getElementById('modalBackdrop');
+            if (backdrop) {
+                backdrop.addEventListener('click', (e) => {
+                    if (e.target === backdrop) {
+                        closeModal();
                     }
                 });
             }
             
-            // Panggil fungsi scroll animation
-            handleScrollAnimation();
+            // Setup event listener untuk sel kalender
+            setupCalendarCellClickEvents();
+            
+            // Tambahkan event listener untuk Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+            
+            // Setup navigasi kalender untuk refresh event listener setelah navigasi
+            const prevBtn = document.getElementById('calNavPrev');
+            const nextBtn = document.getElementById('calNavNext');
+            
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    // Setelah navigasi, setup ulang event listener
+                    setTimeout(() => {
+                        setupCalendarCellClickEvents();
+                    }, 100);
+                });
+            }
+            
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    // Setelah navigasi, setup ulang event listener
+                    setTimeout(() => {
+                        setupCalendarCellClickEvents();
+                    }, 100);
+                });
+            }
+            
+            // Panggil fungsi scroll animation jika ada
+            if (typeof handleScrollAnimation === 'function') {
+                handleScrollAnimation();
+            }
         });
-        
-        // ==========================================================
-        // 2. FUNGSI ANIMASI SCROLL (Scroll Reveal)
-        // ==========================================================
-        
+
+        // Fungsi untuk animasi scroll (jika ada di file lain)
         function handleScrollAnimation() {
-            // Memilih semua elemen yang memiliki kelas animasi scroll
             const animatedElements = document.querySelectorAll(
                 '.event-highlight, .search-filter-container, .section-separator, .facility-item, .pagination-controls, .widget, .no-results'
             );
 
             animatedElements.forEach((element) => {
                 const rect = element.getBoundingClientRect();
-                // Titik pemicu: ketika elemen berada di 90% dari tinggi viewport
                 const triggerPoint = window.innerHeight * 0.9; 
 
                 if (rect.top <= triggerPoint && rect.bottom >= 0) {
-                    // Menambahkan kelas 'animate-in' untuk memicu transisi CSS
                     element.classList.add('animate-in');
                 } 
             });
@@ -1462,18 +1423,6 @@ footer section {
         // Menghubungkan fungsi ke event scroll dan load
         window.addEventListener('scroll', handleScrollAnimation);
         window.addEventListener('load', handleScrollAnimation);
-        
-        // Kode inline untuk Modal Callbacks (Disederhanakan untuk memastikan tidak bentrok)
-        const backdrop = document.getElementById('modalBackdrop');
-        const modalDateEl = document.getElementById('modalDateTitle'); // ID diubah
-        const modalContent = document.getElementById('modalEventsList'); // ID diubah
-        const modalClose = document.getElementById('modalCloseBtn'); // ID diubah
-        
-        if(modalClose) modalClose.addEventListener('click', () => { backdrop.style.display = 'none'; });
-        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') backdrop.style.display = 'none'; });
-        if (backdrop) backdrop.addEventListener('click', function(e) {
-            if (e.target === backdrop) backdrop.style.display = 'none';
-        });
     </script>
     
     <script src="<?= $path_prefix ?>assets/js/navbar.js?v=<?= $cache_buster ?>"></script>
