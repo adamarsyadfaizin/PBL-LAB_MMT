@@ -13,12 +13,11 @@ try {
     $total_comments = $stats['total_comments'];
     $pesan_baru = $stats['total_unread_feedback'];
     
-    // Ambil data tambahan dari materialized views
-    $pdo->exec("REFRESH MATERIALIZED VIEW CONCURRENTLY mv_lab_dashboard_stats");
+    // Data tambahan dari materialized view (di-refresh otomatis setiap ada perubahan data)
     $mv_stats = $pdo->query("SELECT * FROM mv_lab_dashboard_stats")->fetch();
-    $total_kegiatan = $mv_stats['total_kegiatan'];
-    $total_media = $mv_stats['total_media'];
-    $total_videos = $mv_stats['total_videos'];
+    $total_kegiatan = $mv_stats['total_kegiatan'] ?? 0;
+    $total_media = $mv_stats['total_media'] ?? 0;
+    $total_videos = $mv_stats['total_videos'] ?? 0;
     
 } catch (Exception $e) {
     // Fallback ke query biasa jika function gagal

@@ -1,12 +1,16 @@
 <?php
 // get_feedback_detail_mv.php
 // Note: Nama file dibiarkan tetap ada "_mv" agar tidak perlu mengubah javascript di pesan.php
-include '../config/db.php';
+require_once __DIR__ . '/../config/auth.php';
+startSecureSession();
+require_once __DIR__ . '/../config/db.php';
+
+requireAdmin($pdo);
 
 header('Content-Type: text/html; charset=utf-8');
 
 if(isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $id = $_GET['id'];
+    $id = (int) $_GET['id'];
     
     try {
         $stmt = $pdo->prepare("SELECT * FROM feedback WHERE id = ?");
@@ -100,7 +104,7 @@ if(isset($_GET['id']) && is_numeric($_GET['id'])) {
             </div>
             
             <div class="action-buttons">
-                <a href="pesan.php?delete=<?= $feedback['id'] ?>" 
+                <a href="pesan.php?delete=<?= $feedback['id'] ?>&csrf=<?= csrfToken() ?>" 
                    class="btn btn-danger" 
                    onclick="return confirm('Yakin hapus pesan ini?')">
                     Hapus Pesan

@@ -195,7 +195,7 @@ function performBackup(type) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            let message = `Backup ${type} berhasil dibakaan!<br>`;
+            let message = `Backup ${type} berhasil dibuat!<br>`;
             message += `File: ${data.data.filename}<br>`;
             message += `Size: ${formatBytes(data.data.size)}<br>`;
             message += `Summary: ${data.data.summary.total_projects} proyek, ${data.data.summary.total_news} berita, ${data.data.summary.total_members} anggota`;

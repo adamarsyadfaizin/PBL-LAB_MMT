@@ -1,0 +1,17 @@
+# Konfigurasi Apache untuk pengembangan lokal (Laragon).
+# Di Vercel file ini tidak dipakai karena proteksi dilakukan oleh api/index.php.
+
+# Jangan tampilkan isi folder
+Options -Indexes
+
+# Blokir akses langsung ke berkas sensitif
+<FilesMatch "\.(env|sql|md|json|lock|ini|log|example)$">
+    Require all denied
+</FilesMatch>
+
+<Files ".env">
+    Require all denied
+</Files>
+
+# Blokir folder internal
+RedirectMatch 404 ^/(config|database|DOKUMEN PBL)(/|$)

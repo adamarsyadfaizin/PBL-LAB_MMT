@@ -73,7 +73,7 @@
                 <td><?= date('d/m/Y', strtotime($row['created_at'])) ?></td>
                 <td>
                     <a href="berita_form.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
-                    <a href="process_berita.php?action=delete&id=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus berita ini?')"><i class="fas fa-trash"></i></a>
+                    <a href="process_berita.php?action=delete&id=<?= $row['id'] ?>&csrf=<?= csrfToken() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus berita ini?')"><i class="fas fa-trash"></i></a>
                 </td>
             </tr>
             <?php endwhile; ?>

@@ -1,7 +1,6 @@
 <?php
 // api/get_lab_stats.php - API endpoint untuk get_lab_stats function
-header('Content-Type: application/json');
-include '../config/db.php';
+require_once __DIR__ . '/_bootstrap.php';
 
 try {
     // Call function get_lab_stats()

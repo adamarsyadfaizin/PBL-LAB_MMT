@@ -1,15 +1,16 @@
 <?php
 // api/add_comment.php - API endpoint untuk menambah komentar menggunakan stored procedure
-header('Content-Type: application/json');
-include '../config/db.php';
+// Endpoint ini terbuka untuk pengunjung (komentar tanpa login berstatus pending).
+require_once __DIR__ . '/../../config/auth.php';
+startSecureSession();
+require_once __DIR__ . '/../../config/db.php';
 
-// Enable CORS untuk API calls
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
+header('Content-Type: application/json; charset=utf-8');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit(0);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Gunakan metode POST.']);
+    exit;
 }
 
 try {

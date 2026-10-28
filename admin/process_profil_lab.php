@@ -1,126 +1,190 @@
 <?php
-session_start();
-require_once '../config/db.php';
+// admin/process_profil_lab.php
+require_once __DIR__ . '/../config/auth.php';
+startSecureSession();
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/helpers.php';
 
-$target_dir = "../assets/uploads/";
-if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
+requireAdmin($pdo);
+
+function backWithMessage(string $message, string $fallback = 'profil_lab.php'): void
+{
+    echo '<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"></head><body>'
+        . '<script>alert(' . json_encode($message) . '); history.back();</script>'
+        . '<noscript><p>' . htmlspecialchars($message) . '</p><a href="' . $fallback . '">Kembali</a></noscript>'
+        . '</body></html>';
+    exit;
+}
+
+$target_dir = 'assets/uploads/';
+$adminName = $_SESSION['user_name'] ?? 'Admin';
 
 // --- 1. UPDATE PROFIL UTAMA ---
 if (isset($_POST['update_profile'])) {
-    $visi = $_POST['visi'];
-    $misi = $_POST['misi'];
-    $sejarah = $_POST['sejarah'];
-    
-    $stmt = $pdo->query("SELECT struktur_org_path FROM lab_profile LIMIT 1");
-    $oldData = $stmt->fetch();
-    $struktur_path = $oldData['struktur_org_path'] ?? '';
+    requireCsrf();
 
-    if (!empty($_FILES['struktur_org']['name'])) {
-        $ext = strtolower(pathinfo($_FILES['struktur_org']['name'], PATHINFO_EXTENSION));
-        $newName = "struktur_" . time() . "." . $ext;
-        if (move_uploaded_file($_FILES['struktur_org']['tmp_name'], $target_dir . $newName)) {
-            $struktur_path = "assets/uploads/" . $newName;
-        }
+    $visi     = trim($_POST['visi'] ?? '');
+    $misi     = trim($_POST['misi'] ?? '');
+    $sejarah  = trim($_POST['sejarah'] ?? '');
+
+    // Selalu pakai baris profil pertama (id terkecil)
+    $profileId = (int) $pdo->query("SELECT id FROM lab_profile ORDER BY id ASC LIMIT 1")->fetchColumn();
+    $struktur_path = '';
+
+    if ($profileId) {
+        $stmt = $pdo->prepare("SELECT struktur_org_path FROM lab_profile WHERE id = ?");
+        $stmt->execute([$profileId]);
+        $struktur_path = $stmt->fetchColumn() ?: '';
     }
 
-    $check = $pdo->query("SELECT count(*) FROM lab_profile")->fetchColumn();
-    if ($check > 0) {
-        $sql = "UPDATE lab_profile SET visi=?, misi=?, sejarah=?, struktur_org_path=?";
-        $pdo->prepare($sql)->execute([$visi, $misi, $sejarah, $struktur_path]);
+    if (!empty($_FILES['struktur_org']['name'])) {
+        $upload = storeUpload($_FILES['struktur_org'], $target_dir, ['jpg', 'jpeg', 'png', 'webp'], 4 * 1024 * 1024);
+
+        if (!$upload['ok']) {
+            backWithMessage($upload['error']);
+        }
+
+        removeUpload($struktur_path);
+        $struktur_path = $upload['path'];
+    }
+
+    if ($profileId) {
+        $sql = "UPDATE lab_profile SET visi=?, misi=?, sejarah=?, struktur_org_path=? WHERE id=?";
+        $pdo->prepare($sql)->execute([$visi, $misi, $sejarah, $struktur_path, $profileId]);
     } else {
         $sql = "INSERT INTO lab_profile (visi, misi, sejarah, struktur_org_path) VALUES (?, ?, ?, ?)";
         $pdo->prepare($sql)->execute([$visi, $misi, $sejarah, $struktur_path]);
     }
-    
-    // Pastikan fungsi writeLog ada sebelum dipanggil
-    if (function_exists('writeLog')) writeLog($pdo, $_SESSION['admin_user'] ?? 'Admin', "Update Profil Lab");
+
+    if (function_exists('writeLog')) {
+        writeLog($pdo, $adminName, "Update Profil Lab");
+    }
+
     header("Location: profil_lab.php?status=success&tab=profil");
     exit();
 }
 
 // --- 2. TAMBAH ANGGOTA TIM ---
 if (isset($_POST['add_member'])) {
-    $name = $_POST['name'];
-    $role = $_POST['role'];
-    $tags = $_POST['tags'];
-    
-    // Ambil 5 Input Sosmed
-    $linkedin = $_POST['linkedin'];
-    $scholar = $_POST['scholar'];
-    $instagram = $_POST['instagram'];
-    $youtube = $_POST['youtube'];
-    $facebook = $_POST['facebook'];
-    
-    $avatar_url = '';
-    if (!empty($_FILES['avatar']['name'])) {
-        $ext = strtolower(pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION));
-        $newName = "team_" . time() . uniqid() . "." . $ext;
-        if (move_uploaded_file($_FILES['avatar']['tmp_name'], $target_dir . $newName)) {
-            $avatar_url = "assets/uploads/" . $newName;
-        }
+    requireCsrf();
+
+    $name = trim($_POST['name'] ?? '');
+    $role = trim($_POST['role'] ?? '');
+    $tags = trim($_POST['tags'] ?? '');
+
+    if ($name === '' || $role === '') {
+        backWithMessage('Nama dan peran anggota wajib diisi.');
     }
 
-    // Query Insert Lengkap
-    $sql = "INSERT INTO members (name, role, tags, linkedin_url, scholar_url, instagram, youtube, facebook, avatar_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    $pdo->prepare($sql)->execute([$name, $role, $tags, $linkedin, $scholar, $instagram, $youtube, $facebook, $avatar_url]);
+    $avatar_url = '';
+    if (!empty($_FILES['avatar']['name'])) {
+        $upload = storeUpload($_FILES['avatar'], $target_dir, ['jpg', 'jpeg', 'png', 'webp'], 4 * 1024 * 1024);
 
-    if (function_exists('writeLog')) writeLog($pdo, $_SESSION['admin_user'] ?? 'Admin', "Tambah Anggota: $name");
+        if (!$upload['ok']) {
+            backWithMessage($upload['error']);
+        }
+
+        $avatar_url = $upload['path'];
+    }
+
+    $sql = "INSERT INTO members (name, role, tags, linkedin_url, scholar_url, instagram, youtube, facebook, avatar_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $pdo->prepare($sql)->execute([
+        $name,
+        $role,
+        $tags,
+        trim($_POST['linkedin'] ?? ''),
+        trim($_POST['scholar'] ?? ''),
+        trim($_POST['instagram'] ?? ''),
+        trim($_POST['youtube'] ?? ''),
+        trim($_POST['facebook'] ?? ''),
+        $avatar_url
+    ]);
+
+    if (function_exists('writeLog')) {
+        writeLog($pdo, $adminName, "Tambah Anggota: $name");
+    }
+
+    autoRefreshAfterCRUD($pdo, 'member');
+
     header("Location: profil_lab.php?status=success&tab=tim");
     exit();
 }
 
 // --- 3. EDIT ANGGOTA TIM ---
 if (isset($_POST['edit_member'])) {
-    $id = $_POST['id'];
-    $name = $_POST['name'];
-    $role = $_POST['role'];
-    $tags = $_POST['tags'];
-    
-    // Ambil 5 Input Sosmed
-    $linkedin = $_POST['linkedin'];
-    $scholar = $_POST['scholar'];
-    $instagram = $_POST['instagram'];
-    $youtube = $_POST['youtube'];
-    $facebook = $_POST['facebook'];
+    requireCsrf();
+
+    $id   = (int) ($_POST['id'] ?? 0);
+    $name = trim($_POST['name'] ?? '');
+    $role = trim($_POST['role'] ?? '');
+    $tags = trim($_POST['tags'] ?? '');
+
+    if ($id <= 0 || $name === '' || $role === '') {
+        backWithMessage('Data anggota tidak lengkap.');
+    }
 
     $stmt = $pdo->prepare("SELECT avatar_url FROM members WHERE id = ?");
     $stmt->execute([$id]);
-    $oldMember = $stmt->fetch();
-    $avatar_url = $oldMember['avatar_url'];
+    $avatar_url = $stmt->fetchColumn() ?: '';
 
     if (!empty($_FILES['avatar']['name'])) {
-        $ext = strtolower(pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION));
-        $newName = "team_" . time() . uniqid() . "." . $ext;
-        if (move_uploaded_file($_FILES['avatar']['tmp_name'], $target_dir . $newName)) {
-            if (!empty($avatar_url) && file_exists("../" . $avatar_url)) unlink("../" . $avatar_url);
-            $avatar_url = "assets/uploads/" . $newName;
+        $upload = storeUpload($_FILES['avatar'], $target_dir, ['jpg', 'jpeg', 'png', 'webp'], 4 * 1024 * 1024);
+
+        if (!$upload['ok']) {
+            backWithMessage($upload['error']);
         }
+
+        removeUpload($avatar_url);
+        $avatar_url = $upload['path'];
     }
 
-    // Query Update Lengkap
     $sql = "UPDATE members SET name=?, role=?, tags=?, linkedin_url=?, scholar_url=?, instagram=?, youtube=?, facebook=?, avatar_url=? WHERE id=?";
-    $pdo->prepare($sql)->execute([$name, $role, $tags, $linkedin, $scholar, $instagram, $youtube, $facebook, $avatar_url, $id]);
+    $pdo->prepare($sql)->execute([
+        $name,
+        $role,
+        $tags,
+        trim($_POST['linkedin'] ?? ''),
+        trim($_POST['scholar'] ?? ''),
+        trim($_POST['instagram'] ?? ''),
+        trim($_POST['youtube'] ?? ''),
+        trim($_POST['facebook'] ?? ''),
+        $avatar_url,
+        $id
+    ]);
 
-    if (function_exists('writeLog')) writeLog($pdo, $_SESSION['admin_user'] ?? 'Admin', "Edit Anggota: $name");
+    if (function_exists('writeLog')) {
+        writeLog($pdo, $adminName, "Edit Anggota: $name");
+    }
+
+    autoRefreshAfterCRUD($pdo, 'member');
+
     header("Location: profil_lab.php?status=success&tab=tim");
     exit();
 }
 
 // --- 4. HAPUS ANGGOTA TIM ---
 if (isset($_GET['delete_member'])) {
-    $id = $_GET['delete_member'];
-    
+    if (!csrfValid($_GET['csrf'] ?? null)) {
+        denyAccess('Token keamanan tidak valid. Muat ulang halaman profil.');
+    }
+
+    $id = (int) $_GET['delete_member'];
+
     $stmt = $pdo->prepare("SELECT avatar_url, name FROM members WHERE id = ?");
     $stmt->execute([$id]);
     $row = $stmt->fetch();
-    
+
     if ($row) {
-        if (!empty($row['avatar_url']) && file_exists("../" . $row['avatar_url'])) unlink("../" . $row['avatar_url']);
+        removeUpload($row['avatar_url']);
         $pdo->prepare("DELETE FROM members WHERE id = ?")->execute([$id]);
-        if (function_exists('writeLog')) writeLog($pdo, $_SESSION['admin_user'] ?? 'Admin', "Hapus Anggota: " . $row['name']);
+
+        if (function_exists('writeLog')) {
+            writeLog($pdo, $adminName, "Hapus Anggota: " . $row['name']);
+        }
+
+        autoRefreshAfterCRUD($pdo, 'member');
     }
 
     header("Location: profil_lab.php?status=deleted&tab=tim");
     exit();
 }
-?>

@@ -1,6 +1,7 @@
 <?php
 // menu/menu-detail-berita/detail-berita.php
-if (!isset($_SESSION)) session_start();
+require_once __DIR__ . '/../../config/auth.php';
+startSecureSession();
 
 // PATH: Naik dua tingkat (../../) untuk mencapai root /
 $root_prefix = "../../"; 
@@ -67,6 +68,8 @@ $comments = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_comment'])) {
     if (!isset($_SESSION['user_id'])) {
         $comment_error = "Anda harus login terlebih dahulu untuk memberikan komentar.";
+    } elseif (!csrfValid()) {
+        $comment_error = "Sesi formulir kedaluwarsa. Muat ulang halaman lalu kirim ulang komentar.";
     } else {
         $rating = $_POST['rating'] ?? 0;
         $content = trim($_POST['content'] ?? '');
@@ -76,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_comment'])) {
         // VALIDASI: Minimal 10 karakter
         if (empty($content)) {
             $comment_error = "Komentar tidak boleh kosong.";
-        } elseif (strlen($content) < 10) {
+        } elseif (mb_strlen($content, 'UTF-8') < 10) {
             $comment_error = "Komentar terlalu pendek. Minimal 10 karakter.";
         } else {
             $stmt = $pdo->prepare("INSERT INTO comments 
@@ -930,6 +933,7 @@ renderFloatingProfile();
                             </div>
                         <?php else: ?>
                             <form method="POST" action="" id="commentForm">
+                            <?= csrfField() ?>
                                 <div class="form-group">
                                     <label>Rating (opsional):</label>
                                     <div class="rating-input">

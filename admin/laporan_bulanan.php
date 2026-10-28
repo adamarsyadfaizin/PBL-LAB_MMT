@@ -11,11 +11,19 @@
 </div>
 
 <?php
-// Refresh dan ambil data dari materialized view
+// Ambil data dari materialized view (di-refresh lewat tombol Generate Laporan)
 try {
-    $pdo->exec("REFRESH MATERIALIZED VIEW CONCURRENTLY mv_monthly_activity");
     $stmt = $pdo->query("SELECT * FROM mv_monthly_activity ORDER BY month DESC LIMIT 24");
     $monthly_data = $stmt->fetchAll();
+
+    $stats_query = $pdo->query("
+        SELECT 
+            COUNT(DISTINCT DATE_TRUNC('month', month)) as total_months,
+            COALESCE(SUM(total_comments), 0) as total_all_comments,
+            COALESCE(ROUND(AVG(total_comments)), 0) as avg_comments_per_month
+        FROM mv_monthly_activity
+    ");
+    $stats = $stats_query->fetch();
 } catch (Exception $e) {
     // Fallback query jika materialized view gagal
     $stmt = $pdo->query("
@@ -23,7 +31,7 @@ try {
             date_trunc('month', created_at) as month,
             COUNT(*) FILTER (WHERE entity_type = 'news') as news_comments,
             COUNT(*) FILTER (WHERE entity_type = 'media') as media_comments,
-            COUNT(*) FILTER (WHERE entity_type IS NULL) as other_comments,
+            COUNT(*) FILTER (WHERE entity_type NOT IN ('news', 'media') OR entity_type IS NULL) as other_comments,
             COUNT(*) as total_comments
         FROM comments 
         WHERE status = 'approved'
@@ -32,17 +40,15 @@ try {
         LIMIT 24
     ");
     $monthly_data = $stmt->fetchAll();
-}
 
-// Ambil statistik tambahan
-$stats_query = $pdo->query("
-    SELECT 
-        COUNT(DISTINCT DATE_TRUNC('month', created_at)) as total_months,
-        SUM(total_comments) as total_all_comments,
-        ROUND(AVG(total_comments)) as avg_comments_per_month
-    FROM mv_monthly_activity
-");
-$stats = $stats_query->fetch();
+    $stats = [
+        'total_months' => count($monthly_data),
+        'total_all_comments' => array_sum(array_column($monthly_data, 'total_comments')),
+        'avg_comments_per_month' => count($monthly_data) > 0
+            ? round(array_sum(array_column($monthly_data, 'total_comments')) / count($monthly_data))
+            : 0,
+    ];
+}
 ?>
 
 <div class="stats-grid" style="margin-bottom: 30px;">

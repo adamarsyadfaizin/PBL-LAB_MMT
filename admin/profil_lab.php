@@ -23,6 +23,7 @@ $activeTab = $_GET['tab'] ?? 'profil';
 <div id="tab-profil" style="display: <?= $activeTab=='profil'?'block':'none' ?>;">
     <div class="table-card">
         <form action="process_profil_lab.php" method="POST" enctype="multipart/form-data">
+            <?= csrfField() ?>
             <div class="form-group">
                 <label>Visi Laboratorium</label>
                 <textarea name="visi" class="form-control" rows="3"><?= htmlspecialchars($profile['visi'] ?? '') ?></textarea>
@@ -85,7 +86,7 @@ $activeTab = $_GET['tab'] ?? 'profil';
                     </td>
                     <td>
                         <button class="btn btn-sm btn-warning" onclick='openEditModal(<?= json_encode($m) ?>)'><i class="fas fa-edit"></i></button>
-                        <a href="process_profil_lab.php?delete_member=<?= $m['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus anggota ini?')"><i class="fas fa-trash"></i></a>
+                        <a href="process_profil_lab.php?delete_member=<?= $m['id'] ?>&csrf=<?= csrfToken() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus anggota ini?')"><i class="fas fa-trash"></i></a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -102,6 +103,7 @@ $activeTab = $_GET['tab'] ?? 'profil';
         </div>
         
         <form action="process_profil_lab.php" method="POST" enctype="multipart/form-data">
+            <?= csrfField() ?>
             <input type="hidden" name="id" id="m_id">
             
             <div class="form-group">

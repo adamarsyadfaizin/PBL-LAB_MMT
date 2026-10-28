@@ -1,6 +1,7 @@
 <?php
 // menu/menu-detail-galeri/galeri-detail.php
-if (!isset($_SESSION)) session_start();
+require_once __DIR__ . '/../../config/auth.php';
+startSecureSession();
 
 // PATH: Naik dua tingkat (../../) untuk mencapai root /
 $root_prefix = "../../"; 
@@ -45,6 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_comment'])) {
     // Cek apakah user sudah login
     if (!isset($_SESSION['user_id'])) {
         $comment_error = "Anda harus login terlebih dahulu untuk memberikan komentar.";
+    } elseif (!csrfValid()) {
+        $comment_error = "Sesi formulir kedaluwarsa. Muat ulang halaman lalu kirim ulang komentar.";
     } else {
         // Ambil data dari form
         $rating = !empty($_POST['rating']) ? (int)$_POST['rating'] : NULL;
@@ -55,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_comment'])) {
         // Validasi
         if (empty($content)) {
             $comment_error = "Komentar tidak boleh kosong.";
-        } elseif (strlen($content) < 5) {
+        } elseif (mb_strlen($content, 'UTF-8') < 5) {
             $comment_error = "Komentar terlalu pendek.";
         } else {
             // Simpan komentar ke database
@@ -626,10 +629,11 @@ renderFloatingProfile();
                             
                             <?php if (!isset($_SESSION['user_id'])): ?>
                                 <div class="login-prompt">
-                                    <p><i class="fas fa-info-circle"></i> Anda harus <a href="<?= $root_prefix ?>login.php">login</a> terlebih dahulu untuk memberikan komentar.</p>
+                                    <p><i class="fas fa-info-circle"></i> Anda harus <a href="<?= $root_prefix ?>menu/login.php">login</a> terlebih dahulu untuk memberikan komentar.</p>
                                 </div>
                             <?php else: ?>
                                 <form method="POST" action="">
+                                    <?= csrfField() ?>
                                     <div class="form-group">
                                         <label>Rating (opsional):</label>
                                         <div class="rating-input">

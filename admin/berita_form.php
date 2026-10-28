@@ -28,6 +28,7 @@ if ($id) {
 
 <div class="table-card" style="max-width: 800px;">
     <form action="process_berita.php" method="POST" enctype="multipart/form-data">
+    <?= csrfField() ?>
         <input type="hidden" name="id" value="<?= $data['id'] ?? '' ?>">
         
         <div class="form-group">

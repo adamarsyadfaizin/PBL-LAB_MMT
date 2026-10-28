@@ -1,7 +1,10 @@
 <?php
 // api/generate_report.php
-header('Content-Type: application/json');
-include '../config/db.php';
+require_once __DIR__ . '/_bootstrap.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    jsonResponse(['success' => false, 'message' => 'Gunakan metode POST.'], 405);
+}
 
 try {
     // Call stored procedure generate_monthly_report

@@ -1,8 +1,9 @@
 <?php
-if (!isset($_SESSION)) session_start();
+require_once __DIR__ . '/../config/auth.php';
+startSecureSession();
 // PATH: Naik satu tingkat dari /menu/ ke root /config/
-require_once '../config/db.php';
-require_once '../config/settings.php'; // CMS Setting
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/settings.php'; // CMS Setting
 
 // Include components
 require_once 'components/navbar.php';
@@ -23,9 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'])) {
     $pesan = trim($_POST['message']);
     
     // PHP-side validation
-    if (empty($nama_lengkap) || empty($email) || empty($subjek) || empty($pesan)) {
+    if (!csrfValid()) {
+        $error_message = "Sesi formulir kedaluwarsa. Muat ulang halaman lalu kirim ulang pesan.";
+    } elseif (empty($nama_lengkap) || empty($email) || empty($subjek) || empty($pesan)) {
         $error_message = "Semua field harus diisi!";
-    } elseif (strlen($nama_lengkap) < 2) {
+    } elseif (mb_strlen($nama_lengkap, 'UTF-8') < 2) {
         $error_message = "Nama harus minimal 2 karakter!";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = "Format email tidak valid!";
@@ -231,6 +234,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['name'])) {
                     <?php endif; ?>
                     
                     <form class="contact-form" action="" method="post" id="contactForm">
+                    <?= csrfField() ?>
                         <div class="form-group">
                             <label for="contact-name">Nama Lengkap *</label>
                             <input type="text" id="contact-name" name="name" value="<?= isset($_POST['name']) ? htmlspecialchars($_POST['name']) : '' ?>" required placeholder="Nama Anda">

@@ -13,16 +13,13 @@ if (!isset($site_config)) {
  * Merender struktur HTML untuk Navbar.
  * @param string $activePage Halaman yang sedang aktif (misalnya 'beranda', 'profil').
  */
-function renderNavbar($activePage = 'beranda') {
+function renderNavbar($activePage = 'beranda', $path_prefix = null) {
     global $site_config; 
 
-    $path_prefix = "";
-    if (file_exists("assets/css/style.css")) {
-        $path_prefix = ""; 
-    } elseif (file_exists("../assets/css/style.css")) {
-        $path_prefix = "../"; 
-    } elseif (file_exists("../../assets/css/style.css")) {
-        $path_prefix = "../../"; 
+    // Prefix bisa dikirim eksplisit oleh halaman pemanggil.
+    // Kalau tidak, dihitung dari URL file yang sedang dibuka.
+    if ($path_prefix === null) {
+        $path_prefix = function_exists('pathPrefix') ? pathPrefix() : '';
     }
 
     $logo_src = $path_prefix . ($site_config['logo_path'] ?? 'assets/images/logo-placeholder.png');

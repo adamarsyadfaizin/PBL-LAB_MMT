@@ -11,6 +11,7 @@ $data = $stmt->fetch();
 </div>
 
 <form action="process_pengaturan.php" method="POST" enctype="multipart/form-data">
+    <?= csrfField() ?>
     <input type="hidden" name="id" value="<?= $data['id'] ?>">
 
     <div class="table-card" style="margin-bottom: 30px;">

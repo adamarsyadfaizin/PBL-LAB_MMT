@@ -60,7 +60,7 @@ $final_img = $root_prefix . $clean_img;
     <link rel="stylesheet" href="<?= $root_prefix ?>assets/css/style.css?v=<?= $cache_buster ?>">
     <link rel="stylesheet" href="<?= $menu_prefix ?>components/navbar.css?v=<?= $cache_buster ?>">
     
-    <link rel="stylesheet" href="assets/det-proyek/css/style-detail-proyek.css?v=<?= $cache_buster ?>">
+    <link rel="stylesheet" href="assets/det-pro/css/style-detail-proyek.css?v=<?= $cache_buster ?>">
 
     <style>
         /* Background untuk seluruh halaman dengan wallpaper.jpg */
@@ -334,6 +334,6 @@ $final_img = $root_prefix . $clean_img;
 
     <script src="<?= $root_prefix ?>assets/js/navbar.js?v=<?= $cache_buster ?>"></script>
     <script src="<?= $root_prefix ?>assets/js/scrolltop.js?v=<?= $cache_buster ?>"></script>
-    <script src="assets/det-proyek/js/script-detail-proyek.js?v=<?= $cache_buster ?>"></script>
+    <script src="assets/det-pro/js/script-detail-proyek.js?v=<?= $cache_buster ?>"></script>
 </body>
 </html>

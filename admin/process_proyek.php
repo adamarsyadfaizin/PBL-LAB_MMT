@@ -1,78 +1,77 @@
 <?php
 // admin/process_proyek.php
-session_start();
-require_once '../config/db.php';
+require_once __DIR__ . '/../config/auth.php';
+startSecureSession();
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/helpers.php';
 
-function slugify($text) {
-    $text = preg_replace('~[^\pL\d]+~u', '-', $text);
-    $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
-    $text = preg_replace('~[^-\w]+~', '', $text);
-    $text = trim($text, '-');
-    $text = preg_replace('~-+~', '-', $text);
-    return strtolower($text);
+requireAdmin($pdo);
+
+function backWithMessage(string $message): void
+{
+    echo '<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"></head><body>'
+        . '<script>alert(' . json_encode($message) . '); history.back();</script>'
+        . '<noscript><p>' . htmlspecialchars($message) . '</p><a href="proyek.php">Kembali</a></noscript>'
+        . '</body></html>';
+    exit;
 }
 
-$target_dir = "../assets/images/projects/"; 
-$db_path_prefix = "assets/images/projects/"; 
-
-if (!file_exists($target_dir)) {
-    mkdir($target_dir, 0777, true);
-}
+$target_dir = 'assets/images/projects/';
 
 // DELETE
-if (isset($_GET['action']) && $_GET['action'] == 'delete') {
-    $id = $_GET['id'];
+if (isset($_GET['action']) && $_GET['action'] === 'delete') {
+    if (!csrfValid($_GET['csrf'] ?? null)) {
+        denyAccess('Token keamanan tidak valid. Muat ulang halaman daftar proyek.');
+    }
+
+    $id = (int) ($_GET['id'] ?? 0);
+
     $stmt = $pdo->prepare("SELECT cover_image FROM projects WHERE id = ?");
     $stmt->execute([$id]);
-    $row = $stmt->fetch();
-    
-    if ($row && !empty($row['cover_image'])) {
-        $file_path = "../" . $row['cover_image'];
-        if (file_exists($file_path)) unlink($file_path);
-    }
-    
+    removeUpload($stmt->fetchColumn());
+
     $pdo->prepare("DELETE FROM projects WHERE id = ?")->execute([$id]);
+    autoRefreshAfterCRUD($pdo, 'project');
+
     header("Location: proyek.php?status=deleted");
     exit();
 }
 
 // SAVE
 if (isset($_POST['save'])) {
-    $id = $_POST['id'];
-    $title = $_POST['title'];
-    $slug = slugify($title);
-    $year = $_POST['year'];
-    $category_id = $_POST['category_id'];
-    $summary = $_POST['summary'];
-    $description = $_POST['description'];
-    
-    // PERBAIKAN: Jika kosong, set NULL agar database bersih
-    $repo_url = !empty($_POST['repo_url']) ? $_POST['repo_url'] : null;
-    $demo_url = !empty($_POST['demo_url']) ? $_POST['demo_url'] : null;
-    
-    $status = $_POST['status'];
+    requireCsrf();
 
-    if (empty($summary)) {
-        $summary = substr(strip_tags($description), 0, 150);
+    $id          = (int) ($_POST['id'] ?? 0);
+    $title       = trim($_POST['title'] ?? '');
+    $year        = (int) ($_POST['year'] ?? date('Y'));
+    $category_id = (int) ($_POST['category_id'] ?? 0) ?: null;
+    $summary     = trim($_POST['summary'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $status      = $_POST['status'] ?? 'published';
+
+    // Jika kosong, set NULL agar database bersih
+    $repo_url = !empty($_POST['repo_url']) ? trim($_POST['repo_url']) : null;
+    $demo_url = !empty($_POST['demo_url']) ? trim($_POST['demo_url']) : null;
+
+    if ($title === '') {
+        backWithMessage('Judul proyek wajib diisi.');
     }
+
+    if ($summary === '') {
+        $summary = excerpt($description, 150);
+    }
+
+    $slug = uniqueSlug($pdo, 'projects', slugify($title), $id ?: null);
 
     $cover_image = null;
     if (!empty($_FILES['cover_image']['name'])) {
-        $ext = strtolower(pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION));
-        $new_name = time() . '_' . rand(100, 999) . '.' . $ext;
-        $target_file = $target_dir . $new_name;
-        
-        if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
-            if (move_uploaded_file($_FILES['cover_image']['tmp_name'], $target_file)) {
-                $cover_image = $db_path_prefix . $new_name;
-            } else {
-                echo "<script>alert('Gagal upload gambar.'); window.history.back();</script>";
-                exit;
-            }
-        } else {
-            echo "<script>alert('Format file harus JPG, PNG, atau WEBP'); window.history.back();</script>";
-            exit;
+        $upload = storeUpload($_FILES['cover_image'], $target_dir, ['jpg', 'jpeg', 'png', 'webp'], 4 * 1024 * 1024);
+
+        if (!$upload['ok']) {
+            backWithMessage($upload['error']);
         }
+
+        $cover_image = $upload['path'];
     }
 
     try {
@@ -84,31 +83,30 @@ if (isset($_POST['save'])) {
             if ($cover_image) {
                 $stmt = $pdo->prepare("SELECT cover_image FROM projects WHERE id = ?");
                 $stmt->execute([$id]);
-                $old = $stmt->fetchColumn();
-                if ($old && file_exists("../" . $old) && strpos($old, 'placeholder') === false) {
-                    unlink("../" . $old);
-                }
-                
+                removeUpload($stmt->fetchColumn());
+
                 $sql .= ", cover_image=?";
                 $params[] = $cover_image;
             }
-            
+
             $sql .= " WHERE id=?";
             $params[] = $id;
             $pdo->prepare($sql)->execute($params);
 
         } else {
             // INSERT
-            $img_path = $cover_image ?? 'assets/images/logo-placeholder.png';
+            $img_path = $cover_image ?? 'assets/images/default.jpg';
             $sql = "INSERT INTO projects (title, slug, year, category_id, summary, description, repo_url, demo_url, status, cover_image, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
             $pdo->prepare($sql)->execute([$title, $slug, $year, $category_id, $summary, $description, $repo_url, $demo_url, $status, $img_path]);
         }
-        
+
+        autoRefreshAfterCRUD($pdo, 'project');
+
         header("Location: proyek.php?status=success");
         exit();
 
     } catch (PDOException $e) {
-        die("Error Database: " . $e->getMessage());
+        error_log('[proyek] ' . $e->getMessage());
+        backWithMessage('Gagal menyimpan proyek: ' . $e->getMessage());
     }
 }
-?>

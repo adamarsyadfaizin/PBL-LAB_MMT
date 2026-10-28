@@ -1,7 +1,7 @@
 <?php
 // menu/components/footer.php
 
-function renderFooter() {
+function renderFooter($path_prefix = null) {
     // Ambil variabel global $site_config dari settings.php
     global $site_config; 
 
@@ -19,13 +19,9 @@ function renderFooter() {
     ];
 
     // --- LOGIKA PATH OTOMATIS ---
-    $path_prefix = "";
-    if (file_exists("assets/css/style.css")) {
-        $path_prefix = ""; // Root (beranda.php)
-    } elseif (file_exists("../assets/css/style.css")) {
-        $path_prefix = "../"; // Level 1 (menu/proyek.php)
-    } elseif (file_exists("../../assets/css/style.css")) {
-        $path_prefix = "../../"; // Level 2 (detail)
+    // Prefix diutamakan dari halaman pemanggil; kalau kosong dihitung dari URL.
+    if ($path_prefix === null) {
+        $path_prefix = function_exists('pathPrefix') ? pathPrefix() : '';
     }
     ?>
 

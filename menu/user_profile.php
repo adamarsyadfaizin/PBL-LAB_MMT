@@ -1,6 +1,7 @@
 <?php
-if (!isset($_SESSION)) session_start();
-require_once '../config/db.php';
+require_once __DIR__ . '/../config/auth.php';
+startSecureSession();
+require_once __DIR__ . '/../config/db.php';
 
 // Cek apakah user sudah login
 if (!isset($_SESSION['user_id'])) {
@@ -32,15 +33,17 @@ try {
 
 // Proses update password
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['change_password'])) {
-    $current_password = $_POST['current_password'];
-    $new_password = $_POST['new_password'];
-    $confirm_password = $_POST['confirm_password'];
+    $current_password = $_POST['current_password'] ?? '';
+    $new_password = $_POST['new_password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
     
-    if (empty($current_password) || empty($new_password) || empty($confirm_password)) {
+    if (!csrfValid()) {
+        $error = "Sesi formulir kedaluwarsa. Muat ulang halaman lalu coba lagi.";
+    } elseif (empty($current_password) || empty($new_password) || empty($confirm_password)) {
         $error = "Semua field password harus diisi!";
     } elseif ($new_password !== $confirm_password) {
         $error = "Password baru dan konfirmasi password tidak cocok!";
-    } elseif (strlen($new_password) < 6) {
+    } elseif (mb_strlen($new_password, 'UTF-8') < 6) {
         $error = "Password baru minimal 6 karakter!";
     } else {
         try {
@@ -51,32 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['change_password'])) {
             
             if ($user_data) {
                 $db_password = $user_data['password'];
-                $password_valid = false;
-                
-                // =============== PERBAIKAN: VERIFIKASI DENGAN BERBAGAI FORMAT ===============
-                
-                // 1. Coba dengan password_verify() untuk password hash bcrypt standard
-                if (password_verify($current_password, $db_password)) {
+                $password_valid = password_verify($current_password, $db_password);
+
+                // Data lama yang masih teks biasa: diterima sekali lalu diubah ke hash.
+                if (!$password_valid && hash_equals($db_password, $current_password)) {
                     $password_valid = true;
                 }
-                // 2. Cek jika password dimulai dengan $2/$10$ (format khusus dari tabel Anda)
-                else if (strpos($db_password, '$2/$10$') === 0) {
-                    // Untuk password seperti: $2/$10$abc12345678$0examplehashhashhash
-                    // Ini tampaknya hash custom, coba verifikasi dengan cara sederhana
-                    // Atau anggap sebagai plain text jika verifikasi hash gagal
-                    if ($current_password === $db_password) {
-                        $password_valid = true;
-                    }
-                    // Alternatif: coba verifikasi sebagai hash yang valid
-                    else if (@password_verify($current_password, $db_password)) {
-                        $password_valid = true;
-                    }
-                }
-                // 3. Cek sebagai plain text (fallback)
-                else if ($current_password === $db_password) {
-                    $password_valid = true;
-                }
-                // ============================================================================
                 
                 if ($password_valid) {
                     // Update password baru dengan HASH yang konsisten (bcrypt)

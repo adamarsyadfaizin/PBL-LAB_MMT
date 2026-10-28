@@ -318,11 +318,12 @@ $cache_buster = time();
 
                 foreach ($projects as $p):
                     $img = str_replace('../', '', $p['cover_image']);
-                    // Potong summary maksimal 150 karakter
-                    $summary = htmlspecialchars($p['summary']);
-                    if (strlen($summary) > 150) {
-                        $summary = substr($summary, 0, 150) . '...';
+                    // Potong summary maksimal 150 karakter (aman untuk UTF-8)
+                    $summary = (string) $p['summary'];
+                    if (mb_strlen($summary, 'UTF-8') > 150) {
+                        $summary = mb_substr($summary, 0, 150, 'UTF-8') . '...';
                     }
+                    $summary = htmlspecialchars($summary);
                 ?>
                 <a href="menu/menu-proyek-detail/detail-proyek.php?slug=<?= rawurlencode($p['slug']) ?>" class="home-project-card">
                     <div class="card-thumbnail">
@@ -370,11 +371,12 @@ $cache_buster = time();
 
                 foreach ($news as $n):
                     $img = str_replace('../', '', $n['cover_image']);
-                    // Potong summary untuk berita juga
-                    $newsSummary = htmlspecialchars($n['summary']);
-                    if (strlen($newsSummary) > 150) {
-                        $newsSummary = substr($newsSummary, 0, 150) . '...';
+                    // Potong summary untuk berita juga (aman untuk UTF-8)
+                    $newsSummary = (string) $n['summary'];
+                    if (mb_strlen($newsSummary, 'UTF-8') > 150) {
+                        $newsSummary = mb_substr($newsSummary, 0, 150, 'UTF-8') . '...';
                     }
+                    $newsSummary = htmlspecialchars($newsSummary);
                 ?>
                 <a href="menu/menu-detail-berita/detail-berita.php?slug=<?= rawurlencode($n['slug']) ?>" class="home-news-card">
                     <div class="card-thumbnail">

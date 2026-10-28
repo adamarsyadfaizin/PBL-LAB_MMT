@@ -1,15 +1,9 @@
 <?php
 // api/refresh_view.php - API endpoint untuk refresh materialized view
-header('Content-Type: application/json');
-include '../config/db.php';
+require_once __DIR__ . '/_bootstrap.php';
 
-// Enable CORS
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit(0);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    jsonResponse(['success' => false, 'message' => 'Gunakan metode POST.'], 405);
 }
 
 try {

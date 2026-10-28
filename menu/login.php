@@ -1,15 +1,18 @@
 <?php
 // menu/login.php
-session_start();
-require_once "../config/db.php"; 
+require_once __DIR__ . '/../config/auth.php';
+startSecureSession();
+require_once __DIR__ . '/../config/db.php';
 
 $error = "";
 
 // -------------------------
 // GENERATE / REFRESH CAPTCHA
 // -------------------------
+$captchaChars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
 if (isset($_GET['refresh']) && $_GET['refresh'] == '1') {
-    $_SESSION['captcha'] = substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, 6);
+    $_SESSION['captcha'] = substr(str_shuffle($captchaChars), 0, 6);
 
     $uri = strtok($_SERVER['REQUEST_URI'], '?');
     header("Location: $uri");
@@ -17,7 +20,7 @@ if (isset($_GET['refresh']) && $_GET['refresh'] == '1') {
 }
 
 if (empty($_SESSION['captcha'])) {
-    $_SESSION['captcha'] = substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, 6);
+    $_SESSION['captcha'] = substr(str_shuffle($captchaChars), 0, 6);
 }
 
 // -------------------------
@@ -26,18 +29,22 @@ if (empty($_SESSION['captcha'])) {
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $usernameOrEmail = trim($_POST['username'] ?? '');
-    $password        = trim($_POST['password'] ?? '');
+    $password        = (string) ($_POST['password'] ?? '');
     $captchaInput    = trim($_POST['captcha'] ?? '');
 
-    if ($usernameOrEmail === '' || $password === '') {
+    // Pembatasan percobaan login: maksimal 5 kali per 5 menit
+    $attempts = $_SESSION['login_attempts'] ?? ['count' => 0, 'time' => 0];
+    if ($attempts['count'] >= 5 && (time() - $attempts['time']) < 300) {
+        $sisa = 300 - (time() - $attempts['time']);
+        $error = "Terlalu banyak percobaan. Coba lagi dalam " . ceil($sisa / 60) . " menit.";
+    } elseif (!csrfValid()) {
+        $error = "Sesi formulir kedaluwarsa. Muat ulang halaman lalu coba lagi.";
+    } elseif ($usernameOrEmail === '' || $password === '') {
         $error = "Isi username/email dan password.";
-    } 
-    elseif (strtoupper($captchaInput) !== strtoupper($_SESSION['captcha'])) {
+    } elseif (strtoupper($captchaInput) !== strtoupper($_SESSION['captcha'])) {
         $error = "Kode CAPTCHA salah!";
-        $_SESSION['captcha'] = substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, 6);
-    } 
-    else {
-        // QUERY USER
+        $_SESSION['captcha'] = substr(str_shuffle($captchaChars), 0, 6);
+    } else {
         $sql = "SELECT id, name, email, password, role 
                 FROM users 
                 WHERE name = :ue OR email = :ue 
@@ -47,42 +54,57 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->execute(['ue' => $usernameOrEmail]);
         $user = $stmt->fetch();
 
+        $loginOk = false;
+
         if ($user) {
-            // VERIFIKASI PASSWORD (PLAIN TEXT SESUAI PERMINTAAN)
-            if ($password === $user['password']) {
+            $stored = (string) $user['password'];
 
-                $_SESSION['user_id']   = $user['id'];
-                $_SESSION['user_name'] = $user['name'];
-                $_SESSION['user_role'] = $user['role'];
-
-                // Remember me (optional)
-                if (!empty($_POST['remember'])) {
-                    setcookie('remember_me', base64_encode($user['id']), time() + (30*24*60*60), "/");
-                }
-                // --- [MULAI KODE LOG] ---
-                // Catat aktivitas login berhasil
-                // Pastikan db.php sudah di-include di baris paling atas file ini
-                if (function_exists('writeLog')) {
-                    writeLog($pdo, $user['name'], "Login Berhasil");
-                }
-                // --- [SELESAI KODE LOG] ---
-                // --- PERBAIKAN: LOGIKA REDIRECT BERDASARKAN ROLE ---
-                if ($user['role'] === 'admin') {
-                    // Jika admin, arahkan ke folder admin
-                    header("Location: ../admin/index.php");
-                } else {
-                    // Jika user biasa/anggota, arahkan ke beranda
-                    header("Location: ../beranda.php");
-                }
-                exit;
-
-            } else {
-                $error = "Password salah!";
-                $_SESSION['captcha'] = substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, 6);
+            if (password_verify($password, $stored)) {
+                $loginOk = true;
+            } elseif (hash_equals($stored, $password)) {
+                // Data lama masih berupa teks biasa: diterima sekali,
+                // lalu langsung diubah menjadi hash bcrypt.
+                $loginOk = true;
+                $newHash = password_hash($password, PASSWORD_DEFAULT);
+                $pdo->prepare("UPDATE users SET password = ? WHERE id = ?")
+                    ->execute([$newHash, $user['id']]);
             }
+        }
+
+        if ($loginOk) {
+            unset($_SESSION['login_attempts']);
+
+            // Cegah session fixation
+            session_regenerate_id(true);
+
+            $_SESSION['user_id']   = $user['id'];
+            $_SESSION['user_name'] = $user['name'];
+            $_SESSION['user_email'] = $user['email'];
+            $_SESSION['user_role'] = $user['role'];
+
+            if (function_exists('writeLog')) {
+                writeLog($pdo, $user['name'], "Login Berhasil");
+            }
+
+            $target = $_SESSION['redirect_after_login'] ?? null;
+            unset($_SESSION['redirect_after_login']);
+
+            if ($user['role'] === 'admin' || $user['role'] === 'editor') {
+                header("Location: ../admin/index.php");
+            } elseif ($target && strpos($target, '//') === false && strpos($target, 'login.php') === false) {
+                header("Location: " . $target);
+            } else {
+                header("Location: ../beranda.php");
+            }
+            exit;
+
         } else {
-            $error = "Akun tidak ditemukan.";
-            $_SESSION['captcha'] = substr(str_shuffle('ABCDEFGHJKLMNPQRSTUVWXYZ23456789'), 0, 6);
+            $_SESSION['login_attempts'] = [
+                'count' => ($attempts['count'] ?? 0) + 1,
+                'time'  => time(),
+            ];
+            $error = $user ? "Password salah!" : "Akun tidak ditemukan.";
+            $_SESSION['captcha'] = substr(str_shuffle($captchaChars), 0, 6);
         }
     }
 }
@@ -99,14 +121,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <style>
         .captcha-box {
             display:inline-block;
-            padding:10px 14px;
-            font-family: 'Courier New', monospace;
-            font-weight:700;
-            letter-spacing:3px;
-            background:#f3f3f3;
+            padding:6px 8px;
+            background:#fff;
             border-radius:6px;
             border:1px solid #ddd;
+            line-height:0;
         }
+        .captcha-box img { height: 44px; width: auto; display: block; }
         .error-message-inline { 
             color:#c00; 
             text-align:center; 
@@ -127,6 +148,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <?php endif; ?>
 
         <form class="login-form" action="" method="POST" autocomplete="off">
+            <?= csrfField() ?>
 
             <div class="form-group">
                 <label for="username">Username atau Email</label>
@@ -143,20 +165,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <label for="captcha">Verifikasi Keamanan</label>
 
                 <div class="captcha-wrapper">
-                    <div class="captcha-box"><?= htmlspecialchars($_SESSION['captcha']) ?></div>
-                    <a href="?refresh=1" style="margin-left:10px;">&#x21bb; Refresh</a>
+                    <div class="captcha-box">
+                        <img src="captcha.php?t=<?= time() ?>" alt="Kode verifikasi" width="160" height="44">
+                    </div>
+                    <a href="?refresh=1" style="margin-left:10px;">&#x21bb; Ganti kode</a>
                 </div>
 
                 <input type="text" id="captcha" name="captcha" 
                     placeholder="Ketik kode di atas" maxlength="6" required
                     style="margin-top:8px;">
-            </div>
-
-            <div class="form-options">
-                <div class="remember-me">
-                    <input type="checkbox" id="remember" name="remember">
-                    <label for="remember">Ingat saya</label>
-                </div>
             </div>
 
             <button type="submit" class="btn-login">Login</button>

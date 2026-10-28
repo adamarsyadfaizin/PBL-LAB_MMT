@@ -76,7 +76,7 @@
                 </td>
                 <td>
                     <a href="proyek_form.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
-                    <a href="process_proyek.php?action=delete&id=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus proyek?')"><i class="fas fa-trash"></i></a>
+                    <a href="process_proyek.php?action=delete&id=<?= $row['id'] ?>&csrf=<?= csrfToken() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus proyek?')"><i class="fas fa-trash"></i></a>
                 </td>
             </tr>
             <?php endwhile; ?>

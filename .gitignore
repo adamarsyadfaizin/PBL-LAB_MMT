@@ -1,0 +1,17 @@
+# Konfigurasi lokal
+.env
+.env.local
+
+# Vercel
+.vercel
+
+# Berkas backup hasil fitur admin
+backups/
+
+# Berkas sistem / editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.idea/
+.vscode/
+*.log

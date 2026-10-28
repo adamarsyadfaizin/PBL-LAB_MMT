@@ -1,15 +1,14 @@
 <?php
 // api/cleanup_old_data.php - API endpoint untuk cleanup data lama
-header('Content-Type: application/json');
-include '../config/db.php';
+require_once __DIR__ . '/_bootstrap.php';
 
-// Enable CORS
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    jsonResponse(['success' => false, 'message' => 'Gunakan metode POST.'], 405);
+}
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit(0);
+// Hanya admin yang boleh menghapus data
+if (($_SESSION['user_role'] ?? '') !== 'admin') {
+    jsonResponse(['success' => false, 'message' => 'Hanya admin yang boleh menjalankan cleanup.'], 403);
 }
 
 try {
